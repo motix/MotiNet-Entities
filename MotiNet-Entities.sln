@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotiNet-Entities", "src\MotiNet-Entities\MotiNet-Entities.csproj", "{3FCB0076-C6FF-4CF2-BE15-C87D2C585B72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5AF9D36A-D67E-447C-A107-E06B5056134F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0404144B-C367-4348-A70F-8EA0C1611B82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3FCB0076-C6FF-4CF2-BE15-C87D2C585B72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FCB0076-C6FF-4CF2-BE15-C87D2C585B72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FCB0076-C6FF-4CF2-BE15-C87D2C585B72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FCB0076-C6FF-4CF2-BE15-C87D2C585B72}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3FCB0076-C6FF-4CF2-BE15-C87D2C585B72} = {5AF9D36A-D67E-447C-A107-E06B5056134F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0BFA25D2-C788-45B7-9232-B6F15242EAB8}
+	EndGlobalSection
+EndGlobal
