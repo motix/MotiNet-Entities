@@ -1,35 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MotiNet.Entities
 {
     public interface IRepository<TEntity> : IDisposable
         where TEntity : class
     {
-        Task<TEntity> FindByIdAsync<TKey>(TKey id, CancellationToken cancellationToken)
-            where TKey : IEquatable<TKey>;
+        TEntity FindById(object id);
 
-        Task<TEntity> FindByIdAsync<TKey>(TKey id, IFindSpecification<TEntity, TKey> spec, CancellationToken cancellationToken)
-            where TKey : IEquatable<TKey>;
+        TEntity FindById(object id, IFindSpecification<TEntity> spec);
 
-        Task<IEnumerable<TEntity>> AllAsync(CancellationToken cancellationToken);
+        IEnumerable<TEntity> All();
 
-        Task<IEnumerable<TEntity>> SearchAsync(ISearchSpecification<TEntity> spec, CancellationToken cancellationToken);
+        IEnumerable<TEntity> Search(ISearchSpecification<TEntity> spec);
 
-        Task<PagedSearchResult<TEntity>> SearchAsync(IPagedSearchSpecification<TEntity> spec, CancellationToken cancellationToken);
+        PagedSearchResult<TEntity> Search(IPagedSearchSpecification<TEntity> spec);
 
-        Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken);
+        TEntity Add(TEntity entity);
 
-        Task<TEntity> AddAsync<TKey>(TEntity entity, IModifySpecification<TEntity, TKey> spec, CancellationToken cancellationToken)
-            where TKey : IEquatable<TKey>;
+        TEntity Add(TEntity entity, IModifySpecification<TEntity> spec);
 
-        Task UpdateAsync(TEntity entity, CancellationToken cancellationToken);
+        void Update(TEntity entity);
 
-        Task UpdateAsync<TKey>(TEntity entity, IModifySpecification<TEntity, TKey> spec, CancellationToken cancellationToken)
-            where TKey : IEquatable<TKey>;
+        void Update(TEntity entity, IModifySpecification<TEntity> spec);
 
-        Task DeleteAsync(TEntity entity, CancellationToken cancellationToken);
+        void Delete(TEntity entity);
     }
 }

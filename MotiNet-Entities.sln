@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5AF9D36A-D67E-447C-A107-E06B5056134F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0404144B-C367-4348-A70F-8EA0C1611B82}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0404144B-C367-4348-A70F-8EA0C1611B82}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E73332CE-4CEB-4011-AD9E-2E9FDBA184F9}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,7 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motix.Extensions.Entities.Core", "src\Motix.Extensions.Entities.Core\Motix.Extensions.Entities.Core.csproj", "{7F53B013-81C2-4E11-B9F8-7C6C496264E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Motix.Extensions.Entities.Core", "src\Motix.Extensions.Entities.Core\Motix.Extensions.Entities.Core.csproj", "{7F53B013-81C2-4E11-B9F8-7C6C496264E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motix.MotiNet.Entities.EntityFrameworkCore", "src\Motix.MotiNet.Entities.EntityFrameworkCore\Motix.MotiNet.Entities.EntityFrameworkCore.csproj", "{AA4BF067-3648-4245-9532-0DA3920C553E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Motix.MotiNet.Entities.EntityFrameworkCore.Test", "test\Motix.MotiNet.Entities.EntityFrameworkCore.Test\Motix.MotiNet.Entities.EntityFrameworkCore.Test.csproj", "{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,12 +30,22 @@ Global
 		{7F53B013-81C2-4E11-B9F8-7C6C496264E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F53B013-81C2-4E11-B9F8-7C6C496264E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F53B013-81C2-4E11-B9F8-7C6C496264E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA4BF067-3648-4245-9532-0DA3920C553E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA4BF067-3648-4245-9532-0DA3920C553E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA4BF067-3648-4245-9532-0DA3920C553E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA4BF067-3648-4245-9532-0DA3920C553E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7F53B013-81C2-4E11-B9F8-7C6C496264E1} = {5AF9D36A-D67E-447C-A107-E06B5056134F}
+		{AA4BF067-3648-4245-9532-0DA3920C553E} = {5AF9D36A-D67E-447C-A107-E06B5056134F}
+		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D} = {0404144B-C367-4348-A70F-8EA0C1611B82}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0BFA25D2-C788-45B7-9232-B6F15242EAB8}

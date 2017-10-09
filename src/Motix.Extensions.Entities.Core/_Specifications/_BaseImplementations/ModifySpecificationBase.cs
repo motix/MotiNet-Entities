@@ -4,34 +4,33 @@ using System.Linq.Expressions;
 
 namespace MotiNet.Entities
 {
-    public abstract class ModifySpecificationBase<TEntity, TKey> : IModifySpecification<TEntity, TKey>
+    public abstract class ModifySpecificationBase<TEntity> : IModifySpecification<TEntity>
         where TEntity : class
-        where TKey : IEquatable<TKey>
     {
-        public virtual ICollection<OneToManyRelationshipSpecification<TEntity, TKey>> OneToManyRelationships { get; }
-            = new List<OneToManyRelationshipSpecification<TEntity, TKey>>();
+        public virtual ICollection<OneToManyRelationshipSpecification<TEntity>> OneToManyRelationships { get; }
+            = new List<OneToManyRelationshipSpecification<TEntity>>();
 
-        public virtual ICollection<ManyToManyRelationshipSpecification<TEntity, TKey>> ManyToManyRelationships { get; }
-            = new List<ManyToManyRelationshipSpecification<TEntity, TKey>>();
+        public virtual ICollection<ManyToManyRelationshipSpecification<TEntity>> ManyToManyRelationships { get; }
+            = new List<ManyToManyRelationshipSpecification<TEntity>>();
 
         public void AddOneToManyRelationship(
-            Expression<Func<TEntity, TKey>> foreignKeyExpression,
+            Expression<Func<TEntity, object>> foreignKeyExpression,
             Expression<Func<TEntity, object>> parentExpression,
-            Expression<Func<object, TKey>> parentIdExpression)
+            Expression<Func<object, object>> parentIdExpression)
         {
-            OneToManyRelationships.Add(new OneToManyRelationshipSpecification<TEntity, TKey>(
+            OneToManyRelationships.Add(new OneToManyRelationshipSpecification<TEntity>(
                 foreignKeyExpression, parentExpression, parentIdExpression));
         }
 
         public void AddManyToManyRelationship(
-            Expression<Func<TEntity, TKey>> thisIdExpression,
-            Expression<Func<object, TKey>> otherIdExpression,
+            Expression<Func<TEntity, object>> thisIdExpression,
+            Expression<Func<object, object>> otherIdExpression,
             Expression<Func<TEntity, IEnumerable<object>>> othersExpression,
             Type linkType,
-            Expression<Func<object, TKey>> linkForeignKeyToThisExpression,
-            Expression<Func<object, TKey>> linkForeignKeyToOtherExpression)
+            Expression<Func<object, object>> linkForeignKeyToThisExpression,
+            Expression<Func<object, object>> linkForeignKeyToOtherExpression)
         {
-            ManyToManyRelationships.Add(new ManyToManyRelationshipSpecification<TEntity, TKey>(
+            ManyToManyRelationships.Add(new ManyToManyRelationshipSpecification<TEntity>(
                 thisIdExpression, otherIdExpression, othersExpression, linkType, linkForeignKeyToThisExpression, linkForeignKeyToOtherExpression));
         }
     }

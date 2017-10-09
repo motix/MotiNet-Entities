@@ -4,11 +4,12 @@ using System.Linq.Expressions;
 
 namespace MotiNet.Entities
 {
-    public class ManyToManyRelationshipSpecification<TEntity>
+    public class ManyToManyIncludeSpecification<TEntity>
         where TEntity : class
     {
-        public ManyToManyRelationshipSpecification(
+        public ManyToManyIncludeSpecification(
             Expression<Func<TEntity, object>> thisIdExpression,
+            Type otherType,
             Expression<Func<object, object>> otherIdExpression,
             Expression<Func<TEntity, IEnumerable<object>>> othersExpression,
             Type linkType,
@@ -16,6 +17,7 @@ namespace MotiNet.Entities
             Expression<Func<object, object>> linkForeignKeyToOtherExpression)
         {
             ThisIdExpression = thisIdExpression ?? throw new ArgumentNullException(nameof(thisIdExpression));
+            OtherType = otherType ?? throw new ArgumentNullException(nameof(otherType));
             OtherIdExpression = otherIdExpression ?? throw new ArgumentNullException(nameof(otherIdExpression));
             OthersExpression = othersExpression ?? throw new ArgumentNullException(nameof(othersExpression));
             LinkType = linkType ?? throw new ArgumentNullException(nameof(linkType));
@@ -24,6 +26,8 @@ namespace MotiNet.Entities
         }
 
         public Expression<Func<TEntity, object>> ThisIdExpression { get; }
+
+        public Type OtherType { get; }
 
         public Expression<Func<object, object>> OtherIdExpression { get; }
 
@@ -34,5 +38,14 @@ namespace MotiNet.Entities
         public Expression<Func<object, object>> LinkForeignKeyToThisExpression { get; }
 
         public Expression<Func<object, object>> LinkForeignKeyToOtherExpression { get; }
+
+        public ICollection<Expression<Func<object, object>>> ChildIncludes { get; set; }
+            = new List<Expression<Func<object, object>>>();
+
+        public ICollection<string> ChildIncludeStrings { get; set; }
+            = new List<string>();
+
+        public ICollection<ManyToManyIncludeSpecification<object>> ChildManyToManyIncludes { get; set; }
+            = new List<ManyToManyIncludeSpecification<object>>();
     }
 }

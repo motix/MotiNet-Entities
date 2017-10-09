@@ -3,10 +3,9 @@ using System.Linq.Expressions;
 
 namespace MotiNet.Entities
 {
-    public interface IFindSpecification<TEntity, TKey> : IGetSpecification<TEntity>
+    public interface IFindSpecification<TEntity> : IGetSpecification<TEntity>
         where TEntity : class
-        where TKey : IEquatable<TKey>
     {
-        Expression<Func<TEntity, TKey>> IdExpression { get; }
+        Expression<Func<TEntity, object>> KeyExpression { get; }
     }
 }

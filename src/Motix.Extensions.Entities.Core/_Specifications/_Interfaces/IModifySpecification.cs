@@ -4,25 +4,24 @@ using System.Linq.Expressions;
 
 namespace MotiNet.Entities
 {
-    public interface IModifySpecification<TEntity, TKey>
+    public interface IModifySpecification<TEntity>
         where TEntity : class
-        where TKey : IEquatable<TKey>
     {
-        ICollection<OneToManyRelationshipSpecification<TEntity, TKey>> OneToManyRelationships { get; }
+        ICollection<OneToManyRelationshipSpecification<TEntity>> OneToManyRelationships { get; }
 
-        ICollection<ManyToManyRelationshipSpecification<TEntity, TKey>> ManyToManyRelationships { get; }
+        ICollection<ManyToManyRelationshipSpecification<TEntity>> ManyToManyRelationships { get; }
 
         void AddOneToManyRelationship(
-            Expression<Func<TEntity, TKey>> foreignKeyExpression,
+            Expression<Func<TEntity, object>> foreignKeyExpression,
             Expression<Func<TEntity, object>> parentExpression,
-            Expression<Func<object, TKey>> parentIdExpression);
+            Expression<Func<object, object>> parentIdExpression);
 
         void AddManyToManyRelationship(
-            Expression<Func<TEntity, TKey>> thisIdExpression,
-            Expression<Func<object, TKey>> otherIdExpression,
+            Expression<Func<TEntity, object>> thisIdExpression,
+            Expression<Func<object, object>> otherIdExpression,
             Expression<Func<TEntity, IEnumerable<object>>> othersExpression,
             Type linkType,
-            Expression<Func<object, TKey>> linkForeignKeyToThisExpression,
-            Expression<Func<object, TKey>> linkForeignKeyToOtherExpression);
+            Expression<Func<object, object>> linkForeignKeyToThisExpression,
+            Expression<Func<object, object>> linkForeignKeyToOtherExpression);
     }
 }
