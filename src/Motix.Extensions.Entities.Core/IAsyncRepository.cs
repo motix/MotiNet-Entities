@@ -10,7 +10,7 @@ namespace MotiNet.Entities
     {
         Task<TEntity> FindByIdAsync(object id, CancellationToken cancellationToken);
 
-        Task<TEntity> FindByIdAsync(object id, IFindSpecification<TEntity> spec, CancellationToken cancellationToken);
+        Task<TEntity> FindAsync(object key, IFindSpecification<TEntity> spec, CancellationToken cancellationToken);
 
         Task<IEnumerable<TEntity>> AllAsync(CancellationToken cancellationToken);
 

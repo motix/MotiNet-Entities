@@ -7,5 +7,7 @@ namespace MotiNet.Entities
         where TEntity : class
     {
         Expression<Func<TEntity, object>> KeyExpression { get; }
+
+        Expression<Func<TEntity, bool>> AdditionalCriteria { get; }
     }
 }

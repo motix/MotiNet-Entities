@@ -48,19 +48,24 @@ namespace MotiNet.Entities.EntityFrameworkCore
             return _dbContext.Set<TEntity>().FindAsync(new object[] { id }, cancellationToken);
         }
 
-        public virtual TEntity FindById(object id, IFindSpecification<TEntity> spec)
+        public virtual TEntity Find(object key, IFindSpecification<TEntity> spec)
         {
             ThrowIfDisposed();
-            if (id == null)
+            if (key == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(key));
             }
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
             entities = Include(entities, spec);
 
-            var result = entities.SingleOrDefault(x => Equals(GetPropertyValue(x, spec.KeyExpression), id));
+            if (spec.AdditionalCriteria != null)
+            {
+                entities = entities.Where(spec.AdditionalCriteria);
+            }
+
+            var result = entities.SingleOrDefault(x => Equals(GetPropertyValue(x, spec.KeyExpression), key));
 
             if (spec.ManyToManyIncludes != null)
             {
@@ -70,20 +75,25 @@ namespace MotiNet.Entities.EntityFrameworkCore
             return result;
         }
 
-        public virtual async Task<TEntity> FindByIdAsync(object id, IFindSpecification<TEntity> spec, CancellationToken cancellationToken)
+        public virtual async Task<TEntity> FindAsync(object key, IFindSpecification<TEntity> spec, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
-            if (id == null)
+            if (key == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(key));
             }
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
             entities = Include(entities, spec);
 
-            var result = await entities.SingleOrDefaultAsync(x => Equals(GetPropertyValue(x, spec.KeyExpression), id), cancellationToken);
+            if (spec.AdditionalCriteria != null)
+            {
+                entities = entities.Where(spec.AdditionalCriteria);
+            }
+
+            var result = await entities.SingleOrDefaultAsync(x => Equals(GetPropertyValue(x, spec.KeyExpression), key), cancellationToken);
 
             if (spec.ManyToManyIncludes != null)
             {

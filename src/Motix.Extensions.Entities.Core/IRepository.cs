@@ -8,7 +8,7 @@ namespace MotiNet.Entities
     {
         TEntity FindById(object id);
 
-        TEntity FindById(object id, IFindSpecification<TEntity> spec);
+        TEntity Find(object key, IFindSpecification<TEntity> spec);
 
         IEnumerable<TEntity> All();
 

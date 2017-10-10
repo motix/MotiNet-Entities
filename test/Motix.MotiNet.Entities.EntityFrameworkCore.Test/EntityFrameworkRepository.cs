@@ -83,7 +83,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                     var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
                     var spec = new FindArticleByIdSpecification();
                     spec.AddInclude(x => x.Author);
-                    var article = await repository.FindByIdAsync(testId, spec, CancellationToken.None);
+                    var article = await repository.FindAsync(testId, spec, CancellationToken.None);
 
                     Assert.NotNull(article.Author);
                     Assert.Equal(article.AuthorId, article.Author.Id);
@@ -147,7 +147,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                     articleCategoryInclude.ChildManyToManyIncludes.Add(categoryArticleInclude);
                     var spec = new FindArticleByIdSpecification();
                     spec.AddInclude(articleCategoryInclude);
-                    var article = await repository.FindByIdAsync(testId, spec, CancellationToken.None);
+                    var article = await repository.FindAsync(testId, spec, CancellationToken.None);
 
                     Assert.Equal(categoriesCount, article.Categories.Count);
                     Assert.Equal(testCategoryParentId, article.Categories.Single(x => x.Id == testCategoryId).ParentId);
