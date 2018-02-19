@@ -151,9 +151,11 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
 
                     Assert.Equal(categoriesCount, article.Categories.Count);
                     Assert.Equal(testCategoryParentId, article.Categories.Single(x => x.Id == testCategoryId).ParentId);
+                    Assert.NotNull(article.Categories.Single(x => x.Id == testCategoryId).Parent);
                     Assert.Equal(testCategoryParentId, article.Categories.Single(x => x.Id == testCategoryId).Parent.Id);
                     Assert.Equal(siblingCount, article.Categories.Single(x => x.Id == testCategoryId).Articles.Count);
                     Assert.Equal(testAuthorId, article.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).AuthorId);
+                    Assert.NotNull(article.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).Author);
                     Assert.Equal(testAuthorId, article.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).Author.Id);
                 }
             }
@@ -164,7 +166,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
         }
 
         [Fact]
-        public async Task UpdatesOneToManyRelationshipToParentIdWithParentAndNoForeignKey()
+        public async Task UpdatesOneToManyRelationshipRespectingParentIdWhenParentPresentsAndForeignKeyNotPresent()
         {
             var testId = 1;
             var newParentId = 2;
@@ -221,7 +223,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
         }
 
         [Fact]
-        public async Task UpdatesOneToManyRelationshipToForeignKeyIfForeignKeyPresentsAndParentHasDifferentId()
+        public async Task UpdatesOneToManyRelationshipRespectingForeignKeyWhenForeignKeyPresentsAndParentHasDifferentId()
         {
             var testId = 1;
             var newForeignKeyId = 2;

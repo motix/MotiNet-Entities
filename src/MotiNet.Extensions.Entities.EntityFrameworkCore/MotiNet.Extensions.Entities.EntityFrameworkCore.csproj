@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Motix.Extensions.Entities.Core\Motix.Extensions.Entities.Core.csproj" />
+    <ProjectReference Include="..\MotiNet.Extensions.Entities.Core\MotiNet.Extensions.Entities.Core.csproj" />
   </ItemGroup>
 
 </Project>

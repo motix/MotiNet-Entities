@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5AF9D36A-D67E-447C-A107-E06B5056134F}"
 EndProject
@@ -11,14 +11,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
 		Build.ps1 = Build.ps1
+		NuGet.config = NuGet.config
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Motix.Extensions.Entities.Core", "src\Motix.Extensions.Entities.Core\Motix.Extensions.Entities.Core.csproj", "{7F53B013-81C2-4E11-B9F8-7C6C496264E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotiNet.Extensions.Entities.Core", "src\MotiNet.Extensions.Entities.Core\MotiNet.Extensions.Entities.Core.csproj", "{CA26C993-AF8B-4B6C-ABCA-ECAAFE5E6121}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motix.MotiNet.Entities.EntityFrameworkCore", "src\Motix.MotiNet.Entities.EntityFrameworkCore\Motix.MotiNet.Entities.EntityFrameworkCore.csproj", "{AA4BF067-3648-4245-9532-0DA3920C553E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotiNet.Extensions.Entities.EntityFrameworkCore", "src\MotiNet.Extensions.Entities.EntityFrameworkCore\MotiNet.Extensions.Entities.EntityFrameworkCore.csproj", "{73FB8A4C-F06C-4569-8C3E-C19C69C9BE41}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Motix.MotiNet.Entities.EntityFrameworkCore.Test", "test\Motix.MotiNet.Entities.EntityFrameworkCore.Test\Motix.MotiNet.Entities.EntityFrameworkCore.Test.csproj", "{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotiNet.Extensions.Entities.EntityFrameworkCore.Test", "test\MotiNet.Extensions.Entities.EntityFrameworkCore.Test\MotiNet.Extensions.Entities.EntityFrameworkCore.Test.csproj", "{FA4B086F-16CD-4199-BFE3-B4542862153B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,26 +27,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7F53B013-81C2-4E11-B9F8-7C6C496264E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F53B013-81C2-4E11-B9F8-7C6C496264E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F53B013-81C2-4E11-B9F8-7C6C496264E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F53B013-81C2-4E11-B9F8-7C6C496264E1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA4BF067-3648-4245-9532-0DA3920C553E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA4BF067-3648-4245-9532-0DA3920C553E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA4BF067-3648-4245-9532-0DA3920C553E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA4BF067-3648-4245-9532-0DA3920C553E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA26C993-AF8B-4B6C-ABCA-ECAAFE5E6121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA26C993-AF8B-4B6C-ABCA-ECAAFE5E6121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA26C993-AF8B-4B6C-ABCA-ECAAFE5E6121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA26C993-AF8B-4B6C-ABCA-ECAAFE5E6121}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73FB8A4C-F06C-4569-8C3E-C19C69C9BE41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73FB8A4C-F06C-4569-8C3E-C19C69C9BE41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73FB8A4C-F06C-4569-8C3E-C19C69C9BE41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73FB8A4C-F06C-4569-8C3E-C19C69C9BE41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA4B086F-16CD-4199-BFE3-B4542862153B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA4B086F-16CD-4199-BFE3-B4542862153B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA4B086F-16CD-4199-BFE3-B4542862153B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA4B086F-16CD-4199-BFE3-B4542862153B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{7F53B013-81C2-4E11-B9F8-7C6C496264E1} = {5AF9D36A-D67E-447C-A107-E06B5056134F}
-		{AA4BF067-3648-4245-9532-0DA3920C553E} = {5AF9D36A-D67E-447C-A107-E06B5056134F}
-		{E89EE17F-9E7D-41BB-B2D5-CD077C3AA26D} = {0404144B-C367-4348-A70F-8EA0C1611B82}
+		{CA26C993-AF8B-4B6C-ABCA-ECAAFE5E6121} = {5AF9D36A-D67E-447C-A107-E06B5056134F}
+		{73FB8A4C-F06C-4569-8C3E-C19C69C9BE41} = {5AF9D36A-D67E-447C-A107-E06B5056134F}
+		{FA4B086F-16CD-4199-BFE3-B4542862153B} = {0404144B-C367-4348-A70F-8EA0C1611B82}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0BFA25D2-C788-45B7-9232-B6F15242EAB8}

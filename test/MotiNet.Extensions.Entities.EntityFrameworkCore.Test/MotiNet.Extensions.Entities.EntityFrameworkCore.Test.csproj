@@ -11,12 +11,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
+    <PackageReference Include="MotiNet.ComponentModel.Annotations" Version="1.0.0-beta-0018" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Motix.MotiNet.Entities.EntityFrameworkCore\Motix.MotiNet.Entities.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\MotiNet.Extensions.Entities.EntityFrameworkCore\MotiNet.Extensions.Entities.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

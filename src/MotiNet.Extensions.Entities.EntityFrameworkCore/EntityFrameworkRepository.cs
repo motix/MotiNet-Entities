@@ -48,6 +48,10 @@ namespace MotiNet.Entities.EntityFrameworkCore
             return _dbContext.Set<TEntity>().FindAsync(new object[] { id }, cancellationToken);
         }
 
+        #endregion
+
+        #region Find
+
         public virtual TEntity Find(object key, IFindSpecification<TEntity> spec)
         {
             ThrowIfDisposed();
