@@ -29,6 +29,7 @@ exec { & dotnet restore }
 exec { & dotnet test .\test\MotiNet.Extensions.Entities.EntityFrameworkCore.Test -c Release }
 
 if ($env:APPVEYOR_REPO_TAG -eq $true) {
+	exec { & dotnet pack .\src\MotiNet.Extensions.Entities.EntityMarkers -c Release -o ..\..\artifacts }
 	exec { & dotnet pack .\src\MotiNet.Extensions.Entities.Core -c Release -o ..\..\artifacts }
 	exec { & dotnet pack .\src\MotiNet.Extensions.Entities.EntityFrameworkCore -c Release -o ..\..\artifacts }
 } else {
@@ -36,6 +37,7 @@ if ($env:APPVEYOR_REPO_TAG -eq $true) {
 	$revision = "{0:D4}" -f [convert]::ToInt32($revision, 10);
 	$suffix = "beta-" + $revision
 
+	exec { & dotnet pack .\src\MotiNet.Extensions.Entities.EntityMarkers -c Release -o ..\..\artifacts --version-suffix=$suffix }
 	exec { & dotnet pack .\src\MotiNet.Extensions.Entities.Core -c Release -o ..\..\artifacts --version-suffix=$suffix }
 	exec { & dotnet pack .\src\MotiNet.Extensions.Entities.EntityFrameworkCore -c Release -o ..\..\artifacts --version-suffix=$suffix }
 }
