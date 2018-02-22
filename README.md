@@ -6,9 +6,9 @@
 
 [![MyGet CI](https://img.shields.io/myget/motix-ci/v/MotiNet.Extensions.Entities.Core.svg)](https://www.myget.org/feed/motix-ci/package/nuget/MotiNet.Extensions.Entities.Core) [![NuGet](https://img.shields.io/nuget/v/MotiNet.Extensions.Entities.Core.svg)](https://www.nuget.org/packages/MotiNet.Extensions.Entities.Core)
 
-### MotiNet.Extensions.Entities.EntityMarker
+### MotiNet.Extensions.Entities.EntityMarkers
 
-[![MyGet CI](https://img.shields.io/myget/motix-ci/v/MotiNet.Extensions.Entities.EntityMarker.svg)](https://www.myget.org/feed/motix-ci/package/nuget/MotiNet.Extensions.Entities.EntityMarker) [![NuGet](https://img.shields.io/nuget/v/MotiNet.Extensions.Entities.EntityMarker.svg)](https://www.nuget.org/packages/MotiNet.Extensions.Entities.EntityMarker)
+[![MyGet CI](https://img.shields.io/myget/motix-ci/v/MotiNet.Extensions.Entities.EntityMarkers.svg)](https://www.myget.org/feed/motix-ci/package/nuget/MotiNet.Extensions.Entities.EntityMarkers) [![NuGet](https://img.shields.io/nuget/v/MotiNet.Extensions.Entities.EntityMarkers.svg)](https://www.nuget.org/packages/MotiNet.Extensions.Entities.EntityMarkers)
 
 ### MotiNet.Extensions.Entities.EntityFrameworkCore
 
