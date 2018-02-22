@@ -13,13 +13,21 @@ namespace MotiNet.Entities.EntityFrameworkCore
         where TEntity : class
         where TDbContext : DbContext
     {
+        #region Fields
+
         private readonly TDbContext _dbContext;
+
+        #endregion
+
+        #region Constructors
 
         public EntityFrameworkRepository(TDbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
+
+        #endregion
 
         #region Public Operations
 
@@ -268,9 +276,9 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         #endregion
 
-        #region Add
+        #region Create
 
-        public virtual TEntity Add(TEntity entity)
+        public virtual TEntity Create(TEntity entity)
         {
             ThrowIfDisposed();
             if (entity == null)
@@ -284,7 +292,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
             return entity;
         }
 
-        public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -299,7 +307,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
             return entity;
         }
 
-        public virtual TEntity Add(TEntity entity, IModifySpecification<TEntity> spec)
+        public virtual TEntity Create(TEntity entity, IModifySpecification<TEntity> spec)
         {
             ThrowIfDisposed();
             if (entity == null)
@@ -321,7 +329,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
             return entity;
         }
 
-        public virtual async Task<TEntity> AddAsync(TEntity entity, IModifySpecification<TEntity> spec, CancellationToken cancellationToken)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity, IModifySpecification<TEntity> spec, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -811,7 +819,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         private bool _disposed = false; // To detect redundant calls
 
-        public void ThrowIfDisposed()
+        protected void ThrowIfDisposed()
         {
             if (_disposed)
             {

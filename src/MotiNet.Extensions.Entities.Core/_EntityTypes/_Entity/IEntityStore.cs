@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MotiNet.Entities
 {
-    public interface IAsyncRepository<TEntity> : IDisposable
+    public interface IEntityStore<TEntity> : IDisposable
         where TEntity : class
     {
         Task<TEntity> FindByIdAsync(object id, CancellationToken cancellationToken);

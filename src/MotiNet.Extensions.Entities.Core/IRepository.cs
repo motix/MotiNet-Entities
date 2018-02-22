@@ -16,9 +16,9 @@ namespace MotiNet.Entities
 
         PagedSearchResult<TEntity> Search(IPagedSearchSpecification<TEntity> spec);
 
-        TEntity Add(TEntity entity);
+        TEntity Create(TEntity entity);
 
-        TEntity Add(TEntity entity, IModifySpecification<TEntity> spec);
+        TEntity Create(TEntity entity, IModifySpecification<TEntity> spec);
 
         void Update(TEntity entity);
 
