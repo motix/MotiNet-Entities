@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,6 +24,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
+
+        protected EntityFrameworkRepository() { }
 
         #endregion
 
@@ -70,18 +70,18 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
-            entities = Include(entities, spec);
+            entities = StoreHelper.Include(entities, spec);
 
             if (spec.AdditionalCriteria != null)
             {
                 entities = entities.Where(spec.AdditionalCriteria);
             }
 
-            var result = entities.SingleOrDefault(x => Equals(GetPropertyValue(x, spec.KeyExpression), key));
+            var result = entities.SingleOrDefault(x => Equals(StoreHelper.GetPropertyValue(x, spec.KeyExpression), key));
 
             if (spec.ManyToManyIncludes != null)
             {
-                FillManyToManyRelationships(result, spec.ManyToManyIncludes);
+                StoreHelper.FillManyToManyRelationships(result, _dbContext, spec.ManyToManyIncludes);
             }
 
             return result;
@@ -98,18 +98,18 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
-            entities = Include(entities, spec);
+            entities = StoreHelper.Include(entities, spec);
 
             if (spec.AdditionalCriteria != null)
             {
                 entities = entities.Where(spec.AdditionalCriteria);
             }
 
-            var result = await entities.SingleOrDefaultAsync(x => Equals(GetPropertyValue(x, spec.KeyExpression), key), cancellationToken);
+            var result = await entities.SingleOrDefaultAsync(x => Equals(StoreHelper.GetPropertyValue(x, spec.KeyExpression), key), cancellationToken);
 
             if (spec.ManyToManyIncludes != null)
             {
-                await FillManyToManyRelationshipsAsync(result, spec.ManyToManyIncludes, cancellationToken);
+                await StoreHelper.FillManyToManyRelationshipsAsync(result, _dbContext, spec.ManyToManyIncludes, cancellationToken);
             }
 
             return result;
@@ -148,7 +148,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
-            entities = Include(entities, spec);
+            entities = StoreHelper.Include(entities, spec);
 
             if (spec.Criteria != null)
             {
@@ -159,7 +159,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             if (spec.ManyToManyIncludes != null)
             {
-                FillManyToManyRelationships(result, spec.ManyToManyIncludes);
+                StoreHelper.FillManyToManyRelationships(result, _dbContext, spec.ManyToManyIncludes);
             }
 
             return result;
@@ -176,7 +176,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
-            entities = Include(entities, spec);
+            entities = StoreHelper.Include(entities, spec);
 
             if (spec.Criteria != null)
             {
@@ -187,7 +187,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             if (spec.ManyToManyIncludes != null)
             {
-                await FillManyToManyRelationshipsAsync(result, spec.ManyToManyIncludes, cancellationToken);
+                await StoreHelper.FillManyToManyRelationshipsAsync(result, _dbContext, spec.ManyToManyIncludes, cancellationToken);
             }
 
             return result;
@@ -203,7 +203,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
-            entities = Include(entities, spec);
+            entities = StoreHelper.Include(entities, spec);
 
             if (spec.ScopeCriteria != null)
             {
@@ -219,15 +219,15 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var resultCount = entities.Count();
 
-            entities = Order(entities, spec);
+            entities = StoreHelper.Order(entities, spec);
 
-            entities = Page(entities, spec);
+            entities = StoreHelper.Page(entities, spec);
 
             var result = entities.ToList();
 
             if (spec.ManyToManyIncludes != null)
             {
-                FillManyToManyRelationships(result, spec.ManyToManyIncludes);
+                StoreHelper.FillManyToManyRelationships(result, _dbContext, spec.ManyToManyIncludes);
             }
 
             return new PagedSearchResult<TEntity>(totalCount, resultCount, result);
@@ -244,7 +244,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
-            entities = Include(entities, spec);
+            entities = StoreHelper.Include(entities, spec);
 
             if (spec.ScopeCriteria != null)
             {
@@ -260,15 +260,15 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var resultCount = await entities.CountAsync(cancellationToken);
 
-            entities = Order(entities, spec);
+            entities = StoreHelper.Order(entities, spec);
 
-            entities = Page(entities, spec);
+            entities = StoreHelper.Page(entities, spec);
 
             var result = await entities.ToListAsync(cancellationToken);
 
             if (spec.ManyToManyIncludes != null)
             {
-                await FillManyToManyRelationshipsAsync(result, spec.ManyToManyIncludes, cancellationToken);
+                await StoreHelper.FillManyToManyRelationshipsAsync(result, _dbContext, spec.ManyToManyIncludes, cancellationToken);
             }
 
             return new PagedSearchResult<TEntity>(totalCount, resultCount, result);
@@ -319,12 +319,12 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            PrepareOneToManyRelationships(entity, spec);
+            StoreHelper.PrepareOneToManyRelationships(entity, spec);
 
             _dbContext.Set<TEntity>().Add(entity);
             _dbContext.SaveChanges();
 
-            AddManyToManyRelationships(entity, spec);
+            StoreHelper.AddManyToManyRelationships(entity, _dbContext, spec);
 
             return entity;
         }
@@ -342,12 +342,12 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            PrepareOneToManyRelationships(entity, spec);
+            StoreHelper.PrepareOneToManyRelationships(entity, spec);
 
             _dbContext.Set<TEntity>().Add(entity);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            await AddManyToManyRelationshipsAsync(entity, spec, cancellationToken);
+            await StoreHelper.AddManyToManyRelationshipsAsync(entity, _dbContext, spec, cancellationToken);
 
             return entity;
         }
@@ -393,9 +393,9 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            PrepareOneToManyRelationships(entity, spec);
+            StoreHelper.PrepareOneToManyRelationships(entity, spec);
 
-            UpdateManyToManyRelationships(entity, spec);
+            StoreHelper.UpdateManyToManyRelationships(entity, _dbContext, spec);
 
             _dbContext.Entry(entity).State = EntityState.Modified;
             _dbContext.SaveChanges();
@@ -414,9 +414,9 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            PrepareOneToManyRelationships(entity, spec);
+            StoreHelper.PrepareOneToManyRelationships(entity, spec);
 
-            await UpdateManyToManyRelationshipsAsync(entity, spec, cancellationToken);
+            await StoreHelper.UpdateManyToManyRelationshipsAsync(entity, _dbContext, spec, cancellationToken);
 
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -452,366 +452,6 @@ namespace MotiNet.Entities.EntityFrameworkCore
         }
 
         #endregion
-
-        #endregion
-
-        #region Helpers
-
-        private TResult GetPropertyValue<T, TResult>(T obj, Expression<Func<T, TResult>> expression)
-        {
-            var body = expression.Body;
-            MemberExpression propertySelector = body as MemberExpression ?? (MemberExpression)((UnaryExpression)body).Operand;
-            var property = (PropertyInfo)propertySelector.Member;
-            return (TResult)property.GetValue(obj);
-        }
-
-        private void SetPropertyValue<T, TValue>(T obj, Expression<Func<T, TValue>> expression, TValue value)
-        {
-            var body = expression.Body;
-            MemberExpression propertySelector = body as MemberExpression ?? (MemberExpression)((UnaryExpression)body).Operand;
-            var property = (PropertyInfo)propertySelector.Member;
-            property.SetValue(obj, value);
-        }
-
-        private IQueryable<TEntity> Include(IQueryable<TEntity> entities, IGetSpecification<TEntity> spec)
-        {
-            if (spec.Includes != null)
-            {
-                entities = spec.Includes.Aggregate(entities, (current, include) => current.Include(include));
-            }
-
-            if (spec.IncludeStrings != null)
-            {
-                entities = spec.IncludeStrings.Aggregate(entities, (current, include) => current.Include(include));
-            }
-
-            return entities;
-        }
-
-        private void FillManyToManyRelationships<T>(T entity,
-            IEnumerable<ManyToManyIncludeSpecification<T>> manyToManyIncludes)
-            where T : class
-        {
-            foreach (var include in manyToManyIncludes)
-            {
-                var thisId = GetPropertyValue(entity, include.ThisIdExpression);
-                var linkSetMethod = _dbContext.GetType().GetMethod(nameof(_dbContext.Set)).MakeGenericMethod(include.LinkType);
-                var linkSet = (IQueryable<object>)linkSetMethod.Invoke(_dbContext, new object[0]);
-                var links = linkSet.Where(x => Equals(GetPropertyValue(x, include.LinkForeignKeyToThisExpression), thisId));
-                var otherIds = links.Select(x => GetPropertyValue(x, include.LinkForeignKeyToOtherExpression)).ToList();
-                var otherSetMethod = _dbContext.GetType().GetMethod(nameof(_dbContext.Set)).MakeGenericMethod(include.OtherType);
-                var otherSet = (IQueryable<object>)otherSetMethod.Invoke(_dbContext, new object[0]);
-                var othersQuery = otherSet.Where(x => otherIds.Contains(GetPropertyValue(x, include.OtherIdExpression)));
-
-                if (include.ChildIncludes != null)
-                {
-                    othersQuery = include.ChildIncludes.Aggregate(othersQuery, (current, childInclude) => current.Include(childInclude));
-                }
-
-                if (include.ChildIncludeStrings != null)
-                {
-                    othersQuery = include.ChildIncludeStrings.Aggregate(othersQuery, (current, includex) => current.Include(includex));
-                }
-
-                var others = othersQuery.ToList();
-                var otherListType = typeof(List<>).MakeGenericType(include.OtherType);
-                var otherList = Activator.CreateInstance(otherListType);
-                var addMethod = otherListType.GetMethod(nameof(List<object>.Add));
-                foreach (var other in others)
-                {
-                    addMethod.Invoke(otherList, new object[] { other });
-                }
-                SetPropertyValue(entity, include.OthersExpression, (IEnumerable<object>)otherList);
-
-                if (include.ChildManyToManyIncludes != null)
-                {
-                    FillManyToManyRelationships((IEnumerable<object>)otherList, include.ChildManyToManyIncludes);
-                }
-            }
-        }
-
-        private async Task FillManyToManyRelationshipsAsync<T>(T entity,
-            IEnumerable<ManyToManyIncludeSpecification<T>> manyToManyIncludes, CancellationToken cancellationToken)
-            where T : class
-        {
-            foreach (var include in manyToManyIncludes)
-            {
-                var thisId = GetPropertyValue(entity, include.ThisIdExpression);
-                var linkSetMethod = _dbContext.GetType().GetMethod(nameof(_dbContext.Set)).MakeGenericMethod(include.LinkType);
-                var linkSet = (IQueryable<object>)linkSetMethod.Invoke(_dbContext, new object[0]);
-                var links = linkSet.Where(x => Equals(GetPropertyValue(x, include.LinkForeignKeyToThisExpression), thisId));
-                var otherIds = await links.Select(x => GetPropertyValue(x, include.LinkForeignKeyToOtherExpression)).ToListAsync(cancellationToken);
-                var otherSetMethod = _dbContext.GetType().GetMethod(nameof(_dbContext.Set)).MakeGenericMethod(include.OtherType);
-                var otherSet = (IQueryable<object>)otherSetMethod.Invoke(_dbContext, new object[0]);
-                var othersQuery = otherSet.Where(x => otherIds.Contains(GetPropertyValue(x, include.OtherIdExpression)));
-
-                if (include.ChildIncludes != null)
-                {
-                    othersQuery = include.ChildIncludes.Aggregate(othersQuery, (current, childInclude) => current.Include(childInclude));
-                }
-
-                if (include.ChildIncludeStrings != null)
-                {
-                    othersQuery = include.ChildIncludeStrings.Aggregate(othersQuery, (current, childInclude) => current.Include(childInclude));
-                }
-
-                var others = await othersQuery.ToListAsync(cancellationToken);
-                var otherListType = typeof(List<>).MakeGenericType(include.OtherType);
-                var otherList = Activator.CreateInstance(otherListType);
-                var addMethod = otherListType.GetMethod(nameof(List<object>.Add));
-                foreach (var other in others)
-                {
-                    addMethod.Invoke(otherList, new object[] { other });
-                }
-                SetPropertyValue(entity, include.OthersExpression, (IEnumerable<object>)otherList);
-
-                if (include.ChildManyToManyIncludes != null)
-                {
-                    await FillManyToManyRelationshipsAsync((IEnumerable<object>)otherList, include.ChildManyToManyIncludes, cancellationToken);
-                }
-            }
-        }
-
-        private void FillManyToManyRelationships<T>(IEnumerable<T> entities,
-            IEnumerable<ManyToManyIncludeSpecification<T>> manyToManyIncludes)
-            where T : class
-        {
-            foreach (var entity in entities)
-            {
-                FillManyToManyRelationships(entity, manyToManyIncludes);
-            }
-        }
-
-        private async Task FillManyToManyRelationshipsAsync<T>(IEnumerable<T> entities,
-            IEnumerable<ManyToManyIncludeSpecification<T>> manyToManyIncludes, CancellationToken cancellationToken)
-            where T : class
-        {
-            foreach (var entity in entities)
-            {
-                await FillManyToManyRelationshipsAsync(entity, manyToManyIncludes, cancellationToken);
-            }
-        }
-
-        private IQueryable<TEntity> Order(IQueryable<TEntity> entities, IPagedSearchSpecification<TEntity> spec)
-        {
-            if (spec.Orders != null)
-            {
-                entities = spec.Orders.Aggregate(entities, (current, order) =>
-                {
-                    if (current is IOrderedQueryable<TEntity>)
-                    {
-                        if (order.IsDescending)
-                        {
-                            return ((IOrderedQueryable<TEntity>)current).ThenByDescending(order.OrderExpression);
-                        }
-
-                        return ((IOrderedQueryable<TEntity>)current).ThenBy(order.OrderExpression);
-                    }
-
-                    if (order.IsDescending)
-                    {
-                        return current.OrderByDescending(order.OrderExpression);
-                    }
-                    return current.OrderBy(order.OrderExpression);
-                });
-            }
-
-            return entities;
-        }
-
-        private IQueryable<TEntity> Page(IQueryable<TEntity> entities, IPagedSearchSpecification<TEntity> spec)
-        {
-            if (spec.PageSize.HasValue)
-            {
-                var offset = ((spec.PageNumber - 1) * spec.PageSize) ?? 0;
-                entities = entities.Skip(offset).Take(spec.PageSize.Value);
-            }
-
-            return entities;
-        }
-
-        private void PrepareOneToManyRelationships(TEntity entity, IModifySpecification<TEntity> spec)
-        {
-            if (spec.OneToManyRelationships != null)
-            {
-                foreach (var relationship in spec.OneToManyRelationships)
-                {
-                    var foreignKey = GetPropertyValue(entity, relationship.ForeignKeyExpression);
-                    bool updateFromParent;
-
-                    if (foreignKey == null)
-                    {
-                        updateFromParent = true;
-                    }
-                    else
-                    {
-                        var type = foreignKey.GetType();
-                        if (type.IsValueType)
-                        {
-                            var defaultValue = Activator.CreateInstance(type);
-                            updateFromParent = Equals(foreignKey, defaultValue);
-                        }
-                        else
-                        {
-                            updateFromParent = false;
-                        }
-                    }
-
-                    if (updateFromParent)
-                    {
-                        var parent = GetPropertyValue(entity, relationship.ParentExpression);
-
-                        if (parent != null)
-                        {
-                            var parentId = GetPropertyValue(parent, relationship.ParentIdExpression);
-
-                            SetPropertyValue(entity, relationship.ForeignKeyExpression, parentId);
-                            SetPropertyValue(entity, relationship.ParentExpression, null);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void AddManyToManyRelationships(TEntity entity, IModifySpecification<TEntity> spec)
-        {
-            if (spec.ManyToManyRelationships != null)
-            {
-                foreach (var relationship in spec.ManyToManyRelationships)
-                {
-                    var others = GetPropertyValue(entity, relationship.OthersExpression);
-                    if (others != null)
-                    {
-                        var newOtherIds = others.AsQueryable().Select(x => GetPropertyValue(x, relationship.OtherIdExpression)).ToList();
-                        var thisId = GetPropertyValue(entity, relationship.ThisIdExpression);
-                        var linkConstructor = relationship.LinkType.GetConstructor(new Type[0]);
-                        foreach (var newOtherId in newOtherIds)
-                        {
-                            var link = linkConstructor.Invoke(new object[0]);
-                            SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
-                            SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, newOtherId);
-                            _dbContext.Add(link);
-                        }
-                        _dbContext.SaveChanges();
-                    }
-                }
-            }
-        }
-
-        private async Task AddManyToManyRelationshipsAsync(TEntity entity, IModifySpecification<TEntity> spec, CancellationToken cancellationToken)
-        {
-            if (spec.ManyToManyRelationships != null)
-            {
-                foreach (var relationship in spec.ManyToManyRelationships)
-                {
-                    var others = GetPropertyValue(entity, relationship.OthersExpression);
-                    if (others != null)
-                    {
-                        var newOtherIds = others.AsQueryable().Select(x => GetPropertyValue(x, relationship.OtherIdExpression)).ToList();
-                        var thisId = GetPropertyValue(entity, relationship.ThisIdExpression);
-                        var linkConstructor = relationship.LinkType.GetConstructor(new Type[0]);
-                        foreach (var newOtherId in newOtherIds)
-                        {
-                            var link = linkConstructor.Invoke(new object[0]);
-                            SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
-                            SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, newOtherId);
-                            _dbContext.Add(link);
-                        }
-                        await _dbContext.SaveChangesAsync(cancellationToken);
-                    }
-                }
-            }
-        }
-
-        private void UpdateManyToManyRelationships(TEntity entity, IModifySpecification<TEntity> spec)
-        {
-            if (spec.ManyToManyRelationships != null)
-            {
-                foreach (var relationship in spec.ManyToManyRelationships)
-                {
-                    var others = GetPropertyValue(entity, relationship.OthersExpression);
-                    if (others != null)
-                    {
-                        var newOtherIds = others.AsQueryable().Select(x => GetPropertyValue(x, relationship.OtherIdExpression)).ToList();
-                        var thisId = GetPropertyValue(entity, relationship.ThisIdExpression);
-                        var linkSetMethod = _dbContext.GetType().GetMethod(nameof(_dbContext.Set)).MakeGenericMethod(relationship.LinkType);
-                        var linkSet = (IQueryable<object>)linkSetMethod.Invoke(_dbContext, new object[0]);
-                        var oldLinks = linkSet.Where(x => Equals(GetPropertyValue(x, relationship.LinkForeignKeyToThisExpression), thisId));
-                        var oldOtherIds = oldLinks.Select(x => GetPropertyValue(x, relationship.LinkForeignKeyToOtherExpression)).ToList();
-                        var linkConstructor = relationship.LinkType.GetConstructor(new Type[0]);
-
-                        foreach (var newOtherId in newOtherIds)
-                        {
-                            if (!oldOtherIds.Contains(newOtherId))
-                            {
-                                var link = linkConstructor.Invoke(new object[0]);
-                                SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
-                                SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, newOtherId);
-                                _dbContext.Add(link);
-                            }
-                        }
-                        _dbContext.SaveChanges();
-
-                        foreach (var oldOtherId in oldOtherIds)
-                        {
-                            if (!newOtherIds.Contains(oldOtherId))
-                            {
-                                var link = linkConstructor.Invoke(new object[0]);
-                                SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
-                                SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, oldOtherId);
-                                _dbContext.Remove(link);
-                            }
-                        }
-                        _dbContext.SaveChanges();
-                    }
-                }
-            }
-        }
-
-        private async Task UpdateManyToManyRelationshipsAsync(TEntity entity, IModifySpecification<TEntity> spec, CancellationToken cancellationToken)
-        {
-            if (spec.ManyToManyRelationships != null)
-            {
-                foreach (var relationship in spec.ManyToManyRelationships)
-                {
-                    var others = GetPropertyValue(entity, relationship.OthersExpression);
-                    if (others != null)
-                    {
-                        var newOtherIds = others.AsQueryable().Select(x => GetPropertyValue(x, relationship.OtherIdExpression)).ToList();
-                        var thisId = GetPropertyValue(entity, relationship.ThisIdExpression);
-                        var linkSetMethod = _dbContext.GetType().GetMethod(nameof(_dbContext.Set)).MakeGenericMethod(relationship.LinkType);
-                        var linkSet = (IQueryable<object>)linkSetMethod.Invoke(_dbContext, new object[0]);
-                        var oldLinks = linkSet.Where(x => Equals(GetPropertyValue(x, relationship.LinkForeignKeyToThisExpression), thisId));
-                        var oldOtherIds = await oldLinks.Select(x => GetPropertyValue(x, relationship.LinkForeignKeyToOtherExpression)).ToListAsync(cancellationToken);
-                        var linkConstructor = relationship.LinkType.GetConstructor(new Type[0]);
-
-                        foreach (var newOtherId in newOtherIds)
-                        {
-                            if (!oldOtherIds.Contains(newOtherId))
-                            {
-                                var link = linkConstructor.Invoke(new object[0]);
-                                SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
-                                SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, newOtherId);
-                                _dbContext.Add(link);
-                            }
-                        }
-                        await _dbContext.SaveChangesAsync(cancellationToken);
-
-                        foreach (var oldOtherId in oldOtherIds)
-                        {
-                            if (!newOtherIds.Contains(oldOtherId))
-                            {
-                                var link = linkConstructor.Invoke(new object[0]);
-                                SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
-                                SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, oldOtherId);
-                                _dbContext.Remove(link);
-                            }
-                        }
-                        await _dbContext.SaveChangesAsync(cancellationToken);
-                    }
-                }
-            }
-        }
 
         #endregion
 

@@ -1,18 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-namespace MotiNet.Extensions.Entities.Core.Test
+namespace MotiNet.Entities.Test
 {
-    public partial class Article
+    public partial class Article : ITimeWiseEntity, ITagsWiseEntity
     {
         public int Id { get; set; }
 
         public int Priority { get; set; }
+
+        public DateTime DataCreateDate { get; set; }
+
+        public DateTime DataLastModifyDate { get; set; }
 
         public string Title { get; set; }
 
         public string UrlFriendlyTitle { get; set; }
 
         public string Content { get; set; }
+
+        public string Tags { get; set; }
 
         public int AuthorId { get; set; }
     }

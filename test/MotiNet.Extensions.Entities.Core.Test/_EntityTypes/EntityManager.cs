@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using MotiNet.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace MotiNet.Extensions.Entities.Core.Test
+namespace MotiNet.Entities.Test
 {
     public class EntityManager
     {
@@ -20,7 +19,7 @@ namespace MotiNet.Extensions.Entities.Core.Test
 
         private CancellationToken CancellationToken => CancellationToken.None;
 
-        [Fact]
+        [Fact(DisplayName = "EntityManager.FindsEntityById")]
         public async void FindsEntityById()
         {
             var testId = 2;
@@ -30,7 +29,7 @@ namespace MotiNet.Extensions.Entities.Core.Test
             Assert.Equal(testId, entity.Id);
         }
 
-        [Fact]
+        [Fact(DisplayName = "EntityManager.FindsEntityByPriority")]
         public async void FindsEntityByPriority()
         {
             var testPriority = 2;
@@ -40,7 +39,7 @@ namespace MotiNet.Extensions.Entities.Core.Test
             Assert.Equal(testPriority, entity.Priority);
         }
 
-        [Fact]
+        [Fact(DisplayName = "EntityManager.GetsAllEntities")]
         public async void GetsAllEntities()
         {
             var entities = await Manager.AllAsync(CancellationToken);
@@ -49,7 +48,7 @@ namespace MotiNet.Extensions.Entities.Core.Test
             Assert.Equal(expected, entities.Count());
         }
 
-        [Fact]
+        [Fact(DisplayName = "EntityManager.SearchesEntitiesByTitle")]
         public async void SearchesEntitiesByTitle()
         {
             var testTitle = "Title 3";
@@ -60,7 +59,7 @@ namespace MotiNet.Extensions.Entities.Core.Test
             Assert.Equal(expected, entities.Count());
         }
 
-        [Fact]
+        [Fact(DisplayName = "EntityManager.SearchesEntitiesByTitleWithPaging")]
         public async void SearchesEntitiesByTitleWithPaging()
         {
             var testTitle = "Title 3";
@@ -71,7 +70,7 @@ namespace MotiNet.Extensions.Entities.Core.Test
             Assert.Equal(expected, result.ResultCount);
         }
 
-        [Fact]
+        [Fact(DisplayName = "EntityManager.CreatesEntity")]
         public async void CreatesEntity()
         {
             var newEntity = new Article { Id = 4, Title = "Title 4" };
@@ -86,7 +85,7 @@ namespace MotiNet.Extensions.Entities.Core.Test
             Assert.Equal(newEntity.Id, addedEntity.Id);
         }
 
-        [Fact]
+        [Fact(DisplayName = "EntityManager.UpdatesEntity")]
         public async void UpdatesEntity()
         {
             var testId = 1;
@@ -98,12 +97,13 @@ namespace MotiNet.Extensions.Entities.Core.Test
             Assert.NotEqual(newTitle, currentEntity.Title);
 
             var result = await Manager.UpdateAsync(newEntity, CancellationToken);
+            var updatedEntity = Store.Data.Single(x => x.Id == testId);
 
             Assert.True(result.Succeeded);
-            Assert.Equal(newTitle, currentEntity.Title);
+            Assert.Equal(newTitle, updatedEntity.Title);
         }
 
-        [Fact]
+        [Fact(DisplayName = "EntityManager.DeletesEntity")]
         public async void DeletesEntity()
         {
             var testId = 1;
@@ -123,9 +123,9 @@ namespace MotiNet.Extensions.Entities.Core.Test
         {
             internal List<Article> Data { get; } = new List<Article>()
             {
-                new Article() { Id = 1, Priority = 1, Title = "Title 1", UrlFriendlyTitle = "title-1", Content = "Content 1", AuthorId = 1 },
-                new Article() { Id = 2, Priority = 2, Title = "Title 2", UrlFriendlyTitle = "title-2", Content = "Content 2", AuthorId = 2 },
-                new Article() { Id = 3, Priority = 3, Title = "Title 3", UrlFriendlyTitle = "title-3", Content = "Content 3", AuthorId = 3 }
+                new Article() { Id = 1, Priority = 1, Title = "Title 1" },
+                new Article() { Id = 2, Priority = 2, Title = "Title 2" },
+                new Article() { Id = 3, Priority = 3, Title = "Title 3" }
             };
 
             public Task<Article> FindByIdAsync(object id, CancellationToken cancellationToken)
@@ -204,22 +204,14 @@ namespace MotiNet.Extensions.Entities.Core.Test
             public Task UpdateAsync(Article entity, CancellationToken cancellationToken)
             {
                 var oldEntity = Data.Single(x => x.Id == entity.Id);
-                oldEntity.Priority = entity.Priority;
                 oldEntity.Title = entity.Title;
-                oldEntity.UrlFriendlyTitle = entity.UrlFriendlyTitle;
-                oldEntity.Content = entity.Content;
-                oldEntity.AuthorId = entity.AuthorId;
                 return Task.FromResult(0);
             }
 
             public Task UpdateAsync(Article entity, IModifySpecification<Article> spec, CancellationToken cancellationToken)
             {
                 var oldEntity = Data.Single(x => x.Id == entity.Id);
-                oldEntity.Priority = entity.Priority;
                 oldEntity.Title = entity.Title;
-                oldEntity.UrlFriendlyTitle = entity.UrlFriendlyTitle;
-                oldEntity.Content = entity.Content;
-                oldEntity.AuthorId = entity.AuthorId;
                 return Task.FromResult(0);
             }
 

@@ -2,13 +2,15 @@
 
 namespace MotiNet.Entities.EntityFrameworkCore.Test
 {
-    public partial class Category
+    public partial class Category : INameWiseEntity
     {
         public int Id { get; set; }
 
         public int Priority { get; set; }
 
         public string Name { get; set; }
+
+        public string NormalizedName { get; set; }
 
         public string UrlFriendlyName { get; set; }
 

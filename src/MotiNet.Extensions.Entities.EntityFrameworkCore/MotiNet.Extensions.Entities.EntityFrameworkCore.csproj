@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MotiNet.Extensions.Entities.Core\MotiNet.Extensions.Entities.Core.csproj" />
+    <ProjectReference Include="..\MotiNet.Extensions.Entities.EntityMarkers\MotiNet.Extensions.Entities.EntityMarkers.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,9 +2,11 @@
 
 namespace MotiNet.Entities.EntityFrameworkCore.Test
 {
-    public partial class Author
+    public partial class Author : ICodeWiseEntity
     {
         public int Id { get; set; }
+
+        public string Code { get; set; }
 
         public string FullName { get; set; }
 

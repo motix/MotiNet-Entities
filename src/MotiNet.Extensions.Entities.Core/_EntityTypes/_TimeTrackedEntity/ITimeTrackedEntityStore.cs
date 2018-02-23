@@ -7,6 +7,8 @@ namespace MotiNet.Entities
     public interface ITimeTrackedEntityStore<TEntity> : IDisposable
         where TEntity : class
     {
+        TEntity FindLatest();
+
         Task<TEntity> FindLatestAsync(CancellationToken cancellationToken);
     }
 }

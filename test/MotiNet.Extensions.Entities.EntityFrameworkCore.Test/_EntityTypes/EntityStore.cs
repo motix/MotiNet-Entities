@@ -1,4 +1,4 @@
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -9,7 +9,7 @@ using Xunit;
 
 namespace MotiNet.Entities.EntityFrameworkCore.Test
 {
-    public class EntityFrameworkRepository
+    public class EntityStore
     {
         private class FindArticleByIdSpecification : FindSpecificationBase<Article>
         {
@@ -18,7 +18,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
 
         private class UpdateArticleSpecification : ModifySpecificationBase<Article> { }
 
-        [Fact(DisplayName = "EntityFrameworkRepository.FindsEntityById")]
+        [Fact(DisplayName = "EntityStore.FindsEntityById")]
         public async Task FindsEntityById()
         {
             var testId = 1;
@@ -32,8 +32,8 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 // Run the test against one instance of the context
                 using (var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext)
                 {
-                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
-                    var entity = await repository.FindByIdAsync(testId, CancellationToken.None);
+                    var store = new EntityStore<Article, BloggingDbContext>(dbContext);
+                    var entity = await store.FindByIdAsync(testId, CancellationToken.None);
 
                     Assert.Equal(testId, entity.Id);
                 }
@@ -44,7 +44,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             }
         }
 
-        [Fact(DisplayName = "EntityFrameworkRepository.IncludesOneToManyRelationshipsInFoundEntity")]
+        [Fact(DisplayName = "EntityStore.IncludesOneToManyRelationshipsInFoundEntity")]
         public async Task IncludesOneToManyRelationshipsInFoundEntity()
         {
             var testId = 1;
@@ -58,10 +58,10 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 // Run the test against one instance of the context
                 using (var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext)
                 {
-                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                    var store = new EntityStore<Article, BloggingDbContext>(dbContext);
                     var spec = new FindArticleByIdSpecification();
                     spec.AddInclude(x => x.Author);
-                    var entity = await repository.FindAsync(testId, spec, CancellationToken.None);
+                    var entity = await store.FindAsync(testId, spec, CancellationToken.None);
 
                     Assert.NotNull(entity.Author);
                     Assert.Equal(entity.AuthorId, entity.Author.Id);
@@ -73,7 +73,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             }
         }
 
-        [Fact(DisplayName = "EntityFrameworkRepository.IncludesManyToManyRelationshipsAndTheirChildRelationshipsInFoundEntity")]
+        [Fact(DisplayName = "EntityStore.IncludesManyToManyRelationshipsAndTheirChildRelationshipsInFoundEntity")]
         public async Task IncludesManyToManyRelationshipsAndTheirChildRelationshipsInFoundEntity()
         {
             var testId = 1;
@@ -92,7 +92,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 // Run the test against one instance of the context
                 using (var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext)
                 {
-                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                    var store = new EntityStore<Article, BloggingDbContext>(dbContext);
                     var articleCategoryInclude = new ManyToManyIncludeSpecification<Article>(
                         thisIdExpression: x => x.Id,
                         otherType: typeof(Category),
@@ -114,7 +114,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                     articleCategoryInclude.ChildManyToManyIncludes.Add(categoryArticleInclude);
                     var spec = new FindArticleByIdSpecification();
                     spec.AddInclude(articleCategoryInclude);
-                    var entity = await repository.FindAsync(testId, spec, CancellationToken.None);
+                    var entity = await store.FindAsync(testId, spec, CancellationToken.None);
 
                     Assert.Equal(categoriesCount, entity.Categories.Count);
                     Assert.Equal(testCategoryParentId, entity.Categories.Single(x => x.Id == testCategoryId).ParentId);
@@ -132,7 +132,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             }
         }
 
-        [Fact(DisplayName = "EntityFrameworkRepository.UpdatesOneToManyRelationshipRespectingParentIdWhenParentPresentsAndForeignKeyNotPresent")]
+        [Fact(DisplayName = "EntityStore.UpdatesOneToManyRelationshipRespectingParentIdWhenParentPresentsAndForeignKeyNotPresent")]
         public async Task UpdatesOneToManyRelationshipRespectingParentIdWhenParentPresentsAndForeignKeyNotPresent()
         {
             var testId = 1;
@@ -148,7 +148,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 var db = DbContextHelper.InitBloggingDbContext(connection);
                 using (var dbContext = db.dbContext)
                 {
-                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                    var store = new EntityStore<Article, BloggingDbContext>(dbContext);
                     var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
 
                     Assert.Equal(testId, entity.AuthorId);
@@ -161,7 +161,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                         foreignKeyExpression: x => x.AuthorId,
                         parentExpression: x => x.Author,
                         parentIdExpression: x => ((Author)x).Id);
-                    await repository.UpdateAsync(entity, spec, CancellationToken.None);
+                    await store.UpdateAsync(entity, spec, CancellationToken.None);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database
@@ -179,7 +179,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             }
         }
 
-        [Fact(DisplayName = "EntityFrameworkRepository.UpdatesOneToManyRelationshipRespectingForeignKeyWhenForeignKeyPresentsAndParentHasDifferentId")]
+        [Fact(DisplayName = "EntityStore.UpdatesOneToManyRelationshipRespectingForeignKeyWhenForeignKeyPresentsAndParentHasDifferentId")]
         public async Task UpdatesOneToManyRelationshipRespectingForeignKeyWhenForeignKeyPresentsAndParentHasDifferentId()
         {
             var testId = 1;
@@ -196,7 +196,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 var db = DbContextHelper.InitBloggingDbContext(connection);
                 using (var dbContext = db.dbContext)
                 {
-                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                    var store = new EntityStore<Article, BloggingDbContext>(dbContext);
                     var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
 
                     Assert.Equal(testId, entity.AuthorId);
@@ -209,7 +209,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                         foreignKeyExpression: x => x.AuthorId,
                         parentExpression: x => x.Author,
                         parentIdExpression: x => ((Author)x).Id);
-                    await repository.UpdateAsync(entity, spec, CancellationToken.None);
+                    await store.UpdateAsync(entity, spec, CancellationToken.None);
                 }
 
                 // Use a separate instance of the context to verify correct data was saved to database

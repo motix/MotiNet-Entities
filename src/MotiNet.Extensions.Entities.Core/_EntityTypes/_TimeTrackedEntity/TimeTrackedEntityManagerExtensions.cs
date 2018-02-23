@@ -6,6 +6,14 @@ namespace MotiNet.Entities
 {
     public static class TimeTrackedEntityManagerExtensions
     {
+        public static TEntity FindLatest<TEntity>(this ITimeTrackedEntityManager<TEntity> manager)
+            where TEntity : class
+        {
+            manager.ThrowIfDisposed();
+
+            return manager.TimeTrackedEntityStore.FindLatest();
+        }
+
         public static Task<TEntity> FindLatestAsync<TEntity>(this ITimeTrackedEntityManager<TEntity> manager,
             CancellationToken cancellationToken)
             where TEntity : class
@@ -21,7 +29,7 @@ namespace MotiNet.Entities
             return new ManagerEventHandlers<TEntity>()
             {
                 EntityPreparingForCreating = PrepareEntityForCreating,
-                EntityPreparingForSaving = PrepareEntityForSaving
+                EntityPreparingForUpdating = PrepareEntityForUpdating
             };
         }
 
@@ -35,7 +43,7 @@ namespace MotiNet.Entities
             manager.TimeTrackedEntityAccessor.SetDataLastModifyDate(e.Entity, date);
         }
 
-        private static void PrepareEntityForSaving<TEntity>(object sender, ManagerEventArgs<TEntity> e)
+        private static void PrepareEntityForUpdating<TEntity>(object sender, ManagerEventArgs<TEntity> e)
             where TEntity : class
         {
             var manager = (ITimeTrackedEntityManager<TEntity>)sender;

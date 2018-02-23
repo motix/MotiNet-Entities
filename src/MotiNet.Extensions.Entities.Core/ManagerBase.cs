@@ -63,6 +63,18 @@ namespace MotiNet.Entities
             {
                 InitExtensions(TimeTrackedEntityManagerExtensions.GetManagerEventHandlers<TEntity>());
             }
+            else if (this is ICodeBasedEntityManager<TEntity>)
+            {
+                InitExtensions(CodeBasedEntityManagerExtensions.GetManagerEventHandlers<TEntity>());
+            }
+            else if (this is INameBasedEntityManager<TEntity>)
+            {
+                InitExtensions(NameBasedEntityManagerExtensions.GetManagerEventHandlers<TEntity>());
+            }
+            else if (this is ITaggedEntityManager<TEntity>)
+            {
+                InitExtensions(TaggedEntityManagerExtensions.GetManagerEventHandlers<TEntity>());
+            }
         }
 
         #endregion
@@ -132,11 +144,13 @@ namespace MotiNet.Entities
 
         public void RaiseEntityPreparingForCreating(TEntity entity)
         {
+            RaiseEntityPreparingForSaving(entity);
             EntityPreparingForCreating?.Invoke(this, new ManagerEventArgs<TEntity>() { Entity = entity });
         }
 
         public void RaiseEntityPreparingForUpdating(TEntity entity)
         {
+            RaiseEntityPreparingForSaving(entity);
             EntityPreparingForUpdating?.Invoke(this, new ManagerEventArgs<TEntity>() { Entity = entity });
         }
 
