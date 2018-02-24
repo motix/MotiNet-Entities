@@ -15,8 +15,6 @@ namespace MotiNet.Entities.Test
 
         private ArticleStore Store => Manager.Store as ArticleStore;
 
-        private CancellationToken CancellationToken => CancellationToken.None;
-
         [Fact(DisplayName = "TimeTrackedEntityManager.AutoSetsDatesWhenCreatingANewEntity")]
         public async void AutoSetsDatesWhenCreatingANewEntity()
         {
@@ -24,7 +22,7 @@ namespace MotiNet.Entities.Test
             var oldDataCreateDate = newEntity.DataCreateDate;
             var oldDataLastModifyDate = newEntity.DataLastModifyDate;
 
-            var result = await Manager.CreateAsync(newEntity, CancellationToken);
+            var result = await Manager.CreateAsync(newEntity);
             var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
 
             Assert.True(result.Succeeded);
@@ -40,7 +38,7 @@ namespace MotiNet.Entities.Test
             var currentEntity = Store.Data.Single(x => x.Id == testId);
             var oldDataLastModifyDate = currentEntity.DataLastModifyDate;
 
-            var result = await Manager.UpdateAsync(currentEntity, CancellationToken);
+            var result = await Manager.UpdateAsync(currentEntity);
             var updatedEntity = Store.Data.Single(x => x.Id == testId);
 
             Assert.True(result.Succeeded);
@@ -50,7 +48,7 @@ namespace MotiNet.Entities.Test
         [Fact(DisplayName = "TimeTrackedEntityManager.FindsLatestEntity")]
         public async void FindsLatestEntity()
         {
-            var entity = await Manager.FindLatestAsync(CancellationToken);
+            var entity = await Manager.FindLatestAsync();
             var expected = Store.Data.OrderByDescending(x => x.DataCreateDate).First().Id;
 
             Assert.Equal(expected, entity.Id);

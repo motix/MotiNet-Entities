@@ -15,15 +15,13 @@ namespace MotiNet.Entities.Test
 
         private ArticleStore Store => Manager.Store as ArticleStore;
 
-        private CancellationToken CancellationToken => CancellationToken.None;
-
         [Fact(DisplayName = "CodeBasedEntityManager.AutoGenerateCodeWhenCreatingANewEntityWithEmptyCode")]
         public async void AutoGenerateCodeWhenCreatingANewEntityWithEmptyCode()
         {
             var newEntity = new Article { Id = 4 };
             Assert.Null(newEntity.UrlFriendlyTitle);
 
-            var result = await Manager.CreateAsync(newEntity, CancellationToken);
+            var result = await Manager.CreateAsync(newEntity);
             var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
 
             Assert.True(result.Succeeded);
@@ -36,7 +34,7 @@ namespace MotiNet.Entities.Test
             var testCode = "A";
             var newEntity = new Article { Id = 4, UrlFriendlyTitle = testCode };
 
-            var result = await Manager.CreateAsync(newEntity, CancellationToken);
+            var result = await Manager.CreateAsync(newEntity);
             var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
 
             Assert.True(result.Succeeded);
@@ -47,7 +45,7 @@ namespace MotiNet.Entities.Test
         public async void FindsEntityByCode()
         {
             var testCode = "title-1";
-            var entity = await Manager.FindByCodeAsync(testCode, CancellationToken);
+            var entity = await Manager.FindByCodeAsync(testCode);
             var expected = Store.Data.Single(x => x.UrlFriendlyTitle == testCode).Id;
 
             Assert.Equal(expected, entity.Id);

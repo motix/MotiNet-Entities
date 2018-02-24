@@ -15,15 +15,13 @@ namespace MotiNet.Entities.Test
 
         private ArticleStore Store => Manager.Store as ArticleStore;
 
-        private CancellationToken CancellationToken => CancellationToken.None;
-
         [Fact(DisplayName = "TaggedEntityManager.AutoNormalizesTagsWhenSavingAnEntity")]
         public async void AutoNormalizesTagsWhenSavingAnEntity()
         {
             var testTags = "A B-C";
             var newEntity = new Article { Id = 4, Tags = testTags };
 
-            var result = await Manager.CreateAsync(newEntity, CancellationToken);
+            var result = await Manager.CreateAsync(newEntity);
             var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
             var expected = new TagProcessor().NormalizeTags(testTags);
 

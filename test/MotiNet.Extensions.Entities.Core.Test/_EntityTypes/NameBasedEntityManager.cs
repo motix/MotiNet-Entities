@@ -15,15 +15,13 @@ namespace MotiNet.Entities.Test
 
         private CategoryStore Store => Manager.Store as CategoryStore;
 
-        private CancellationToken CancellationToken => CancellationToken.None;
-
         [Fact(DisplayName = "NameBasedEntityManager.AutoNormalizesNameWhenSavingAnEntity")]
         public async void AutoNormalizesNameWhenSavingAnEntity()
         {
             var testName = "a";
             var newEntity = new Category { Id = 4, Name = testName };
 
-            var result = await Manager.CreateAsync(newEntity, CancellationToken);
+            var result = await Manager.CreateAsync(newEntity);
             var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
 
             Assert.True(result.Succeeded);
@@ -34,7 +32,7 @@ namespace MotiNet.Entities.Test
         public async void FindsEntityByName()
         {
             var testName = "Name 1";
-            var entity = await Manager.FindByNameAsync(testName, CancellationToken);
+            var entity = await Manager.FindByNameAsync(testName);
             var expected = Store.Data.Single(x => x.NormalizedName == testName.ToUpper()).Id;
 
             Assert.Equal(expected, entity.Id);

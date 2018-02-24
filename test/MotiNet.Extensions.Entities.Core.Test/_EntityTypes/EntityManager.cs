@@ -17,14 +17,12 @@ namespace MotiNet.Entities.Test
 
         private ArticleStore Store => Manager.Store as ArticleStore;
 
-        private CancellationToken CancellationToken => CancellationToken.None;
-
         [Fact(DisplayName = "EntityManager.FindsEntityById")]
         public async void FindsEntityById()
         {
             var testId = 2;
 
-            var entity = await Manager.FindByIdAsync(testId, CancellationToken);
+            var entity = await Manager.FindByIdAsync(testId);
 
             Assert.Equal(testId, entity.Id);
         }
@@ -34,7 +32,7 @@ namespace MotiNet.Entities.Test
         {
             var testPriority = 2;
 
-            var entity = await Manager.FindAsync(testPriority, new FindArticleByPrioritySpecification(), CancellationToken);
+            var entity = await Manager.FindAsync(testPriority, new FindArticleByPrioritySpecification());
 
             Assert.Equal(testPriority, entity.Priority);
         }
@@ -42,7 +40,7 @@ namespace MotiNet.Entities.Test
         [Fact(DisplayName = "EntityManager.GetsAllEntities")]
         public async void GetsAllEntities()
         {
-            var entities = await Manager.AllAsync(CancellationToken);
+            var entities = await Manager.AllAsync();
             var expected = Store.Data.Count;
 
             Assert.Equal(expected, entities.Count());
@@ -53,7 +51,7 @@ namespace MotiNet.Entities.Test
         {
             var testTitle = "Title 3";
 
-            var entities = await Manager.SearchAsync(new SearchArticleSpecification(testTitle), CancellationToken);
+            var entities = await Manager.SearchAsync(new SearchArticleSpecification(testTitle));
             var expected = Store.Data.Count(x => x.Title == testTitle);
 
             Assert.Equal(expected, entities.Count());
@@ -64,7 +62,7 @@ namespace MotiNet.Entities.Test
         {
             var testTitle = "Title 3";
 
-            var result = await Manager.SearchAsync(new PagedSearchArticleSpecification(testTitle, 10, 1), CancellationToken);
+            var result = await Manager.SearchAsync(new PagedSearchArticleSpecification(testTitle, 10, 1));
             var expected = Store.Data.Count(x => x.Title == testTitle);
 
             Assert.Equal(expected, result.ResultCount);
@@ -76,7 +74,7 @@ namespace MotiNet.Entities.Test
             var newEntity = new Article { Id = 4, Title = "Title 4" };
 
             var initialCount = Store.Data.Count;
-            var result = await Manager.CreateAsync(newEntity, CancellationToken);
+            var result = await Manager.CreateAsync(newEntity);
             var finalCount = Store.Data.Count;
             var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
 
@@ -96,7 +94,7 @@ namespace MotiNet.Entities.Test
 
             Assert.NotEqual(newTitle, currentEntity.Title);
 
-            var result = await Manager.UpdateAsync(newEntity, CancellationToken);
+            var result = await Manager.UpdateAsync(newEntity);
             var updatedEntity = Store.Data.Single(x => x.Id == testId);
 
             Assert.True(result.Succeeded);
@@ -110,7 +108,7 @@ namespace MotiNet.Entities.Test
             var currentEntity = new Article { Id = testId };
 
             var initialCount = Store.Data.Count;
-            var result = await Manager.DeleteAsync(currentEntity, CancellationToken);
+            var result = await Manager.DeleteAsync(currentEntity);
             var finalCount = Store.Data.Count;
             var deletedEntity = Store.Data.SingleOrDefault(x => x.Id == testId);
 

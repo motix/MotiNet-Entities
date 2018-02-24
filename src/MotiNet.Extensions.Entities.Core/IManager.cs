@@ -8,8 +8,6 @@ namespace MotiNet.Entities
 {
     public interface IManager<TEntity> where TEntity : class
     {
-        IList<IEntityValidator<TEntity>> EntityValidators { get; }
-
         CancellationToken CancellationToken { get; }
 
         ILogger Logger { get; }

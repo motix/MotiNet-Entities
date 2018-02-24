@@ -16,10 +16,36 @@ namespace MotiNet.Entities
         protected ManagerBase(
             IDisposable store,
             object entityAccessor,
-            IEnumerable<IEntityValidator<TEntity>> entityValidators,
+            IEnumerable<IEntityValidator<TEntity, TSubEntity>> entityValidators,
             ILogger<ManagerBase<TEntity>> logger)
             : base(store, entityAccessor, entityValidators, logger)
-        { }
+        {
+            if (entityValidators != null)
+            {
+                foreach (var validator in entityValidators)
+                {
+                    EntityValidators.Add(validator);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Properties
+
+        private IList<IEntityValidator<TEntity, TSubEntity>> EntityValidators { get; }
+            = new List<IEntityValidator<TEntity, TSubEntity>>();
+
+        #endregion
+
+        #region Public Operations
+
+        public override async Task<GenericResult> ValidateEntityAsync(TEntity entity)
+        {
+            var result = await base.ValidateEntityAsync(entity);
+
+            return result;
+        }
 
         #endregion
     }
@@ -81,16 +107,16 @@ namespace MotiNet.Entities
 
         #region Properties
 
-        public IList<IEntityValidator<TEntity>> EntityValidators { get; }
-            = new List<IEntityValidator<TEntity>>();
-
-        public virtual CancellationToken CancellationToken => CancellationToken.None;
-
-        public ILogger Logger { get; }
-
         public IDisposable Store { get; }
 
         public object Accessor { get; }
+
+        public ILogger Logger { get; }
+
+        public virtual CancellationToken CancellationToken => CancellationToken.None;
+
+        private IList<IEntityValidator<TEntity>> EntityValidators { get; }
+            = new List<IEntityValidator<TEntity>>();
 
         #endregion
 
@@ -116,7 +142,7 @@ namespace MotiNet.Entities
             }
         }
 
-        public async Task<GenericResult> ValidateEntityAsync(TEntity entity)
+        public virtual async Task<GenericResult> ValidateEntityAsync(TEntity entity)
         {
             var errors = new List<GenericError>();
             foreach (var validator in EntityValidators)

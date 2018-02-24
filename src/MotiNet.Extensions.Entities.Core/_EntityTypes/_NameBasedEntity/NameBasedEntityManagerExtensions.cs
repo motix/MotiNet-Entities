@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MotiNet.Entities
 {
     public static class NameBasedEntityManagerExtensions
     {
-        public static TEntity FindByName<TEntity>(this INameBasedEntityManager<TEntity> manager,
-            string name)
+        public static TEntity FindByName<TEntity>(this INameBasedEntityManager<TEntity> manager, string name)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -19,8 +17,7 @@ namespace MotiNet.Entities
             return manager.NameBasedEntityStore.FindByName(NormalizeEntityName(manager, name));
         }
 
-        public static Task<TEntity> FindByNameAsync<TEntity>(this INameBasedEntityManager<TEntity> manager,
-            string name, CancellationToken cancellationToken)
+        public static Task<TEntity> FindByNameAsync<TEntity>(this INameBasedEntityManager<TEntity> manager, string name)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -29,7 +26,7 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return manager.NameBasedEntityStore.FindByNameAsync(NormalizeEntityName(manager, name), cancellationToken);
+            return manager.NameBasedEntityStore.FindByNameAsync(NormalizeEntityName(manager, name), manager.CancellationToken);
         }
 
         public static ManagerEventHandlers<TEntity> GetManagerEventHandlers<TEntity>()

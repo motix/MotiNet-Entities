@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MotiNet.Entities
@@ -14,13 +13,12 @@ namespace MotiNet.Entities
             return manager.TimeTrackedEntityStore.FindLatest();
         }
 
-        public static Task<TEntity> FindLatestAsync<TEntity>(this ITimeTrackedEntityManager<TEntity> manager,
-            CancellationToken cancellationToken)
+        public static Task<TEntity> FindLatestAsync<TEntity>(this ITimeTrackedEntityManager<TEntity> manager)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
 
-            return manager.TimeTrackedEntityStore.FindLatestAsync(cancellationToken);
+            return manager.TimeTrackedEntityStore.FindLatestAsync(manager.CancellationToken);
         }
 
         public static ManagerEventHandlers<TEntity> GetManagerEventHandlers<TEntity>()
