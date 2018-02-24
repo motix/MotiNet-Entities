@@ -21,32 +21,37 @@ namespace MotiNet.Entities
             return manager.TimeTrackedEntityStore.FindLatestAsync(manager.CancellationToken);
         }
 
-        public static ManagerEventHandlers<TEntity> GetManagerEventHandlers<TEntity>()
+        public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()
             where TEntity : class
         {
-            return new ManagerEventHandlers<TEntity>()
+            return new ManagerTasks<TEntity>()
             {
-                EntityPreparingForCreating = PrepareEntityForCreating,
-                EntityPreparingForUpdating = PrepareEntityForUpdating
+                EntityCreatingAsync = EntityCreatingAsync,
+                EntityUpdatingAsync = EntityUpdatingAsync
             };
         }
 
-        private static void PrepareEntityForCreating<TEntity>(object sender, ManagerEventArgs<TEntity> e)
+        private static Task EntityCreatingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
             where TEntity : class
         {
-            var manager = (ITimeTrackedEntityManager<TEntity>)sender;
+            var timeTrackedManager = (ITimeTrackedEntityManager<TEntity>)manager;
 
             var date = DateTime.Now;
-            manager.TimeTrackedEntityAccessor.SetDataCreateDate(e.Entity, date);
-            manager.TimeTrackedEntityAccessor.SetDataLastModifyDate(e.Entity, date);
+            timeTrackedManager.TimeTrackedEntityAccessor.SetDataCreateDate(taskArgs.Entity, date);
+            timeTrackedManager.TimeTrackedEntityAccessor.SetDataLastModifyDate(taskArgs.Entity, date);
+
+            return Task.FromResult(0);
         }
 
-        private static void PrepareEntityForUpdating<TEntity>(object sender, ManagerEventArgs<TEntity> e)
+        private static Task EntityUpdatingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
             where TEntity : class
         {
-            var manager = (ITimeTrackedEntityManager<TEntity>)sender;
+            var timeTrackedManager = (ITimeTrackedEntityManager<TEntity>)manager;
 
-            manager.TimeTrackedEntityAccessor.SetDataLastModifyDate(e.Entity, DateTime.Now);
+            var date = DateTime.Now;
+            timeTrackedManager.TimeTrackedEntityAccessor.SetDataLastModifyDate(taskArgs.Entity, DateTime.Now);
+
+            return Task.FromResult(0);
         }
     }
 }

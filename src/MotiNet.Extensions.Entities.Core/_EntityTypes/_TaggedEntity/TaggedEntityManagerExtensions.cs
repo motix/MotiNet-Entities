@@ -1,24 +1,28 @@
-﻿namespace MotiNet.Entities
+﻿using System.Threading.Tasks;
+
+namespace MotiNet.Entities
 {
     public static class TaggedEntityManagerExtensions
     {
-        public static ManagerEventHandlers<TEntity> GetManagerEventHandlers<TEntity>()
+        public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()
             where TEntity : class
         {
-            return new ManagerEventHandlers<TEntity>()
+            return new ManagerTasks<TEntity>()
             {
-                EntityPreparingForSaving = PrepareEntityForSaving
+                EntitySavingAsync = EntitySavingAsync
             };
         }
 
-        private static void PrepareEntityForSaving<TEntity>(object sender, ManagerEventArgs<TEntity> e)
+        private static Task EntitySavingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
             where TEntity : class
         {
-            var manager = (ITaggedEntityManager<TEntity>)sender;
+            var taggedManager = (ITaggedEntityManager<TEntity>)manager;
 
-            var tags = manager.TaggedEntityAccessor.GetTags(e.Entity);
-            var normalizedTags = NormalizeEntityTags(manager, tags);
-            manager.TaggedEntityAccessor.SetTags(e.Entity, normalizedTags);
+            var tags = taggedManager.TaggedEntityAccessor.GetTags(taskArgs.Entity);
+            var normalizedTags = NormalizeEntityTags(taggedManager, tags);
+            taggedManager.TaggedEntityAccessor.SetTags(taskArgs.Entity, normalizedTags);
+
+            return Task.FromResult(0);
         }
 
         private static string NormalizeEntityTags<TEntity>(ITaggedEntityManager<TEntity> manager, string tags)

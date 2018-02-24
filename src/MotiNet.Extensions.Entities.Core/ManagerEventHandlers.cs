@@ -1,4 +1,7 @@
-﻿namespace MotiNet.Entities
+﻿using System;
+using System.Threading.Tasks;
+
+namespace MotiNet.Entities
 {
     public delegate void EntityPreparingForValidationEventHandler<TEntity>(object sender, ManagerEventArgs<TEntity> e) where TEntity : class;
 
@@ -17,5 +20,6 @@
         public EntityPreparingForUpdatingEventHandler<TEntity> EntityPreparingForUpdating { get; set; }
 
         public EntityPreparingForSavingEventHandler<TEntity> EntityPreparingForSaving { get; set; }
+        public Func<IManager<object>, ManagerTaskArgs<object>, Task> EntitySavingAsync { get; internal set; }
     }
 }

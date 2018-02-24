@@ -71,7 +71,7 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            manager.RaiseEntityPreparingForValidation(entity);
+            await manager.ExecuteEntityValidatingAsync(entity);
 
             var result = await manager.ValidateEntityAsync(entity);
             if (!result.Succeeded)
@@ -79,7 +79,7 @@ namespace MotiNet.Entities
                 return result;
             }
 
-            manager.RaiseEntityPreparingForCreating(entity);
+            await manager.ExecuteEntityCreatingAsync(entity);
 
             await manager.EntityStore.CreateAsync(entity, manager.CancellationToken);
 
@@ -95,7 +95,7 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            manager.RaiseEntityPreparingForValidation(entity);
+            await manager.ExecuteEntityValidatingAsync(entity);
 
             var result = await manager.ValidateEntityAsync(entity);
             if (!result.Succeeded)
@@ -103,7 +103,7 @@ namespace MotiNet.Entities
                 return result;
             }
 
-            manager.RaiseEntityPreparingForUpdating(entity);
+            await manager.ExecuteEntityUpdatingAsync(entity);
 
             await manager.EntityStore.UpdateAsync(entity, manager.CancellationToken);
 

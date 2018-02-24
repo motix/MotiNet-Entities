@@ -8,25 +8,27 @@ namespace MotiNet.Entities
 {
     public interface IManager<TEntity> where TEntity : class
     {
-        CancellationToken CancellationToken { get; }
-
-        ILogger Logger { get; }
-
         IDisposable Store { get; }
 
         object Accessor { get; }
 
-        void InitExtensions(ManagerEventHandlers<TEntity> eventHandlers);
+        ILogger Logger { get; }
+
+        CancellationToken CancellationToken { get; }
+
+        void InitExtensions(ManagerTasks<TEntity> tasks);
 
         Task<GenericResult> ValidateEntityAsync(TEntity entity);
 
-        void RaiseEntityPreparingForValidation(TEntity entity);
+        Task ExecuteEntityValidatingAsync(TEntity entity);
 
-        void RaiseEntityPreparingForCreating(TEntity entity);
+        Task ExecuteEntityValidateAsync(TEntity entity, List<GenericError> errors);
 
-        void RaiseEntityPreparingForUpdating(TEntity entity);
+        Task ExecuteEntityCreatingAsync(TEntity entity);
 
-        void RaiseEntityPreparingForSaving(TEntity entity);
+        Task ExecuteEntityUpdatingAsync(TEntity entity);
+
+        Task ExecuteEntitySavingAsync(TEntity entity);
 
         void ThrowIfDisposed();
     }

@@ -53,18 +53,6 @@ namespace MotiNet.Entities
     public abstract class ManagerBase<TEntity> : IManager<TEntity>, IDisposable
         where TEntity : class
     {
-        #region Events
-
-        protected event EntityPreparingForValidationEventHandler<TEntity> EntityPreparingForValidation;
-
-        protected event EntityPreparingForCreatingEventHandler<TEntity> EntityPreparingForCreating;
-
-        protected event EntityPreparingForUpdatingEventHandler<TEntity> EntityPreparingForUpdating;
-
-        protected event EntityPreparingForSavingEventHandler<TEntity> EntityPreparingForSaving;
-
-        #endregion
-
         #region Constructors
 
         protected ManagerBase(
@@ -87,19 +75,19 @@ namespace MotiNet.Entities
 
             if (this is ITimeTrackedEntityManager<TEntity>)
             {
-                InitExtensions(TimeTrackedEntityManagerExtensions.GetManagerEventHandlers<TEntity>());
+                InitExtensions(TimeTrackedEntityManagerExtensions.GetManagerTasks<TEntity>());
             }
             else if (this is ICodeBasedEntityManager<TEntity>)
             {
-                InitExtensions(CodeBasedEntityManagerExtensions.GetManagerEventHandlers<TEntity>());
+                InitExtensions(CodeBasedEntityManagerExtensions.GetManagerTasks<TEntity>());
             }
             else if (this is INameBasedEntityManager<TEntity>)
             {
-                InitExtensions(NameBasedEntityManagerExtensions.GetManagerEventHandlers<TEntity>());
+                InitExtensions(NameBasedEntityManagerExtensions.GetManagerTasks<TEntity>());
             }
             else if (this is ITaggedEntityManager<TEntity>)
             {
-                InitExtensions(TaggedEntityManagerExtensions.GetManagerEventHandlers<TEntity>());
+                InitExtensions(TaggedEntityManagerExtensions.GetManagerTasks<TEntity>());
             }
         }
 
@@ -115,30 +103,43 @@ namespace MotiNet.Entities
 
         public virtual CancellationToken CancellationToken => CancellationToken.None;
 
-        private IList<IEntityValidator<TEntity>> EntityValidators { get; }
-            = new List<IEntityValidator<TEntity>>();
+        protected List<EntityValidatingAsync<TEntity>> EntityValidatingTasks { get; } = new List<EntityValidatingAsync<TEntity>>();
+
+        protected List<EntityValidateAsync<TEntity>> EntityValidateTasks { get; } = new List<EntityValidateAsync<TEntity>>();
+
+        protected List<EntityCreatingAsync<TEntity>> EntityCreatingTasks { get; } = new List<EntityCreatingAsync<TEntity>>();
+
+        protected List<EntityUpdatingAsync<TEntity>> EntityUpdatingTasks { get; } = new List<EntityUpdatingAsync<TEntity>>();
+
+        protected List<EntitySavingAsync<TEntity>> EntitySavingTasks { get; } = new List<EntitySavingAsync<TEntity>>();
+
+        private IList<IEntityValidator<TEntity>> EntityValidators { get; } = new List<IEntityValidator<TEntity>>();
 
         #endregion
 
         #region Public Operations
-
-        public void InitExtensions(ManagerEventHandlers<TEntity> eventHandlers)
+        
+        public void InitExtensions(ManagerTasks<TEntity> tasks)
         {
-            if (eventHandlers.EntityPreparingForValidation != null)
+            if (tasks.EntityValidatingAsync != null)
             {
-                EntityPreparingForValidation += eventHandlers.EntityPreparingForValidation;
+                EntityValidatingTasks.Add(tasks.EntityValidatingAsync);
             }
-            if (eventHandlers.EntityPreparingForCreating != null)
+            if (tasks.EntityValidateAsync != null)
             {
-                EntityPreparingForCreating += eventHandlers.EntityPreparingForCreating;
+                EntityValidateTasks.Add(tasks.EntityValidateAsync);
             }
-            if (eventHandlers.EntityPreparingForUpdating != null)
+            if (tasks.EntityCreatingAsync != null)
             {
-                EntityPreparingForUpdating += eventHandlers.EntityPreparingForUpdating;
+                EntityCreatingTasks.Add(tasks.EntityCreatingAsync);
             }
-            if (eventHandlers.EntityPreparingForSaving != null)
+            if (tasks.EntityUpdatingAsync != null)
             {
-                EntityPreparingForSaving += eventHandlers.EntityPreparingForSaving;
+                EntityUpdatingTasks.Add(tasks.EntityUpdatingAsync);
+            }
+            if (tasks.EntitySavingAsync != null)
+            {
+                EntitySavingTasks.Add(tasks.EntitySavingAsync);
             }
         }
 
@@ -153,6 +154,7 @@ namespace MotiNet.Entities
                     errors.AddRange(result.Errors);
                 }
             }
+            await ExecuteEntityValidateAsync(entity, errors);
             if (errors.Count > 0)
             {
                 // TODO:: Resource
@@ -163,26 +165,53 @@ namespace MotiNet.Entities
 
         }
 
-        public void RaiseEntityPreparingForValidation(TEntity entity)
+        public async Task ExecuteEntityValidatingAsync(TEntity entity)
         {
-            EntityPreparingForValidation?.Invoke(this, new ManagerEventArgs<TEntity>() { Entity = entity });
+            foreach(var task in EntityValidatingTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
         }
 
-        public void RaiseEntityPreparingForCreating(TEntity entity)
+        public async Task ExecuteEntityValidateAsync(TEntity entity, List<GenericError> errors)
         {
-            RaiseEntityPreparingForSaving(entity);
-            EntityPreparingForCreating?.Invoke(this, new ManagerEventArgs<TEntity>() { Entity = entity });
+            foreach(var task in EntityValidateTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ValidateEntityTaskArgs<TEntity>(entity, errors));
+            }
         }
 
-        public void RaiseEntityPreparingForUpdating(TEntity entity)
+        public async Task ExecuteEntityCreatingAsync(TEntity entity)
         {
-            RaiseEntityPreparingForSaving(entity);
-            EntityPreparingForUpdating?.Invoke(this, new ManagerEventArgs<TEntity>() { Entity = entity });
+            await ExecuteEntitySavingAsync(entity);
+
+            foreach (var task in EntityCreatingTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
         }
 
-        public void RaiseEntityPreparingForSaving(TEntity entity)
+        public async Task ExecuteEntityUpdatingAsync(TEntity entity)
         {
-            EntityPreparingForSaving?.Invoke(this, new ManagerEventArgs<TEntity>() { Entity = entity });
+            await ExecuteEntitySavingAsync(entity);
+
+            foreach (var task in EntityUpdatingTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
+        }
+
+        public async Task ExecuteEntitySavingAsync(TEntity entity)
+        {
+            foreach (var task in EntitySavingTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
         }
 
         #endregion

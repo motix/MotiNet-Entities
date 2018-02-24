@@ -29,36 +29,40 @@ namespace MotiNet.Entities
             return manager.CodeBasedEntityStore.FindByCodeAsync(NormalizeEntityCode(manager, code), manager.CancellationToken);
         }
 
-        public static ManagerEventHandlers<TEntity> GetManagerEventHandlers<TEntity>()
+        public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()
             where TEntity : class
         {
-            return new ManagerEventHandlers<TEntity>()
+            return new ManagerTasks<TEntity>()
             {
-                EntityPreparingForValidation = PrepareEntityForValidation,
-                EntityPreparingForSaving = PrepareEntityForSaving
+                EntityValidatingAsync = EntityValidatingAsync,
+                EntitySavingAsync = EntitySavingAsync
             };
         }
 
-        private static void PrepareEntityForValidation<TEntity>(object sender, ManagerEventArgs<TEntity> e)
+        private static Task EntityValidatingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
             where TEntity : class
         {
-            var manager = (ICodeBasedEntityManager<TEntity>)sender;
+            var codeBasedManager = (ICodeBasedEntityManager<TEntity>)manager;
 
-            if (manager.CodeBasedEntityAccessor.GetCode(e.Entity) == null && manager.CodeGenerator != null)
+            if (codeBasedManager.CodeBasedEntityAccessor.GetCode(taskArgs.Entity) == null && codeBasedManager.CodeGenerator != null)
             {
-                var code = manager.CodeGenerator.GenerateCode(manager, e.Entity);
-                manager.CodeBasedEntityAccessor.SetCode(e.Entity, code);
+                var code = codeBasedManager.CodeGenerator.GenerateCode(manager, taskArgs.Entity);
+                codeBasedManager.CodeBasedEntityAccessor.SetCode(taskArgs.Entity, code);
             }
+
+            return Task.FromResult(0);
         }
 
-        private static void PrepareEntityForSaving<TEntity>(object sender, ManagerEventArgs<TEntity> e)
+        private static Task EntitySavingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
             where TEntity : class
         {
-            var manager = (ICodeBasedEntityManager<TEntity>)sender;
+            var codeBasedManager = (ICodeBasedEntityManager<TEntity>)manager;
 
-            var code = manager.CodeBasedEntityAccessor.GetCode(e.Entity);
-            var normalizedCode = NormalizeEntityCode(manager, code);
-            manager.CodeBasedEntityAccessor.SetCode(e.Entity, normalizedCode);
+            var code = codeBasedManager.CodeBasedEntityAccessor.GetCode(taskArgs.Entity);
+            var normalizedCode = NormalizeEntityCode(codeBasedManager, code);
+            codeBasedManager.CodeBasedEntityAccessor.SetCode(taskArgs.Entity, normalizedCode);
+
+            return Task.FromResult(0);
         }
 
         private static string NormalizeEntityCode<TEntity>(ICodeBasedEntityManager<TEntity> manager, string code)

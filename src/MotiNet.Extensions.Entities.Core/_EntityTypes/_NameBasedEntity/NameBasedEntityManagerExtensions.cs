@@ -29,23 +29,25 @@ namespace MotiNet.Entities
             return manager.NameBasedEntityStore.FindByNameAsync(NormalizeEntityName(manager, name), manager.CancellationToken);
         }
 
-        public static ManagerEventHandlers<TEntity> GetManagerEventHandlers<TEntity>()
+        public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()
             where TEntity : class
         {
-            return new ManagerEventHandlers<TEntity>()
+            return new ManagerTasks<TEntity>()
             {
-                EntityPreparingForSaving = PrepareEntityForSaving
+                EntitySavingAsync = EntitySavingAsync
             };
         }
 
-        private static void PrepareEntityForSaving<TEntity>(object sender, ManagerEventArgs<TEntity> e)
+        private static Task EntitySavingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
             where TEntity : class
         {
-            var manager = (INameBasedEntityManager<TEntity>)sender;
+            var nameBasedManager = (INameBasedEntityManager<TEntity>)manager;
 
-            var name = manager.NameBasedEntityAccessor.GetName(e.Entity);
-            var normalizedName = NormalizeEntityName(manager, name);
-            manager.NameBasedEntityAccessor.SetNormalizedName(e.Entity, normalizedName);
+            var name = nameBasedManager.NameBasedEntityAccessor.GetName(taskArgs.Entity);
+            var normalizedName = NormalizeEntityName(nameBasedManager, name);
+            nameBasedManager.NameBasedEntityAccessor.SetNormalizedName(taskArgs.Entity, normalizedName);
+
+            return Task.FromResult(0);
         }
 
         private static string NormalizeEntityName<TEntity>(INameBasedEntityManager<TEntity> manager, string name)
