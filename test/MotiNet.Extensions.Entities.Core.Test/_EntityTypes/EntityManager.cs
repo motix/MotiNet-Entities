@@ -68,6 +68,31 @@ namespace MotiNet.Entities.Test
             Assert.Equal(expected, result.ResultCount);
         }
 
+        [Fact(DisplayName = "EntityManager.ValidatesEntityWhenCreating")]
+        public async void ValidatesEntityWhenCreating()
+        {
+            var newEntity = new Article { Id = 4 };
+
+            var initialCount = Store.Data.Count;
+            var result = await Manager.CreateAsync(newEntity);
+            var finalCount = Store.Data.Count;
+
+            Assert.False(result.Succeeded);
+            Assert.Equal(finalCount, initialCount);
+
+            newEntity = new Article { Id = 4, Title = "Title 4" };
+
+            initialCount = Store.Data.Count;
+            result = await Manager.CreateAsync(newEntity);
+            finalCount = Store.Data.Count;
+            var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
+
+            Assert.True(result.Succeeded);
+            Assert.Equal(finalCount, initialCount + 1);
+            Assert.Equal(newEntity.Id, addedEntity.Id);
+        }
+
+
         [Fact(DisplayName = "EntityManager.CreatesEntity")]
         public async void CreatesEntity()
         {
@@ -115,6 +140,17 @@ namespace MotiNet.Entities.Test
             Assert.True(result.Succeeded);
             Assert.Equal(finalCount, initialCount - 1);
             Assert.Null(deletedEntity);
+        }
+
+        public class ArticleValidator : IEntityValidator<Article>
+        {
+            public Task<GenericResult> ValidateAsync(object manager, Article entity)
+            {
+                var result = string.IsNullOrWhiteSpace(entity.Title) ?
+                    GenericResult.Failed(new GenericError()) :
+                    GenericResult.Success;
+                return Task.FromResult(result);
+            }   
         }
 
         public class ArticleStore : IEntityStore<Article>
@@ -240,7 +276,7 @@ namespace MotiNet.Entities.Test
                 : base(
                       store: new ArticleStore(),
                       entityAccessor: null,
-                      entityValidators: null,
+                      entityValidators: new List<ArticleValidator>() { new ArticleValidator() },
                       logger: new Mock<ILogger<ArticleManager>>().Object)
             { }
 

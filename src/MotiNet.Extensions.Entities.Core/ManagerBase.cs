@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MotiNet.Entities
 {
-    public abstract class ManagerBase<TEntity, TSubEntity> : ManagerBase<TEntity>
+    public abstract class ManagerBase<TEntity, TSubEntity> : ManagerBase<TEntity>, IManager<TEntity, TSubEntity>
         where TEntity : class
         where TSubEntity : class
     {
@@ -27,24 +27,83 @@ namespace MotiNet.Entities
                     EntityValidators.Add(validator);
                 }
             }
+
+            if (this is IMasterDetailsEntityManager<TEntity, TSubEntity>)
+            {
+                InitExtensions(MasterDetailsEntityManagerExtensions.GetManagerTasks<TEntity, TSubEntity>());
+            }
         }
 
         #endregion
 
         #region Properties
 
-        private IList<IEntityValidator<TEntity, TSubEntity>> EntityValidators { get; }
-            = new List<IEntityValidator<TEntity, TSubEntity>>();
+        protected IList<EntityValidateAsync<TEntity, TSubEntity>> EntityWithSubEntitiesValidateTasks { get; } = new List<EntityValidateAsync<TEntity, TSubEntity>>();
+
+        private IList<IEntityValidator<TEntity, TSubEntity>> EntityValidators { get; } = new List<IEntityValidator<TEntity, TSubEntity>>();
 
         #endregion
 
         #region Public Operations
 
+        public virtual void InitExtensions(ManagerTasks<TEntity, TSubEntity> tasks)
+        {
+            base.InitExtensions(tasks);
+
+            if (tasks.EntityWithSubEntitiesValidateAsync != null)
+            {
+                EntityWithSubEntitiesValidateTasks.Add(tasks.EntityWithSubEntitiesValidateAsync);
+            }
+        }
+
         public override async Task<GenericResult> ValidateEntityAsync(TEntity entity)
         {
-            var result = await base.ValidateEntityAsync(entity);
+            var errors = new List<GenericError>();
+            foreach (var validator in EntityValidators)
+            {
+                var result = await validator.ValidateAsync(this, entity);
+                if (!result.Succeeded)
+                {
+                    errors.AddRange(result.Errors);
+                }
+            }
+            await ExecuteEntityWithSubEntitiesValidateAsync(entity, errors);
+            if (errors.Count > 0)
+            {
+                // TODO:: Resource
+                Logger.LogWarning(0, "Entity {name} validation failed: {errors}.", typeof(TEntity).Name, string.Join(", ", errors.Select(e => e.Code)));
+                return GenericResult.Failed(errors.ToArray());
+            }
+            return GenericResult.Success;
+        }
 
-            return result;
+        public virtual async Task<GenericResult> ValidateSubEntityAsync(TSubEntity subEntity)
+        {
+            var errors = new List<GenericError>();
+            foreach (var validator in EntityValidators)
+            {
+                var result = await validator.ValidateAsync(this, subEntity);
+                if (!result.Succeeded)
+                {
+                    errors.AddRange(result.Errors);
+                }
+            }
+            if (errors.Count > 0)
+            {
+                // TODO:: Resource
+                Logger.LogWarning(0, "SubEntity {type} validation failed: {errors}.", typeof(TSubEntity).Name, string.Join(", ", errors.Select(e => e.Code)));
+                return GenericResult.Failed(errors.ToArray());
+            }
+            return GenericResult.Success;
+        }
+
+        public async Task ExecuteEntityWithSubEntitiesValidateAsync(TEntity entity, List<GenericError> errors)
+        {
+            foreach (var task in EntityWithSubEntitiesValidateTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ValidateEntityTaskArgs<TEntity, TSubEntity>(entity, EntityValidators, errors));
+            }
         }
 
         #endregion
@@ -103,15 +162,13 @@ namespace MotiNet.Entities
 
         public virtual CancellationToken CancellationToken => CancellationToken.None;
 
-        protected List<EntityValidatingAsync<TEntity>> EntityValidatingTasks { get; } = new List<EntityValidatingAsync<TEntity>>();
+        protected IList<EntityValidatingAsync<TEntity>> EntityValidatingTasks { get; } = new List<EntityValidatingAsync<TEntity>>();
 
-        protected List<EntityValidateAsync<TEntity>> EntityValidateTasks { get; } = new List<EntityValidateAsync<TEntity>>();
+        protected IList<EntityCreatingAsync<TEntity>> EntityCreatingTasks { get; } = new List<EntityCreatingAsync<TEntity>>();
 
-        protected List<EntityCreatingAsync<TEntity>> EntityCreatingTasks { get; } = new List<EntityCreatingAsync<TEntity>>();
+        protected IList<EntityUpdatingAsync<TEntity>> EntityUpdatingTasks { get; } = new List<EntityUpdatingAsync<TEntity>>();
 
-        protected List<EntityUpdatingAsync<TEntity>> EntityUpdatingTasks { get; } = new List<EntityUpdatingAsync<TEntity>>();
-
-        protected List<EntitySavingAsync<TEntity>> EntitySavingTasks { get; } = new List<EntitySavingAsync<TEntity>>();
+        protected IList<EntitySavingAsync<TEntity>> EntitySavingTasks { get; } = new List<EntitySavingAsync<TEntity>>();
 
         private IList<IEntityValidator<TEntity>> EntityValidators { get; } = new List<IEntityValidator<TEntity>>();
 
@@ -119,15 +176,11 @@ namespace MotiNet.Entities
 
         #region Public Operations
         
-        public void InitExtensions(ManagerTasks<TEntity> tasks)
+        public virtual void InitExtensions(ManagerTasks<TEntity> tasks)
         {
             if (tasks.EntityValidatingAsync != null)
             {
                 EntityValidatingTasks.Add(tasks.EntityValidatingAsync);
-            }
-            if (tasks.EntityValidateAsync != null)
-            {
-                EntityValidateTasks.Add(tasks.EntityValidateAsync);
             }
             if (tasks.EntityCreatingAsync != null)
             {
@@ -154,15 +207,13 @@ namespace MotiNet.Entities
                     errors.AddRange(result.Errors);
                 }
             }
-            await ExecuteEntityValidateAsync(entity, errors);
             if (errors.Count > 0)
             {
                 // TODO:: Resource
-                Logger.LogWarning(0, "Entity validation failed: {errors}.", string.Join(", ", errors.Select(e => e.Code)));
+                Logger.LogWarning(0, "Entity {name} validation failed: {errors}.", typeof(TEntity).Name, string.Join(", ", errors.Select(e => e.Code)));
                 return GenericResult.Failed(errors.ToArray());
             }
             return GenericResult.Success;
-
         }
 
         public async Task ExecuteEntityValidatingAsync(TEntity entity)
@@ -171,15 +222,6 @@ namespace MotiNet.Entities
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));
-            }
-        }
-
-        public async Task ExecuteEntityValidateAsync(TEntity entity, List<GenericError> errors)
-        {
-            foreach(var task in EntityValidateTasks)
-            {
-                // Do one by one to ensure the order
-                await task(this, new ValidateEntityTaskArgs<TEntity>(entity, errors));
             }
         }
 

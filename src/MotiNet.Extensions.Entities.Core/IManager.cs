@@ -6,7 +6,19 @@ using System.Threading.Tasks;
 
 namespace MotiNet.Entities
 {
-    public interface IManager<TEntity> where TEntity : class
+    public interface IManager<TEntity, TSubEntity> : IManager<TEntity>
+        where TEntity : class
+        where TSubEntity : class
+    {
+        void InitExtensions(ManagerTasks<TEntity, TSubEntity> tasks);
+
+        Task<GenericResult> ValidateSubEntityAsync(TSubEntity subEntity);
+
+        Task ExecuteEntityWithSubEntitiesValidateAsync(TEntity entity, List<GenericError> errors);
+    }
+
+    public interface IManager<TEntity>
+        where TEntity : class
     {
         IDisposable Store { get; }
 
@@ -21,8 +33,6 @@ namespace MotiNet.Entities
         Task<GenericResult> ValidateEntityAsync(TEntity entity);
 
         Task ExecuteEntityValidatingAsync(TEntity entity);
-
-        Task ExecuteEntityValidateAsync(TEntity entity, List<GenericError> errors);
 
         Task ExecuteEntityCreatingAsync(TEntity entity);
 
