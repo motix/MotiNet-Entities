@@ -2,7 +2,7 @@
 
 namespace MotiNet.Entities.Test
 {
-    public partial class Category : INameWiseEntity
+    public partial class Category
     {
         public int Id { get; set; }
 

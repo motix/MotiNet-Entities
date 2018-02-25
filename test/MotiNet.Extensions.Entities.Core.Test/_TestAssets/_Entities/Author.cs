@@ -2,7 +2,7 @@
 
 namespace MotiNet.Entities.Test
 {
-    public partial class Author : ICodeWiseEntity
+    public partial class Author
     {
         public int Id { get; set; }
 

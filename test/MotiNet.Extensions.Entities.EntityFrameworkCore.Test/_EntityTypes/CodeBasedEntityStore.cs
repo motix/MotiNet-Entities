@@ -41,12 +41,12 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
 
             public Article FindByCode(string normalizedCode)
             {
-                return CodeBasedEntityStoreHelper.FindByCode(this, normalizedCode, x => x.UrlFriendlyTitle);
+                return CodeBasedEntityStoreHelper.FindEntityByCode(this, normalizedCode, x => x.UrlFriendlyTitle);
             }
 
             public Task<Article> FindByCodeAsync(string normalizedCode, CancellationToken cancellationToken)
             {
-                return CodeBasedEntityStoreHelper.FindByCodeAsync(this, normalizedCode, x => x.UrlFriendlyTitle, cancellationToken);
+                return CodeBasedEntityStoreHelper.FindEntityByCodeAsync(this, normalizedCode, x => x.UrlFriendlyTitle, cancellationToken);
             }
         }
     }

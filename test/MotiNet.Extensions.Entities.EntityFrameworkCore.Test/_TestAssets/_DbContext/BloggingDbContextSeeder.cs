@@ -15,6 +15,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 dbContext.Categories.Find(1).ParentId = 6;
                 dbContext.SaveChanges();
             }
+
             if (!dbContext.Authors.Any())
             {
                 dbContext.Authors.AddRange(GetPreconfiguredAuthors());
@@ -34,7 +35,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             }
         }
 
-        static IEnumerable<Category> GetPreconfiguredCategories()
+        private static IEnumerable<Category> GetPreconfiguredCategories()
         {
             return new List<Category>()
             {
@@ -47,7 +48,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             };
         }
 
-        static IEnumerable<Author> GetPreconfiguredAuthors()
+        private static IEnumerable<Author> GetPreconfiguredAuthors()
         {
             return new List<Author>()
             {
@@ -59,7 +60,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             };
         }
 
-        static IEnumerable<Article> GetPreconfiguredArticles()
+        private static IEnumerable<Article> GetPreconfiguredArticles()
         {
             return new List<Article>()
             {
@@ -98,7 +99,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             };
         }
 
-        static IEnumerable<ArticleCategory> GetPreconfiguredArticleCategories()
+        private static IEnumerable<ArticleCategory> GetPreconfiguredArticleCategories()
         {
             return new List<ArticleCategory>()
             {

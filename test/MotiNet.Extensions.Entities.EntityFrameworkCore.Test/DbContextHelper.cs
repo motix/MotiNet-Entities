@@ -20,5 +20,21 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
 
             return (new BloggingDbContext(options), options);
         }
+
+        public static (TravelDbContext dbContext, DbContextOptions<TravelDbContext> options) InitTravelDbContext(DbConnection connection)
+        {
+            var options = new DbContextOptionsBuilder<TravelDbContext>()
+                .UseSqlite(connection)
+                .Options;
+
+            // Create the schema in the database
+            using (var dbContext = new TravelDbContext(options))
+            {
+                dbContext.Database.EnsureCreated();
+                TravelDbContextSeeder.Seed(dbContext);
+            }
+
+            return (new TravelDbContext(options), options);
+        }
     }
 }

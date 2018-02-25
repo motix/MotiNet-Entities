@@ -14,7 +14,11 @@ namespace MotiNet.Entities
 
         Task<GenericResult> ValidateSubEntityAsync(TSubEntity subEntity);
 
-        Task ExecuteEntityWithSubEntitiesValidateAsync(TEntity entity, List<GenericError> errors);
+        Task ExecuteEntityWithSubEntityValidatingAsync(TEntity entity);
+
+        Task ExecuteEntityWithSubEntityValidateAsync(TEntity entity, List<GenericError> errors);
+
+        Task ExecuteEntityWithSubEntitySavingAsync(TEntity entity);
     }
 
     public interface IManager<TEntity>

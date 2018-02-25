@@ -33,6 +33,10 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                    .IsRequired()
                    .HasMaxLength(StringLengths.TitleContent);
 
+            builder.Property(x => x.NormalizedName)
+                   .IsRequired()
+                   .HasMaxLength(StringLengths.TitleContent);
+
             builder.Property(x => x.UrlFriendlyName)
                    .IsRequired()
                    .HasMaxLength(StringLengths.TitleContent);
@@ -62,6 +66,9 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                    .HasMaxLength(StringLengths.TitleContent);
 
             builder.Property(x => x.Content)
+                   .HasMaxLength(StringLengths.MaxContent);
+
+            builder.Property(x => x.Tags)
                    .HasMaxLength(StringLengths.MaxContent);
 
             builder.Ignore(x => x.Categories);

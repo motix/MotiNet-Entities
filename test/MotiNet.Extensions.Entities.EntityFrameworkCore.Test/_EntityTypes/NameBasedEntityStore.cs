@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,12 +42,12 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
 
             public Category FindByName(string normalizedName)
             {
-                return NameBasedEntityStoreHelper.FindByName(this, normalizedName, x => x.UrlFriendlyName);
+                throw new NotImplementedException();
             }
 
             public Task<Category> FindByNameAsync(string normalizedName, CancellationToken cancellationToken)
             {
-                return NameBasedEntityStoreHelper.FindByNameAsync(this, normalizedName, cancellationToken);
+                return NameBasedEntityStoreHelper.FindEntityByNameAsync(this, normalizedName, cancellationToken);
             }
         }
     }

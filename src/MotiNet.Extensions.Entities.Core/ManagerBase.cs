@@ -28,7 +28,11 @@ namespace MotiNet.Entities
                 }
             }
 
-            if (this is IMasterDetailsEntityManager<TEntity, TSubEntity>)
+            if (this is IScopedNameBasedEntityManager<TEntity, TSubEntity>)
+            {
+                InitExtensions(ScopedNameBasedEntityManagerExtensions.GetManagerTasks<TEntity, TSubEntity>());
+            }
+            else if (this is IMasterDetailsEntityManager<TEntity, TSubEntity>)
             {
                 InitExtensions(MasterDetailsEntityManagerExtensions.GetManagerTasks<TEntity, TSubEntity>());
             }
@@ -38,7 +42,11 @@ namespace MotiNet.Entities
 
         #region Properties
 
-        protected IList<EntityValidateAsync<TEntity, TSubEntity>> EntityWithSubEntitiesValidateTasks { get; } = new List<EntityValidateAsync<TEntity, TSubEntity>>();
+        protected IList<EntityValidatingAsync<TEntity, TSubEntity>> EntityWithSubEntityValidatingTasks { get; } = new List<EntityValidatingAsync<TEntity, TSubEntity>>();
+
+        protected IList<EntityValidateAsync<TEntity, TSubEntity>> EntityWithSubEntityValidateTasks { get; } = new List<EntityValidateAsync<TEntity, TSubEntity>>();
+
+        protected IList<EntitySavingAsync<TEntity, TSubEntity>> EntityWithSubEntitySavingTasks { get; } = new List<EntitySavingAsync<TEntity, TSubEntity>>();
 
         private IList<IEntityValidator<TEntity, TSubEntity>> EntityValidators { get; } = new List<IEntityValidator<TEntity, TSubEntity>>();
 
@@ -50,9 +58,17 @@ namespace MotiNet.Entities
         {
             base.InitExtensions(tasks);
 
-            if (tasks.EntityWithSubEntitiesValidateAsync != null)
+            if (tasks.EntityWithSubEntityValidatingAsync != null)
             {
-                EntityWithSubEntitiesValidateTasks.Add(tasks.EntityWithSubEntitiesValidateAsync);
+                EntityWithSubEntityValidatingTasks.Add(tasks.EntityWithSubEntityValidatingAsync);
+            }
+            if (tasks.EntityWithSubEntityValidateAsync != null)
+            {
+                EntityWithSubEntityValidateTasks.Add(tasks.EntityWithSubEntityValidateAsync);
+            }
+            if (tasks.EntityWithSubEntitySavingAsync != null)
+            {
+                EntityWithSubEntitySavingTasks.Add(tasks.EntityWithSubEntitySavingAsync);
             }
         }
 
@@ -67,7 +83,7 @@ namespace MotiNet.Entities
                     errors.AddRange(result.Errors);
                 }
             }
-            await ExecuteEntityWithSubEntitiesValidateAsync(entity, errors);
+            await ExecuteEntityWithSubEntityValidateAsync(entity, errors);
             if (errors.Count > 0)
             {
                 // TODO:: Resource
@@ -97,12 +113,42 @@ namespace MotiNet.Entities
             return GenericResult.Success;
         }
 
-        public async Task ExecuteEntityWithSubEntitiesValidateAsync(TEntity entity, List<GenericError> errors)
+        public override async Task ExecuteEntityValidatingAsync(TEntity entity)
         {
-            foreach (var task in EntityWithSubEntitiesValidateTasks)
+            await base.ExecuteEntityValidatingAsync(entity);
+            await ExecuteEntityWithSubEntityValidatingAsync(entity);
+        }
+
+        public async Task ExecuteEntityWithSubEntityValidatingAsync(TEntity entity)
+        {
+            foreach (var task in EntityWithSubEntityValidatingTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
+        }
+
+        public async Task ExecuteEntityWithSubEntityValidateAsync(TEntity entity, List<GenericError> errors)
+        {
+            foreach (var task in EntityWithSubEntityValidateTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ValidateEntityTaskArgs<TEntity, TSubEntity>(entity, EntityValidators, errors));
+            }
+        }
+
+        public override async Task ExecuteEntitySavingAsync(TEntity entity)
+        {
+            await base.ExecuteEntitySavingAsync(entity);
+            await ExecuteEntityWithSubEntitySavingAsync(entity);
+        }
+
+        public async Task ExecuteEntityWithSubEntitySavingAsync(TEntity entity)
+        {
+            foreach (var task in EntityWithSubEntitySavingTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
             }
         }
 
@@ -216,7 +262,7 @@ namespace MotiNet.Entities
             return GenericResult.Success;
         }
 
-        public async Task ExecuteEntityValidatingAsync(TEntity entity)
+        public virtual async Task ExecuteEntityValidatingAsync(TEntity entity)
         {
             foreach(var task in EntityValidatingTasks)
             {
@@ -225,7 +271,7 @@ namespace MotiNet.Entities
             }
         }
 
-        public async Task ExecuteEntityCreatingAsync(TEntity entity)
+        public virtual async Task ExecuteEntityCreatingAsync(TEntity entity)
         {
             await ExecuteEntitySavingAsync(entity);
 
@@ -236,7 +282,7 @@ namespace MotiNet.Entities
             }
         }
 
-        public async Task ExecuteEntityUpdatingAsync(TEntity entity)
+        public virtual async Task ExecuteEntityUpdatingAsync(TEntity entity)
         {
             await ExecuteEntitySavingAsync(entity);
 
@@ -247,7 +293,7 @@ namespace MotiNet.Entities
             }
         }
 
-        public async Task ExecuteEntitySavingAsync(TEntity entity)
+        public virtual async Task ExecuteEntitySavingAsync(TEntity entity)
         {
             foreach (var task in EntitySavingTasks)
             {

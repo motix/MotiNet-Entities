@@ -11,7 +11,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
     {
         public static Task<TEntity> FindEntityByIdAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            object id, CancellationToken cancellationToken)
+            object id,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {
@@ -27,7 +28,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static async Task<TEntity> FindEntityAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            object key, IFindSpecification<TEntity> spec, CancellationToken cancellationToken)
+            object key, IFindSpecification<TEntity> spec,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {
@@ -36,6 +38,10 @@ namespace MotiNet.Entities.EntityFrameworkCore
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
+            }
+            if (spec == null)
+            {
+                throw new ArgumentNullException(nameof(spec));
             }
 
             var entities = store.DbContext.Set<TEntity>().AsQueryable();
@@ -71,7 +77,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static async Task<IEnumerable<TEntity>> SearchEntitiesAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            ISearchSpecification<TEntity> spec, CancellationToken cancellationToken)
+            ISearchSpecification<TEntity> spec,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {
@@ -103,7 +110,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static async Task<PagedSearchResult<TEntity>> SearchEntitiesAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            IPagedSearchSpecification<TEntity> spec, CancellationToken cancellationToken)
+            IPagedSearchSpecification<TEntity> spec,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {
@@ -148,7 +156,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static async Task<TEntity> CreateEntityAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            TEntity entity, CancellationToken cancellationToken)
+            TEntity entity,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {
@@ -167,7 +176,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static async Task<TEntity> CreateEntityAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            TEntity entity, IModifySpecification<TEntity> spec, CancellationToken cancellationToken)
+            TEntity entity, IModifySpecification<TEntity> spec,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {
@@ -194,7 +204,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static Task UpdateEntityAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            TEntity entity, CancellationToken cancellationToken)
+            TEntity entity,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {
@@ -211,7 +222,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static async Task UpdateEntityAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            TEntity entity, IModifySpecification<TEntity> spec, CancellationToken cancellationToken)
+            TEntity entity, IModifySpecification<TEntity> spec,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {
@@ -236,7 +248,8 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static Task DeleteEntityAsync<TEntity, TDbContext>(
             IEntityStoreMarker<TEntity, TDbContext> store,
-            TEntity entity, CancellationToken cancellationToken)
+            TEntity entity,
+            CancellationToken cancellationToken)
             where TEntity : class
             where TDbContext : DbContext
         {

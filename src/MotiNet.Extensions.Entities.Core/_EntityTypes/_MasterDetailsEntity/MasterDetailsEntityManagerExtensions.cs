@@ -5,21 +5,21 @@ namespace MotiNet.Entities
 {
     public static class MasterDetailsEntityManagerExtensions
     {
-        public static ManagerTasks<TEntity, TSubEntity> GetManagerTasks<TEntity, TSubEntity>()
+        public static ManagerTasks<TEntity, TEntityDetail> GetManagerTasks<TEntity, TEntityDetail>()
             where TEntity : class
-            where TSubEntity : class
+            where TEntityDetail : class
         {
-            return new ManagerTasks<TEntity, TSubEntity>()
+            return new ManagerTasks<TEntity, TEntityDetail>()
             {
-                EntityWithSubEntitiesValidateAsync = EntityWithSubEntitiesValidateAsync
+                EntityWithSubEntityValidateAsync = EntityValidateAsync
             };
         }
 
-        private static async Task EntityWithSubEntitiesValidateAsync<TEntity, TSubEntity>(IManager<TEntity, TSubEntity> manager, ValidateEntityTaskArgs<TEntity, TSubEntity> taskArgs)
+        private static async Task EntityValidateAsync<TEntity, TEntityDetail>(IManager<TEntity, TEntityDetail> manager, ValidateEntityTaskArgs<TEntity, TEntityDetail> taskArgs)
             where TEntity : class
-            where TSubEntity : class
+            where TEntityDetail : class
         {
-            var masterDetailsManager = (IMasterDetailsEntityManager<TEntity, TSubEntity>)manager;
+            var masterDetailsManager = (IMasterDetailsEntityManager<TEntity, TEntityDetail>)manager;
 
             var details = masterDetailsManager.MasterDetailsEntityAccessor.GetDetails(taskArgs.Entity);
             var tasks = new List<Task<GenericResult>>(details.Count);

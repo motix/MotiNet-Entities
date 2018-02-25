@@ -39,12 +39,12 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
 
             public Article FindLatest()
             {
-                return TimeTrackedEntityStoreHelper.FindLatest(this);
+                return TimeTrackedEntityStoreHelper.FindLatestEntity(this);
             }
 
             public Task<Article> FindLatestAsync(CancellationToken cancellationToken)
             {
-                return TimeTrackedEntityStoreHelper.FindLatestAsync(this, cancellationToken);
+                return TimeTrackedEntityStoreHelper.FindLatestEntityAsync(this, cancellationToken);
             }
         }
     }

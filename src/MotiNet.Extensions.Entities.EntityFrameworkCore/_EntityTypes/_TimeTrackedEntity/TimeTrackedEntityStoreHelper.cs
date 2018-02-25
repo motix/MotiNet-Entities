@@ -9,7 +9,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 {
     public static class TimeTrackedEntityStoreHelper
     {
-        public static TEntity FindLatest<TEntity, TDbContext>(
+        public static TEntity FindLatestEntity<TEntity, TDbContext>(
             ITimeTrackedEntityStoreMarker<TEntity, TDbContext> store,
             Expression<Func<TEntity, DateTime>> dataCreateDateSelector)
             where TEntity : class
@@ -21,7 +21,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                                                  .FirstOrDefault();
         }
 
-        public static TEntity FindLatest<TEntity, TDbContext>(
+        public static TEntity FindLatestEntity<TEntity, TDbContext>(
             ITimeTrackedEntityStoreMarker<TEntity, TDbContext> store)
             where TEntity : class, ITimeWiseEntity
             where TDbContext : DbContext
@@ -32,7 +32,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                                                  .FirstOrDefault();
         }
 
-        public static Task<TEntity> FindLatestAsync<TEntity, TDbContext>(
+        public static Task<TEntity> FindLatestEntityAsync<TEntity, TDbContext>(
             ITimeTrackedEntityStoreMarker<TEntity, TDbContext> store,
             Expression<Func<TEntity, DateTime>> dataCreateDateSelector,
             CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                                                  .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public static Task<TEntity> FindLatestAsync<TEntity, TDbContext>(
+        public static Task<TEntity> FindLatestEntityAsync<TEntity, TDbContext>(
             ITimeTrackedEntityStoreMarker<TEntity, TDbContext> store,
             CancellationToken cancellationToken)
             where TEntity : class, ITimeWiseEntity

@@ -14,7 +14,15 @@ namespace MotiNet.Entities
     public delegate Task EntitySavingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         where TEntity : class;
 
+    public delegate Task EntityValidatingAsync<TEntity, TSubEntity>(IManager<TEntity, TSubEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
+        where TEntity : class
+        where TSubEntity : class;
+
     public delegate Task EntityValidateAsync<TEntity, TSubEntity>(IManager<TEntity, TSubEntity> manager, ValidateEntityTaskArgs<TEntity, TSubEntity> taskArgs)
+        where TEntity : class
+        where TSubEntity : class;
+
+    public delegate Task EntitySavingAsync<TEntity, TSubEntity>(IManager<TEntity, TSubEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         where TEntity : class
         where TSubEntity : class;
 
@@ -22,7 +30,11 @@ namespace MotiNet.Entities
         where TEntity : class
         where TSubEntity : class
     {
-        public EntityValidateAsync<TEntity, TSubEntity> EntityWithSubEntitiesValidateAsync { get; set; }
+        public EntityValidatingAsync<TEntity, TSubEntity> EntityWithSubEntityValidatingAsync { get; set; }
+
+        public EntityValidateAsync<TEntity, TSubEntity> EntityWithSubEntityValidateAsync { get; set; }
+
+        public EntitySavingAsync<TEntity, TSubEntity> EntityWithSubEntitySavingAsync { get; set; }
     }
 
     public class ManagerTasks<TEntity> where TEntity : class

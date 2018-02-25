@@ -18,7 +18,7 @@ namespace MotiNet.Entities.Test
         [Fact(DisplayName = "NameBasedEntityManager.AutoNormalizesNameWhenSavingAnEntity")]
         public async void AutoNormalizesNameWhenSavingAnEntity()
         {
-            var testName = "a";
+            var testName = "test name";
             var newEntity = new Category { Id = 4, Name = testName };
 
             var result = await Manager.CreateAsync(newEntity);
