@@ -125,7 +125,7 @@ namespace MotiNet.Entities.Test
 
             public IScopedNameBasedEntityAccessor<City, Country> ScopedNameBasedEntityAccessor => Accessor as IScopedNameBasedEntityAccessor<City, Country>;
 
-            public ILookupNormalizer NameNormalizer { get; set; }
+            public ILookupNormalizer NameNormalizer { get; }
         }
     }
 }

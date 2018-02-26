@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MotiNet.Entities.EntityFrameworkCore
 {
@@ -29,6 +30,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         private bool _disposed = false; // To detect redundant calls
 
+        [ExcludeFromCodeCoverage]
         public void ThrowIfDisposed()
         {
             if (_disposed)
@@ -37,6 +39,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
             }
         }
 
+        [ExcludeFromCodeCoverage]
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -61,6 +64,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
         // }
 
         // This code added to correctly implement the disposable pattern.
+        [ExcludeFromCodeCoverage]
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.

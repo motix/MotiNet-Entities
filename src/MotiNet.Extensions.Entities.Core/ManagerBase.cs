@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -133,7 +134,7 @@ namespace MotiNet.Entities
             foreach (var task in EntityWithSubEntityValidateTasks)
             {
                 // Do one by one to ensure the order
-                await task(this, new ValidateEntityTaskArgs<TEntity, TSubEntity>(entity, EntityValidators, errors));
+                await task(this, new ValidateEntityTaskArgs<TEntity, TSubEntity>(entity, errors));
             }
         }
 
@@ -306,8 +307,9 @@ namespace MotiNet.Entities
 
         #region IDisposable Support
 
-        private bool _disposed = false;
+        private bool _disposed = false; // To detect redundant calls
 
+        [ExcludeFromCodeCoverage]
         public void ThrowIfDisposed()
         {
             if (_disposed)
@@ -316,6 +318,7 @@ namespace MotiNet.Entities
             }
         }
 
+        [ExcludeFromCodeCoverage]
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -333,9 +336,20 @@ namespace MotiNet.Entities
             }
         }
 
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~EfRepository() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        [ExcludeFromCodeCoverage]
         public void Dispose()
         {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
         }
 
         #endregion

@@ -98,7 +98,7 @@ namespace MotiNet.Entities.Test
 
             public INameBasedEntityAccessor<Category> NameBasedEntityAccessor => Accessor as INameBasedEntityAccessor<Category>;
 
-            public ILookupNormalizer NameNormalizer { get; set; }
+            public ILookupNormalizer NameNormalizer { get; }
         }
     }
 }

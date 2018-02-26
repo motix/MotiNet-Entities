@@ -22,6 +22,10 @@ namespace MotiNet.Entities
             where TEntity : class
         {
             manager.ThrowIfDisposed();
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
             if (spec == null)
             {
                 throw new ArgumentNullException(nameof(spec));

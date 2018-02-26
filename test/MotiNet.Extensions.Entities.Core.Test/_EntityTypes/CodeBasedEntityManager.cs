@@ -41,10 +41,27 @@ namespace MotiNet.Entities.Test
             Assert.Equal(testCode.ToLower(), addedEntity.UrlFriendlyTitle);
         }
 
+        [Fact(DisplayName = "CodeBasedEntityManager.AutoNormalizesCodeButDoesNothingWhenNoCodeNormalizerPresents")]
+        public async void AutoNormalizesCodeButDoesNothingWhenNoCodeNormalizerPresents()
+        {
+            var testCode = "A";
+            var newEntity = new Article { Id = 4, UrlFriendlyTitle = testCode };
+
+            var codeNormalizer = Manager.CodeNormalizer;
+            Manager.CodeNormalizer = null;
+            var result = await Manager.CreateAsync(newEntity);
+            Manager.CodeNormalizer = codeNormalizer;
+            var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
+
+            Assert.True(result.Succeeded);
+            Assert.Equal(testCode, addedEntity.UrlFriendlyTitle);
+        }
+
         [Fact(DisplayName = "CodeBasedEntityManager.FindsEntityByCode")]
         public async void FindsEntityByCode()
         {
             var testCode = "title-1";
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.FindByCodeAsync(null));
             var entity = await Manager.FindByCodeAsync(testCode);
             var expected = Store.Data.Single(x => x.UrlFriendlyTitle == testCode).Id;
 
@@ -119,9 +136,9 @@ namespace MotiNet.Entities.Test
 
             public ICodeBasedEntityAccessor<Article> CodeBasedEntityAccessor => Accessor as ICodeBasedEntityAccessor<Article>;
 
-            public ILookupNormalizer CodeNormalizer { get; set; }
+            public ILookupNormalizer CodeNormalizer { get; internal set; }
 
-            public IEntityCodeGenerator<Article> CodeGenerator { get; set; }
+            public IEntityCodeGenerator<Article> CodeGenerator { get; }
         }
     }
 }

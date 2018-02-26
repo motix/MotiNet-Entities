@@ -8,6 +8,6 @@
 
         IScopedNameBasedEntityAccessor<TEntity, TEntityScope> ScopedNameBasedEntityAccessor { get; }
 
-        ILookupNormalizer NameNormalizer { get; set; }
+        ILookupNormalizer NameNormalizer { get; }
     }
 }

@@ -7,8 +7,8 @@
 
         ICodeBasedEntityAccessor<TEntity> CodeBasedEntityAccessor { get; }
 
-        ILookupNormalizer CodeNormalizer { get; set; }
+        ILookupNormalizer CodeNormalizer { get; }
 
-        IEntityCodeGenerator<TEntity> CodeGenerator { get; set; }
+        IEntityCodeGenerator<TEntity> CodeGenerator { get; }
     }
 }

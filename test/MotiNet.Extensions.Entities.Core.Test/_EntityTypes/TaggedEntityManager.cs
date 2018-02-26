@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -73,7 +72,7 @@ namespace MotiNet.Entities.Test
 
             public ITaggedEntityAccessor<Article> TaggedEntityAccessor => Accessor as ITaggedEntityAccessor<Article>;
 
-            public ITagProcessor TagProcessor { get; set; }
+            public ITagProcessor TagProcessor { get; }
         }
     }
 }

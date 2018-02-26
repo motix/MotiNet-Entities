@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MotiNet.Entities
+﻿namespace MotiNet.Entities
 {
     public class LowerInvariantLookupNormalizer<TMarker>
         : LowerInvariantLookupNormalizer,

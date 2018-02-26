@@ -3,7 +3,7 @@
     public interface ITaggedEntityManager<TEntity> : IManager<TEntity>
         where TEntity : class
     {
-        ITagProcessor TagProcessor { get; set; }
+        ITagProcessor TagProcessor { get; }
 
         ITaggedEntityAccessor<TEntity> TaggedEntityAccessor { get; }
     }

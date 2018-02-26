@@ -7,6 +7,6 @@
 
         INameBasedEntityAccessor<TEntity> NameBasedEntityAccessor { get; }
 
-        ILookupNormalizer NameNormalizer { get; set; }
+        ILookupNormalizer NameNormalizer { get; }
     }
 }

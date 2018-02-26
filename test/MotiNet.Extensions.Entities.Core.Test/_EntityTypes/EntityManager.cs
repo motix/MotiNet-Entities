@@ -22,6 +22,7 @@ namespace MotiNet.Entities.Test
         {
             var testId = 2;
 
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.FindByIdAsync(null));
             var entity = await Manager.FindByIdAsync(testId);
 
             Assert.Equal(testId, entity.Id);
@@ -32,6 +33,8 @@ namespace MotiNet.Entities.Test
         {
             var testPriority = 2;
 
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.FindAsync(null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.FindAsync(string.Empty, null));
             var entity = await Manager.FindAsync(testPriority, new FindArticleByPrioritySpecification());
 
             Assert.Equal(testPriority, entity.Priority);
@@ -51,6 +54,7 @@ namespace MotiNet.Entities.Test
         {
             var testTitle = "Title 3";
 
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.SearchAsync((ISearchSpecification<Article>)null));
             var entities = await Manager.SearchAsync(new SearchArticleSpecification(testTitle));
             var expected = Store.Data.Count(x => x.Title == testTitle);
 
@@ -62,6 +66,7 @@ namespace MotiNet.Entities.Test
         {
             var testTitle = "Title 3";
 
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.SearchAsync(null));
             var result = await Manager.SearchAsync(new PagedSearchArticleSpecification(testTitle, 10, 1));
             var expected = Store.Data.Count(x => x.Title == testTitle);
 
@@ -79,19 +84,7 @@ namespace MotiNet.Entities.Test
 
             Assert.False(result.Succeeded);
             Assert.Equal(finalCount, initialCount);
-
-            newEntity = new Article { Id = 4, Title = "Title 4" };
-
-            initialCount = Store.Data.Count;
-            result = await Manager.CreateAsync(newEntity);
-            finalCount = Store.Data.Count;
-            var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
-
-            Assert.True(result.Succeeded);
-            Assert.Equal(finalCount, initialCount + 1);
-            Assert.Equal(newEntity.Id, addedEntity.Id);
         }
-
 
         [Fact(DisplayName = "EntityManager.CreatesEntity")]
         public async void CreatesEntity()
@@ -99,6 +92,7 @@ namespace MotiNet.Entities.Test
             var newEntity = new Article { Id = 4, Title = "Title 4" };
 
             var initialCount = Store.Data.Count;
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.CreateAsync(null));
             var result = await Manager.CreateAsync(newEntity);
             var finalCount = Store.Data.Count;
             var addedEntity = Store.Data.Single(x => x.Id == newEntity.Id);
@@ -106,6 +100,24 @@ namespace MotiNet.Entities.Test
             Assert.True(result.Succeeded);
             Assert.Equal(finalCount, initialCount + 1);
             Assert.Equal(newEntity.Id, addedEntity.Id);
+        }
+
+        [Fact(DisplayName = "EntityManager.ValidatesEntityWhenUpdating")]
+        public async void ValidatesEntityWhenUpdating()
+        {
+            var testId = 1;
+
+            var currentEntity = Store.Data.Single(x => x.Id == testId);
+            var oldTitle = currentEntity.Title;
+            var newEntity = new Article { Id = testId, Title = null };
+
+            Assert.NotEqual(newEntity.Title, oldTitle);
+
+            var result = await Manager.UpdateAsync(newEntity);
+            var updatedEntity = Store.Data.Single(x => x.Id == testId);
+
+            Assert.False(result.Succeeded);
+            Assert.Equal(oldTitle, updatedEntity.Title);
         }
 
         [Fact(DisplayName = "EntityManager.UpdatesEntity")]
@@ -119,6 +131,7 @@ namespace MotiNet.Entities.Test
 
             Assert.NotEqual(newTitle, currentEntity.Title);
 
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.UpdateAsync(null));
             var result = await Manager.UpdateAsync(newEntity);
             var updatedEntity = Store.Data.Single(x => x.Id == testId);
 
@@ -133,6 +146,7 @@ namespace MotiNet.Entities.Test
             var currentEntity = new Article { Id = testId };
 
             var initialCount = Store.Data.Count;
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.DeleteAsync(null));
             var result = await Manager.DeleteAsync(currentEntity);
             var finalCount = Store.Data.Count;
             var deletedEntity = Store.Data.SingleOrDefault(x => x.Id == testId);
