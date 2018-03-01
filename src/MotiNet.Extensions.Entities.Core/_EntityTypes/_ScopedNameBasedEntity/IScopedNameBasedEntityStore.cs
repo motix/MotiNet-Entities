@@ -1,9 +1,10 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MotiNet.Entities
 {
-    public interface IScopedNameBasedEntityStore<TEntity, TEntityScope>
+    public interface IScopedNameBasedEntityStore<TEntity, TEntityScope> : IDisposable
         where TEntity : class
         where TEntityScope : class
     {

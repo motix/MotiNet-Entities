@@ -156,7 +156,7 @@ namespace MotiNet.Entities
         #endregion
     }
 
-    public abstract class ManagerBase<TEntity> : IManager<TEntity>, IDisposable
+    public abstract class ManagerBase<TEntity> : IManager<TEntity>
         where TEntity : class
     {
         #region Constructors

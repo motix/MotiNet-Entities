@@ -21,7 +21,7 @@ namespace MotiNet.Entities
         Task ExecuteEntityWithSubEntitySavingAsync(TEntity entity);
     }
 
-    public interface IManager<TEntity>
+    public interface IManager<TEntity> : IDisposable
         where TEntity : class
     {
         IDisposable Store { get; }
