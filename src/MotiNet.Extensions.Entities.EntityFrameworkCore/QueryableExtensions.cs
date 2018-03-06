@@ -26,7 +26,7 @@ namespace System.Linq
             var body = Expression.Equal(propertySelector.Body, value);
             var lambda = Expression.Lambda(body, propertySelector.Parameters.First());
 
-            var method = typeof(EntityFrameworkQueryableExtensions).GetMethods()
+            var method = typeof(Queryable).GetMethods()
                 .Single(m => m.Name == nameof(Queryable.SingleOrDefault) && m.GetParameters().Length == 2)
                 .MakeGenericMethod(typeof(TSource));
 
