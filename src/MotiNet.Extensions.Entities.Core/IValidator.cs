@@ -2,15 +2,15 @@
 
 namespace MotiNet.Entities
 {
-    public interface IEntityValidator<in TEntity, in TSubEntity>
-        : IEntityValidator<TEntity>
+    public interface IValidator<in TEntity, in TSubEntity>
+        : IValidator<TEntity>
         where TEntity : class
         where TSubEntity : class
     {
         Task<GenericResult> ValidateAsync(object manager, TSubEntity subEntity);
     }
 
-    public interface IEntityValidator<in TEntity>
+    public interface IValidator<in TEntity>
         where TEntity : class
     {
         Task<GenericResult> ValidateAsync(object manager, TEntity entity);

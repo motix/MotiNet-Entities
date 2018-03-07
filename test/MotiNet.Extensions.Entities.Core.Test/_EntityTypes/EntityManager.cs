@@ -156,7 +156,7 @@ namespace MotiNet.Entities.Test
             Assert.Null(deletedEntity);
         }
 
-        public class ArticleValidator : IEntityValidator<Article>
+        public class ArticleValidator : IValidator<Article>
         {
             public Task<GenericResult> ValidateAsync(object manager, Article entity)
             {

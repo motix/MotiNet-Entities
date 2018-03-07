@@ -17,7 +17,7 @@ namespace MotiNet.Entities
         protected ManagerBase(
             IDisposable store,
             object entityAccessor,
-            IEnumerable<IEntityValidator<TEntity, TSubEntity>> entityValidators,
+            IEnumerable<IValidator<TEntity, TSubEntity>> entityValidators,
             ILogger<ManagerBase<TEntity>> logger)
             : base(store, entityAccessor, entityValidators, logger)
         {
@@ -49,7 +49,7 @@ namespace MotiNet.Entities
 
         protected IList<EntitySavingAsync<TEntity, TSubEntity>> EntityWithSubEntitySavingTasks { get; } = new List<EntitySavingAsync<TEntity, TSubEntity>>();
 
-        private IList<IEntityValidator<TEntity, TSubEntity>> EntityValidators { get; } = new List<IEntityValidator<TEntity, TSubEntity>>();
+        private IList<IValidator<TEntity, TSubEntity>> EntityValidators { get; } = new List<IValidator<TEntity, TSubEntity>>();
 
         #endregion
 
@@ -164,7 +164,7 @@ namespace MotiNet.Entities
         protected ManagerBase(
             IDisposable store,
             object entityAccessor,
-            IEnumerable<IEntityValidator<TEntity>> entityValidators,
+            IEnumerable<IValidator<TEntity>> entityValidators,
             ILogger<ManagerBase<TEntity>> logger)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
@@ -217,7 +217,7 @@ namespace MotiNet.Entities
 
         protected IList<EntitySavingAsync<TEntity>> EntitySavingTasks { get; } = new List<EntitySavingAsync<TEntity>>();
 
-        private IList<IEntityValidator<TEntity>> EntityValidators { get; } = new List<IEntityValidator<TEntity>>();
+        private IList<IValidator<TEntity>> EntityValidators { get; } = new List<IValidator<TEntity>>();
 
         #endregion
 

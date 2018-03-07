@@ -38,7 +38,7 @@ namespace MotiNet.Entities.Test
             Assert.Equal(newEntity.Id, addedEntity.Id);
         }
 
-        public class CountryValidator : IEntityValidator<Country, City>
+        public class CountryValidator : IValidator<Country, City>
         {
             public Task<GenericResult> ValidateAsync(object manager, Country entity)
             {
