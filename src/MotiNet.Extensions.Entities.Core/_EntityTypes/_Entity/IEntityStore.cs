@@ -8,13 +8,23 @@ namespace MotiNet.Entities
     public interface IEntityStore<TEntity> : IDisposable
         where TEntity : class
     {
+        TEntity FindById(object id);
+
         Task<TEntity> FindByIdAsync(object id, CancellationToken cancellationToken);
+
+        TEntity Find(object key, IFindSpecification<TEntity> spec);
 
         Task<TEntity> FindAsync(object key, IFindSpecification<TEntity> spec, CancellationToken cancellationToken);
 
+        IEnumerable<TEntity> All();
+
         Task<IEnumerable<TEntity>> AllAsync(CancellationToken cancellationToken);
 
+        IEnumerable<TEntity> Search(ISearchSpecification<TEntity> spec);
+
         Task<IEnumerable<TEntity>> SearchAsync(ISearchSpecification<TEntity> spec, CancellationToken cancellationToken);
+
+        PagedSearchResult<TEntity> Search(IPagedSearchSpecification<TEntity> spec);
 
         Task<PagedSearchResult<TEntity>> SearchAsync(IPagedSearchSpecification<TEntity> spec, CancellationToken cancellationToken);
 

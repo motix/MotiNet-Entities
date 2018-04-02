@@ -19,9 +19,19 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         #region Public Operations
 
+        public virtual TEntity FindById(object id)
+        {
+            return EntityStoreHelper.FindEntityById(this, id);
+        }
+
         public virtual Task<TEntity> FindByIdAsync(object id, CancellationToken cancellationToken)
         {
             return EntityStoreHelper.FindEntityByIdAsync(this, id, cancellationToken);
+        }
+
+        public virtual TEntity Find(object key, IFindSpecification<TEntity> spec)
+        {
+            return EntityStoreHelper.FindEntity(this, key, spec);
         }
 
         public virtual Task<TEntity> FindAsync(object key, IFindSpecification<TEntity> spec, CancellationToken cancellationToken)
@@ -29,14 +39,29 @@ namespace MotiNet.Entities.EntityFrameworkCore
             return EntityStoreHelper.FindEntityAsync(this, key, spec, cancellationToken);
         }
 
+        public virtual IEnumerable<TEntity> All()
+        {
+            return EntityStoreHelper.AllEntities(this);
+        }
+
         public virtual Task<IEnumerable<TEntity>> AllAsync(CancellationToken cancellationToken)
         {
             return EntityStoreHelper.AllEntitiesAsync(this, cancellationToken);
         }
 
+        public virtual IEnumerable<TEntity> Search(ISearchSpecification<TEntity> spec)
+        {
+            return EntityStoreHelper.SearchEntities(this, spec);
+        }
+
         public virtual Task<IEnumerable<TEntity>> SearchAsync(ISearchSpecification<TEntity> spec, CancellationToken cancellationToken)
         {
             return EntityStoreHelper.SearchEntitiesAsync(this, spec, cancellationToken);
+        }
+
+        public virtual PagedSearchResult<TEntity> Search(IPagedSearchSpecification<TEntity> spec)
+        {
+            return EntityStoreHelper.SearchEntities(this, spec);
         }
 
         public virtual Task<PagedSearchResult<TEntity>> SearchAsync(IPagedSearchSpecification<TEntity> spec, CancellationToken cancellationToken)

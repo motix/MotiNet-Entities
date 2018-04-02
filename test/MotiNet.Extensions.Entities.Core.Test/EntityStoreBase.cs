@@ -8,7 +8,17 @@ namespace MotiNet.Entities.Test
     public class EntityStoreBase<TEntity> : IEntityStore<TEntity>
         where TEntity : class
     {
+        public virtual TEntity FindById(object id)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual Task<TEntity> FindByIdAsync(object id, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TEntity Find(object key, IFindSpecification<TEntity> spec)
         {
             throw new NotImplementedException();
         }
@@ -18,12 +28,27 @@ namespace MotiNet.Entities.Test
             throw new NotImplementedException();
         }
 
+        public IEnumerable<TEntity> All()
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual Task<IEnumerable<TEntity>> AllAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
+        public IEnumerable<TEntity> Search(ISearchSpecification<TEntity> spec)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual Task<IEnumerable<TEntity>> SearchAsync(ISearchSpecification<TEntity> spec, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public PagedSearchResult<TEntity> Search(IPagedSearchSpecification<TEntity> spec)
         {
             throw new NotImplementedException();
         }

@@ -176,10 +176,27 @@ namespace MotiNet.Entities.Test
                 new Article() { Id = 3, Priority = 3, Title = "Title 3" }
             };
 
+            public Article FindById(object id)
+            {
+                return Data.SingleOrDefault(x => x.Id.Equals(id));
+            }
+
             public Task<Article> FindByIdAsync(object id, CancellationToken cancellationToken)
             {
                 var result = Data.SingleOrDefault(x => x.Id.Equals(id));
                 return Task.FromResult(result);
+            }
+
+            public Article Find(object key, IFindSpecification<Article> spec)
+            {
+                var entities = Data.AsQueryable();
+
+                if (spec.AdditionalCriteria != null)
+                {
+                    entities = entities.Where(spec.AdditionalCriteria);
+                }
+
+                return entities.SingleOrDefault(x => Equals(GetPropertyValue(x, spec.KeyExpression), key));
             }
 
             public Task<Article> FindAsync(object key, IFindSpecification<Article> spec, CancellationToken cancellationToken)
@@ -195,10 +212,27 @@ namespace MotiNet.Entities.Test
                 return Task.FromResult(result);
             }
 
+            public IEnumerable<Article> All()
+            {
+                return Data.AsEnumerable();
+            }
+
             public Task<IEnumerable<Article>> AllAsync(CancellationToken cancellationToken)
             {
                 var result = Data.AsEnumerable();
                 return Task.FromResult(result);
+            }
+
+            public IEnumerable<Article> Search(ISearchSpecification<Article> spec)
+            {
+                var entities = Data.AsQueryable();
+
+                if (spec.Criteria != null)
+                {
+                    entities = entities.Where(spec.Criteria);
+                }
+
+                return entities.AsEnumerable();
             }
 
             public Task<IEnumerable<Article>> SearchAsync(ISearchSpecification<Article> spec, CancellationToken cancellationToken)
@@ -212,6 +246,29 @@ namespace MotiNet.Entities.Test
 
                 var result = entities.AsEnumerable();
                 return Task.FromResult(result);
+            }
+
+            public PagedSearchResult<Article> Search(IPagedSearchSpecification<Article> spec)
+            {
+                var entities = Data.AsQueryable();
+
+                if (spec.ScopeCriteria != null)
+                {
+                    entities = entities.Where(spec.ScopeCriteria);
+                }
+
+                var totalCount = entities.Count();
+
+                if (spec.Criteria != null)
+                {
+                    entities = entities.Where(spec.Criteria);
+                }
+
+                var resultCount = entities.Count();
+
+                var result = entities.ToList();
+
+                return new PagedSearchResult<Article>(totalCount, resultCount, result);
             }
 
             public Task<PagedSearchResult<Article>> SearchAsync(IPagedSearchSpecification<Article> spec, CancellationToken cancellationToken)
