@@ -36,19 +36,20 @@ namespace MotiNet.Entities
         {
             var timeTrackedManager = (ITimeTrackedEntityManager<TEntity>)manager;
 
-            var date = DateTime.Now;
-            timeTrackedManager.TimeTrackedEntityAccessor.SetDataCreateDate(taskArgs.Entity, date);
-            timeTrackedManager.TimeTrackedEntityAccessor.SetDataLastModifyDate(taskArgs.Entity, date);
+            var now = DateTime.Now;
+            timeTrackedManager.TimeTrackedEntityAccessor.SetDataCreateDate(taskArgs.Entity, now);
+            timeTrackedManager.TimeTrackedEntityAccessor.SetDataLastModifyDate(taskArgs.Entity, now);
 
             return Task.FromResult(0);
         }
 
-        private static Task EntityUpdatingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
+        private static Task EntityUpdatingAsync<TEntity>(IManager<TEntity> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
             where TEntity : class
         {
             var timeTrackedManager = (ITimeTrackedEntityManager<TEntity>)manager;
 
-            var date = DateTime.Now;
+            var oldCreateDate = timeTrackedManager.TimeTrackedEntityAccessor.GetDataCreateDate(taskArgs.OldEntity);
+            timeTrackedManager.TimeTrackedEntityAccessor.SetDataCreateDate(taskArgs.Entity, oldCreateDate);
             timeTrackedManager.TimeTrackedEntityAccessor.SetDataLastModifyDate(taskArgs.Entity, DateTime.Now);
 
             return Task.FromResult(0);

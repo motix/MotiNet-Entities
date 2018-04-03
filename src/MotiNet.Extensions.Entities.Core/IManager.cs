@@ -40,7 +40,7 @@ namespace MotiNet.Entities
 
         Task ExecuteEntityCreatingAsync(TEntity entity);
 
-        Task ExecuteEntityUpdatingAsync(TEntity entity);
+        Task ExecuteEntityUpdatingAsync(TEntity entity, TEntity oldEntity);
 
         Task ExecuteEntitySavingAsync(TEntity entity);
 

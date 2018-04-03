@@ -63,6 +63,11 @@ namespace MotiNet.Entities.Test
                 new Article() { Id = 3, DataCreateDate = DateTime.Now.AddDays(-1), DataLastModifyDate = DateTime.Now }
             };
 
+            public override Task<Article> FindByIdAsync(object id, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(Data.SingleOrDefault(x => x.Id == (int)id));
+            }
+
             public override Task<Article> CreateAsync(Article entity, CancellationToken cancellationToken)
             {
                 Data.Add(entity);
@@ -77,10 +82,7 @@ namespace MotiNet.Entities.Test
                 return Task.FromResult(0);
             }
 
-            public Article FindLatest()
-            {
-                throw new NotImplementedException();
-            }
+            public Article FindLatest() => throw new NotImplementedException();
 
             public Task<Article> FindLatestAsync(CancellationToken cancellationToken)
             {
@@ -91,17 +93,17 @@ namespace MotiNet.Entities.Test
             }
         }
 
-        public class ArticleAccessor : ITimeTrackedEntityAccessor<Article>
+        public class ArticleAccessor
+            : IEntityAccessor<Article>,
+              ITimeTrackedEntityAccessor<Article>
         {
-            public void SetDataCreateDate(Article entity, DateTime dataCreateDate)
-            {
-                entity.DataCreateDate = dataCreateDate;
-            }
+            public object GetId(Article entity) => entity.Id;
 
-            public void SetDataLastModifyDate(Article entity, DateTime dataLastModifyDate)
-            {
-                entity.DataLastModifyDate = dataLastModifyDate;
-            }
+            public DateTime GetDataCreateDate(Article entity) => entity.DataCreateDate;
+
+            public void SetDataCreateDate(Article entity, DateTime dataCreateDate) => entity.DataCreateDate = dataCreateDate;
+
+            public void SetDataLastModifyDate(Article entity, DateTime dataLastModifyDate) => entity.DataLastModifyDate = dataLastModifyDate;
         }
 
         public class ArticleManager : ManagerBase<Article>, IEntityManager<Article>, ITimeTrackedEntityManager<Article>
@@ -115,6 +117,8 @@ namespace MotiNet.Entities.Test
             { }
 
             public IEntityStore<Article> EntityStore => Store as IEntityStore<Article>;
+
+            public IEntityAccessor<Article> EntityAccessor => Accessor as IEntityAccessor<Article>;
 
             public ITimeTrackedEntityStore<Article> TimeTrackedEntityStore => Store as ITimeTrackedEntityStore<Article>;
 

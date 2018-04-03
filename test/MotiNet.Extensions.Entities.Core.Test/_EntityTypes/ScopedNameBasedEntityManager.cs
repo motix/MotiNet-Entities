@@ -56,10 +56,7 @@ namespace MotiNet.Entities.Test
                 return Task.FromResult(entity);
             }
 
-            public City FindByName(string normalizedName, Country scope)
-            {
-                throw new NotImplementedException();
-            }
+            public City FindByName(string normalizedName, Country scope) => throw new NotImplementedException();
 
             public Task<City> FindByNameAsync(string normalizedName, Country scope, CancellationToken cancellationToken)
             {
@@ -69,10 +66,7 @@ namespace MotiNet.Entities.Test
                 return Task.FromResult(result);
             }
 
-            public Country FindScopeById(object id, CancellationToken cancellationToken)
-            {
-                throw new NotImplementedException();
-            }
+            public Country FindScopeById(object id, CancellationToken cancellationToken) => throw new NotImplementedException();
 
             public Task<Country> FindScopeByIdAsync(object id, CancellationToken cancellationToken)
             {
@@ -86,25 +80,13 @@ namespace MotiNet.Entities.Test
 
         public class CityAccessor : IScopedNameBasedEntityAccessor<City, Country>
         {
-            public string GetName(City entity)
-            {
-                return entity.Name;
-            }
+            public string GetName(City entity) => entity.Name;
 
-            public void SetNormalizedName(City entity, string normalizedName)
-            {
-                entity.NormalizedName = normalizedName;
-            }
+            public void SetNormalizedName(City entity, string normalizedName) => entity.NormalizedName = normalizedName;
 
-            public object GetScopeId(City entity)
-            {
-                return entity.CountryId;
-            }
+            public object GetScopeId(City entity) => entity.CountryId;
 
-            public void SetScope(City entity, Country scope)
-            {
-                entity.Country = scope;
-            }
+            public void SetScope(City entity, Country scope) => entity.Country = scope;
         }
 
         public class CityManager : ManagerBase<City, Country>, IEntityManager<City>, IScopedNameBasedEntityManager<City, Country>
@@ -120,6 +102,8 @@ namespace MotiNet.Entities.Test
             }
 
             public IEntityStore<City> EntityStore => Store as IEntityStore<City>;
+
+            public IEntityAccessor<City> EntityAccessor => throw new NotImplementedException();
 
             public IScopedNameBasedEntityStore<City, Country> ScopedNameBasedEntityStore => Store as IScopedNameBasedEntityStore<City, Country>;
 

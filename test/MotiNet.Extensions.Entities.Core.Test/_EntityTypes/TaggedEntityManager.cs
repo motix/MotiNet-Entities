@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -45,15 +46,9 @@ namespace MotiNet.Entities.Test
 
         public class ArticleAccessor : ITaggedEntityAccessor<Article>
         {
-            public string GetTags(Article entity)
-            {
-                return entity.Tags;
-            }
+            public string GetTags(Article entity) => entity.Tags;
 
-            public void SetTags(Article entity, string tags)
-            {
-                entity.Tags = tags;
-            }
+            public void SetTags(Article entity, string tags) => entity.Tags = tags;
         }
 
         public class ArticleManager : ManagerBase<Article>, IEntityManager<Article>, ITaggedEntityManager<Article>
@@ -69,6 +64,8 @@ namespace MotiNet.Entities.Test
             }
 
             public IEntityStore<Article> EntityStore => Store as IEntityStore<Article>;
+
+            public IEntityAccessor<Article> EntityAccessor => throw new NotImplementedException();
 
             public ITaggedEntityAccessor<Article> TaggedEntityAccessor => Accessor as ITaggedEntityAccessor<Article>;
 

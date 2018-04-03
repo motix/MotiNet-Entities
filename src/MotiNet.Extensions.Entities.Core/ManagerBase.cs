@@ -183,15 +183,15 @@ namespace MotiNet.Entities
             {
                 InitExtensions(TimeTrackedEntityManagerExtensions.GetManagerTasks<TEntity>());
             }
-            else if (this is ICodeBasedEntityManager<TEntity>)
+            if (this is ICodeBasedEntityManager<TEntity>)
             {
                 InitExtensions(CodeBasedEntityManagerExtensions.GetManagerTasks<TEntity>());
             }
-            else if (this is INameBasedEntityManager<TEntity>)
+            if (this is INameBasedEntityManager<TEntity>)
             {
                 InitExtensions(NameBasedEntityManagerExtensions.GetManagerTasks<TEntity>());
             }
-            else if (this is ITaggedEntityManager<TEntity>)
+            if (this is ITaggedEntityManager<TEntity>)
             {
                 InitExtensions(TaggedEntityManagerExtensions.GetManagerTasks<TEntity>());
             }
@@ -283,14 +283,14 @@ namespace MotiNet.Entities
             }
         }
 
-        public virtual async Task ExecuteEntityUpdatingAsync(TEntity entity)
+        public virtual async Task ExecuteEntityUpdatingAsync(TEntity entity, TEntity oldEntity)
         {
             await ExecuteEntitySavingAsync(entity);
 
             foreach (var task in EntityUpdatingTasks)
             {
                 // Do one by one to ensure the order
-                await task(this, new ManagerTaskArgs<TEntity>(entity));
+                await task(this, new ManagerUpdatingTaskArgs<TEntity>(entity, oldEntity));
             }
         }
 

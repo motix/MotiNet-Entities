@@ -167,7 +167,15 @@ namespace MotiNet.Entities
                 return result;
             }
 
-            await manager.ExecuteEntityUpdatingAsync(entity);
+            var id = manager.EntityAccessor.GetId(entity);
+            var oldEntity = await manager.FindByIdAsync(id);
+
+            if (oldEntity == null)
+            {
+                return GenericResult.Failed();
+            }
+
+            await manager.ExecuteEntityUpdatingAsync(entity, oldEntity);
 
             await manager.EntityStore.UpdateAsync(entity, manager.CancellationToken);
 

@@ -4,5 +4,7 @@
         where TEntity : class
     {
         IEntityStore<TEntity> EntityStore { get; }
+
+        IEntityAccessor<TEntity> EntityAccessor { get; }
     }
 }

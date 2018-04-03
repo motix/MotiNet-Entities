@@ -164,7 +164,7 @@ namespace MotiNet.Entities.Test
                     GenericResult.Failed(new GenericError()) :
                     GenericResult.Success;
                 return Task.FromResult(result);
-            }   
+            }
         }
 
         public class ArticleStore : IEntityStore<Article>
@@ -341,17 +341,24 @@ namespace MotiNet.Entities.Test
             #endregion
         }
 
+        public class ArticleAccessor : IEntityAccessor<Article>
+        {
+            public object GetId(Article entity) => entity.Id;
+        }
+
         public class ArticleManager : ManagerBase<Article>, IEntityManager<Article>
         {
             public ArticleManager()
                 : base(
                       store: new ArticleStore(),
-                      entityAccessor: null,
+                      entityAccessor: new ArticleAccessor(),
                       entityValidators: new List<ArticleValidator>() { new ArticleValidator() },
                       logger: new Mock<ILogger<ArticleManager>>().Object)
             { }
 
             public IEntityStore<Article> EntityStore => Store as IEntityStore<Article>;
+
+            public IEntityAccessor<Article> EntityAccessor => Accessor as IEntityAccessor<Article>;
         }
 
         public class FindArticleByPrioritySpecification : FindSpecificationBase<Article>
@@ -361,10 +368,7 @@ namespace MotiNet.Entities.Test
 
         public class SearchArticleSpecification : SearchSpecificationBase<Article>
         {
-            public SearchArticleSpecification(string title)
-            {
-                Title = title ?? throw new ArgumentNullException(nameof(title));
-            }
+            public SearchArticleSpecification(string title) => Title = title ?? throw new ArgumentNullException(nameof(title));
 
             public string Title { get; set; }
 
@@ -373,10 +377,9 @@ namespace MotiNet.Entities.Test
 
         public class PagedSearchArticleSpecification : PagedSearchSpecificationBase<Article>
         {
-            public PagedSearchArticleSpecification(string title, int? pageSize, int? pageNumber) : base(pageSize, pageNumber)
-            {
-                Title = title ?? throw new ArgumentNullException(nameof(title));
-            }
+            public PagedSearchArticleSpecification(string title, int? pageSize, int? pageNumber)
+                : base(pageSize, pageNumber)
+                => Title = title ?? throw new ArgumentNullException(nameof(title));
 
             public string Title { get; set; }
 

@@ -69,15 +69,11 @@ namespace MotiNet.Entities.Test
 
         public class CategoryAccessor : INameBasedEntityAccessor<Category>
         {
-            public string GetName(Category entity)
-            {
-                return entity.Name;
-            }
+            public object GetId(Category entity) => entity.Id;
 
-            public void SetNormalizedName(Category entity, string normalizedName)
-            {
-                entity.NormalizedName = normalizedName;
-            }
+            public string GetName(Category entity) => entity.Name;
+
+            public void SetNormalizedName(Category entity, string normalizedName) => entity.NormalizedName = normalizedName;
         }
 
         public class CategoryManager : ManagerBase<Category>, IEntityManager<Category>, INameBasedEntityManager<Category>
@@ -93,6 +89,8 @@ namespace MotiNet.Entities.Test
             }
 
             public IEntityStore<Category> EntityStore => Store as IEntityStore<Category>;
+
+            public IEntityAccessor<Category> EntityAccessor => throw new NotImplementedException();
 
             public INameBasedEntityStore<Category> NameBasedEntityStore => Store as INameBasedEntityStore<Category>;
 

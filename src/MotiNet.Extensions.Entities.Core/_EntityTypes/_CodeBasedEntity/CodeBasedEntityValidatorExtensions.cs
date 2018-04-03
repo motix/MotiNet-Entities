@@ -23,10 +23,13 @@ namespace MotiNet.Entities
             {
                 errors.Add(invalidCode(name));
             }
-            var existingEntity = await manager.FindByCodeAsync(name);
-            if (existingEntity != null)
+            else
             {
-                errors.Add(duplicateCode(name));
+                var existingEntity = await manager.FindByCodeAsync(name);
+                if (existingEntity != null && !Equals(accessor.GetId(existingEntity), accessor.GetId(entity)))
+                {
+                    errors.Add(duplicateCode(name));
+                }
             }
         }
     }

@@ -82,10 +82,7 @@ namespace MotiNet.Entities.Test
                 return Task.FromResult(entity);
             }
 
-            public Article FindByCode(string normalizedCode)
-            {
-                throw new NotImplementedException();
-            }
+            public Article FindByCode(string normalizedCode) => throw new NotImplementedException();
 
             public Task<Article> FindByCodeAsync(string normalizedCode, CancellationToken cancellationToken)
             {
@@ -98,23 +95,16 @@ namespace MotiNet.Entities.Test
 
         public class ArticleAccessor : ICodeBasedEntityAccessor<Article>
         {
-            public string GetCode(Article entity)
-            {
-                return entity.UrlFriendlyTitle;
-            }
+            public object GetId(Article entity) => entity.Id;
 
-            public void SetCode(Article entity, string code)
-            {
-                entity.UrlFriendlyTitle = code;
-            }
+            public string GetCode(Article entity) => entity.UrlFriendlyTitle;
+
+            public void SetCode(Article entity, string code) => entity.UrlFriendlyTitle = code;
         }
 
         public class ArticleCodeGenerator : IEntityCodeGenerator<Article>
         {
-            public string GenerateCode(object manager, Article entity)
-            {
-                return Guid.NewGuid().ToString();
-            }
+            public string GenerateCode(object manager, Article entity) => Guid.NewGuid().ToString();
         }
 
         public class ArticleManager : ManagerBase<Article>, IEntityManager<Article>, ICodeBasedEntityManager<Article>
@@ -131,6 +121,8 @@ namespace MotiNet.Entities.Test
             }
 
             public IEntityStore<Article> EntityStore => Store as IEntityStore<Article>;
+
+            public IEntityAccessor<Article> EntityAccessor => throw new NotImplementedException();
 
             public ICodeBasedEntityStore<Article> CodeBasedEntityStore => Store as ICodeBasedEntityStore<Article>;
 

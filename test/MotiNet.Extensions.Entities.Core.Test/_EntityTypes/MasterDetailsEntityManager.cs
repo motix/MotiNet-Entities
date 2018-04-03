@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -75,10 +76,7 @@ namespace MotiNet.Entities.Test
 
         public class CountryAccessor : IMasterDetailsEntityAccessor<Country, City>
         {
-            public ICollection<City> GetDetails(Country entity)
-            {
-                return entity.Cities;
-            }
+            public ICollection<City> GetDetails(Country entity) => entity.Cities;
         }
 
         public class CountryManager : ManagerBase<Country, City>, IEntityManager<Country>, IMasterDetailsEntityManager<Country, City>
@@ -92,6 +90,8 @@ namespace MotiNet.Entities.Test
             { }
 
             public IEntityStore<Country> EntityStore => Store as IEntityStore<Country>;
+
+            public IEntityAccessor<Country> EntityAccessor => throw new NotImplementedException();
 
             public IMasterDetailsEntityAccessor<Country, City> MasterDetailsEntityAccessor => Accessor as IMasterDetailsEntityAccessor<Country, City>;
         }
