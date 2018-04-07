@@ -12,7 +12,7 @@ namespace MotiNet.Entities
 
         Task<TEntity> FindByNameAsync(string normalizedName, TEntityScope scope, CancellationToken cancellationToken);
 
-        TEntityScope FindScopeById(object id, CancellationToken cancellationToken);
+        TEntityScope FindScopeById(object id);
 
         Task<TEntityScope> FindScopeByIdAsync(object id, CancellationToken cancellationToken);
 

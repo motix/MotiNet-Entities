@@ -14,7 +14,9 @@ namespace MotiNet.Entities
 
         Task<GenericResult> ValidateSubEntityAsync(TSubEntity subEntity);
 
-        Task ExecuteEntityWithSubEntityValidatingAsync(TEntity entity);
+        Task ExecuteEntityWithSubEntityCreateValidatingAsync(TEntity entity);
+
+        Task ExecuteEntityWithSubEntityUpdateValidatingAsync(TEntity entity, TEntity oldEntity);
 
         Task ExecuteEntityWithSubEntityValidateAsync(TEntity entity, List<GenericError> errors);
 
@@ -36,9 +38,11 @@ namespace MotiNet.Entities
 
         Task<GenericResult> ValidateEntityAsync(TEntity entity);
 
-        Task ExecuteEntityValidatingAsync(TEntity entity);
+        Task ExecuteEntityCreateValidatingAsync(TEntity entity);
 
         Task ExecuteEntityCreatingAsync(TEntity entity);
+
+        Task ExecuteEntityUpdateValidatingAsync(TEntity entity, TEntity oldEntity);
 
         Task ExecuteEntityUpdatingAsync(TEntity entity, TEntity oldEntity);
 

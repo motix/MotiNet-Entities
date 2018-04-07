@@ -34,7 +34,8 @@ namespace MotiNet.Entities
         {
             return new ManagerTasks<TEntity>()
             {
-                EntityValidatingAsync = EntityValidatingAsync,
+                EntityCreateValidatingAsync = EntityValidatingAsync,
+                EntityUpdateValidatingAsync = EntityValidatingAsync,
                 EntitySavingAsync = EntitySavingAsync
             };
         }

@@ -37,12 +37,13 @@ namespace MotiNet.Entities
         {
             return new ManagerTasks<TEntity, TEntityScope>()
             {
-                EntityWithSubEntityValidatingAsync = EntityValidatingAsync,
+                EntityWithSubEntityCreateValidatingAsync = EntityCreateValidatingAsync,
+                EntityWithSubEntityUpdateValidatingAsync = EntityUpdateValidatingAsync,
                 EntityWithSubEntitySavingAsync = EntitySavingAsync
             };
         }
 
-        private static async Task EntityValidatingAsync<TEntity, TEntityScope>(IManager<TEntity, TEntityScope> manager, ManagerTaskArgs<TEntity> taskArgs)
+        private static async Task EntityCreateValidatingAsync<TEntity, TEntityScope>(IManager<TEntity, TEntityScope> manager, ManagerTaskArgs<TEntity> taskArgs)
             where TEntity : class
             where TEntityScope : class
         {
@@ -53,11 +54,25 @@ namespace MotiNet.Entities
             scopedNameBasedManager.ScopedNameBasedEntityAccessor.SetScope(taskArgs.Entity, scope);
         }
 
+        private static Task EntityUpdateValidatingAsync<TEntity, TEntityScope>(IManager<TEntity, TEntityScope> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
+            where TEntity : class
+            where TEntityScope : class
+        {
+            var scopedNameBasedManager = (IScopedNameBasedEntityManager<TEntity, TEntityScope>)manager;
+
+            var oldScopeId = scopedNameBasedManager.ScopedNameBasedEntityAccessor.GetScopeId(taskArgs.OldEntity);
+            scopedNameBasedManager.ScopedNameBasedEntityAccessor.SetScopeId(taskArgs.Entity, oldScopeId);
+
+            return EntityCreateValidatingAsync(manager, taskArgs);
+        }
+
         private static Task EntitySavingAsync<TEntity, TEntityScope>(IManager<TEntity, TEntityScope> manager, ManagerTaskArgs<TEntity> taskArgs)
             where TEntity : class
             where TEntityScope : class
         {
             var scopedNameBasedManager = (IScopedNameBasedEntityManager<TEntity, TEntityScope>)manager;
+
+            scopedNameBasedManager.ScopedNameBasedEntityAccessor.SetScope(taskArgs.Entity, null);
 
             var name = scopedNameBasedManager.ScopedNameBasedEntityAccessor.GetName(taskArgs.Entity);
             var normalizedName = NormalizeEntityName(scopedNameBasedManager, name);

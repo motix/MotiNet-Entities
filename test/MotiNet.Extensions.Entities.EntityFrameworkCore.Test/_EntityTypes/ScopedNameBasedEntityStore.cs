@@ -67,25 +67,15 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
         {
             public CityStore(TravelDbContext dbContext) : base(dbContext) { }
 
-            public City FindByName(string normalizedName, Country scope)
-            {
-                throw new NotImplementedException();
-            }
+            public City FindByName(string normalizedName, Country scope) => throw new NotImplementedException();
 
             public Task<City> FindByNameAsync(string normalizedName, Country scope, CancellationToken cancellationToken)
-            {
-                return ScopedNameBasedEntityStoreHelper.FindEntityByNameAsync(this, normalizedName, scope, x => x.CountryId, cancellationToken);
-            }
+                => ScopedNameBasedEntityStoreHelper.FindEntityByNameAsync(this, normalizedName, scope, x => x.CountryId, cancellationToken);
 
-            public Country FindScopeById(object id, CancellationToken cancellationToken)
-            {
-                throw new NotImplementedException();
-            }
+            public Country FindScopeById(object id) => throw new NotImplementedException();
 
             public Task<Country> FindScopeByIdAsync(object id, CancellationToken cancellationToken)
-            {
-                return ScopedNameBasedEntityStoreHelper.FindScopeByIdAsync(this, id, cancellationToken);
-            }
+                => ScopedNameBasedEntityStoreHelper.FindScopeByIdAsync(this, id, cancellationToken);
         }
     }
 }

@@ -135,7 +135,7 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            await manager.ExecuteEntityValidatingAsync(entity);
+            await manager.ExecuteEntityCreateValidatingAsync(entity);
 
             var result = await manager.ValidateEntityAsync(entity);
             if (!result.Succeeded)
@@ -159,20 +159,20 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            await manager.ExecuteEntityValidatingAsync(entity);
-
-            var result = await manager.ValidateEntityAsync(entity);
-            if (!result.Succeeded)
-            {
-                return result;
-            }
-
             var id = manager.EntityAccessor.GetId(entity);
             var oldEntity = await manager.FindByIdAsync(id);
 
             if (oldEntity == null)
             {
                 return GenericResult.Failed();
+            }
+
+            await manager.ExecuteEntityUpdateValidatingAsync(entity, oldEntity);
+
+            var result = await manager.ValidateEntityAsync(entity);
+            if (!result.Succeeded)
+            {
+                return result;
             }
 
             await manager.ExecuteEntityUpdatingAsync(entity, oldEntity);

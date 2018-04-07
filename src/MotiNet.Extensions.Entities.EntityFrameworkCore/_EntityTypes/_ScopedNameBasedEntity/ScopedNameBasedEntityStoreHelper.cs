@@ -148,13 +148,11 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
         public static TEntityScope FindScopeById<TEntity, TEntityScope, TDbContext>(
             IScopedNameBasedEntityStoreMarker<TEntity, TEntityScope, TDbContext> store,
-            object id,
-            CancellationToken cancellationToken)
+            object id)
             where TEntity : class
             where TEntityScope : class
             where TDbContext : DbContext
         {
-            cancellationToken.ThrowIfCancellationRequested();
             store.ThrowIfDisposed();
             if (id == null)
             {

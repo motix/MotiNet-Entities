@@ -66,7 +66,7 @@ namespace MotiNet.Entities.Test
                 return Task.FromResult(result);
             }
 
-            public Country FindScopeById(object id, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public Country FindScopeById(object id) => throw new NotImplementedException();
 
             public Task<Country> FindScopeByIdAsync(object id, CancellationToken cancellationToken)
             {
@@ -80,11 +80,17 @@ namespace MotiNet.Entities.Test
 
         public class CityAccessor : IScopedNameBasedEntityAccessor<City, Country>
         {
+            public object GetId(City entity) => entity.Id;
+
             public string GetName(City entity) => entity.Name;
 
             public void SetNormalizedName(City entity, string normalizedName) => entity.NormalizedName = normalizedName;
 
             public object GetScopeId(City entity) => entity.CountryId;
+
+            public void SetScopeId(City entity, object scopeId) => entity.CountryId = (int)scopeId;
+
+            public Country GetScope(City entity) => entity.Country;
 
             public void SetScope(City entity, Country scope) => entity.Country = scope;
         }
