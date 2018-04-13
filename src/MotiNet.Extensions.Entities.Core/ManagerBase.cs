@@ -29,7 +29,11 @@ namespace MotiNet.Entities
                 }
             }
 
-            if (this is IScopedNameBasedEntityManager<TEntity, TSubEntity>)
+            if (this is IChildEntityManager<TEntity, TSubEntity>)
+            {
+                InitExtensions(ChildEntityManagerExtensions.GetManagerTasks<TEntity, TSubEntity>());
+            }
+            else if (this is IScopedNameBasedEntityManager<TEntity, TSubEntity>)
             {
                 InitExtensions(ScopedNameBasedEntityManagerExtensions.GetManagerTasks<TEntity, TSubEntity>());
             }

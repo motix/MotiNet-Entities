@@ -15,6 +15,5 @@ namespace MotiNet.Entities
         TEntityScope FindScopeById(object id);
 
         Task<TEntityScope> FindScopeByIdAsync(object id, CancellationToken cancellationToken);
-
     }
 }
