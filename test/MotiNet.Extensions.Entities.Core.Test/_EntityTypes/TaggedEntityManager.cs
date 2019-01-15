@@ -16,7 +16,7 @@ namespace MotiNet.Entities.Test
         private ArticleStore Store => Manager.Store as ArticleStore;
 
         [Fact(DisplayName = "TaggedEntityManager.AutoNormalizesTagsWhenSavingAnEntity")]
-        public async void AutoNormalizesTagsWhenSavingAnEntity()
+        public async Task AutoNormalizesTagsWhenSavingAnEntity()
         {
             var testTags = "A B-C";
             var newEntity = new Article { Id = 4, Tags = testTags };

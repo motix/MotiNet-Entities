@@ -16,7 +16,7 @@ namespace MotiNet.Entities.Test
         private ArticleStore Store => Manager.Store as ArticleStore;
 
         [Fact(DisplayName = "CodeBasedEntityManager.AutoGenerateCodeWhenCreatingANewEntityWithEmptyCode")]
-        public async void AutoGenerateCodeWhenCreatingANewEntityWithEmptyCode()
+        public async Task AutoGenerateCodeWhenCreatingANewEntityWithEmptyCode()
         {
             var newEntity = new Article { Id = 4 };
             Assert.Null(newEntity.UrlFriendlyTitle);
@@ -29,7 +29,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "CodeBasedEntityManager.AutoNormalizesCodeWhenSavingAnEntity")]
-        public async void AutoNormalizesCodeWhenSavingAnEntity()
+        public async Task AutoNormalizesCodeWhenSavingAnEntity()
         {
             var testCode = "A";
             var newEntity = new Article { Id = 4, UrlFriendlyTitle = testCode };
@@ -42,7 +42,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "CodeBasedEntityManager.AutoNormalizesCodeButDoesNothingWhenNoCodeNormalizerPresents")]
-        public async void AutoNormalizesCodeButDoesNothingWhenNoCodeNormalizerPresents()
+        public async Task AutoNormalizesCodeButDoesNothingWhenNoCodeNormalizerPresents()
         {
             var testCode = "A";
             var newEntity = new Article { Id = 4, UrlFriendlyTitle = testCode };
@@ -58,7 +58,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "CodeBasedEntityManager.FindsEntityByCode")]
-        public async void FindsEntityByCode()
+        public async Task FindsEntityByCode()
         {
             var testCode = "title-1";
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await Manager.FindByCodeAsync(null));

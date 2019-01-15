@@ -16,7 +16,7 @@ namespace MotiNet.Entities.Test
         private CountryStore Store => Manager.Store as CountryStore;
 
         [Fact(DisplayName = "MasterDetailsEntityManager.ValidatesDetailsWhenCreating")]
-        public async void ValidatesDetailsWhenCreating()
+        public async Task ValidatesDetailsWhenCreating()
         {
             var newEntity = new Country { Id = 4, Name = "Country 4", Cities = new List<City>() { new City() { Id = 1 } } };
 

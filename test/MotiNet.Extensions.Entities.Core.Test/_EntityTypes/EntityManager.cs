@@ -18,7 +18,7 @@ namespace MotiNet.Entities.Test
         private ArticleStore Store => Manager.Store as ArticleStore;
 
         [Fact(DisplayName = "EntityManager.FindsEntityById")]
-        public async void FindsEntityById()
+        public async Task FindsEntityById()
         {
             var testId = 2;
 
@@ -29,7 +29,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.FindsEntityByPriority")]
-        public async void FindsEntityByPriority()
+        public async Task FindsEntityByPriority()
         {
             var testPriority = 2;
 
@@ -41,7 +41,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.GetsAllEntities")]
-        public async void GetsAllEntities()
+        public async Task GetsAllEntities()
         {
             var entities = await Manager.AllAsync();
             var expected = Store.Data.Count;
@@ -50,7 +50,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.SearchesEntitiesByTitle")]
-        public async void SearchesEntitiesByTitle()
+        public async Task SearchesEntitiesByTitle()
         {
             var testTitle = "Title 3";
 
@@ -62,7 +62,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.SearchesEntitiesByTitleWithPaging")]
-        public async void SearchesEntitiesByTitleWithPaging()
+        public async Task SearchesEntitiesByTitleWithPaging()
         {
             var testTitle = "Title 3";
 
@@ -74,7 +74,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.ValidatesEntityWhenCreating")]
-        public async void ValidatesEntityWhenCreating()
+        public async Task ValidatesEntityWhenCreating()
         {
             var newEntity = new Article { Id = 4 };
 
@@ -87,7 +87,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.CreatesEntity")]
-        public async void CreatesEntity()
+        public async Task CreatesEntity()
         {
             var newEntity = new Article { Id = 4, Title = "Title 4" };
 
@@ -103,7 +103,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.ValidatesEntityWhenUpdating")]
-        public async void ValidatesEntityWhenUpdating()
+        public async Task ValidatesEntityWhenUpdating()
         {
             var testId = 1;
 
@@ -121,7 +121,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.UpdatesEntity")]
-        public async void UpdatesEntity()
+        public async Task UpdatesEntity()
         {
             var testId = 1;
             var newTitle = "Modified title";
@@ -140,7 +140,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "EntityManager.DeletesEntity")]
-        public async void DeletesEntity()
+        public async Task DeletesEntity()
         {
             var testId = 1;
             var currentEntity = new Article { Id = testId };

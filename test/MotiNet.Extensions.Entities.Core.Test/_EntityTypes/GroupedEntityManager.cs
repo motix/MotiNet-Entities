@@ -15,7 +15,7 @@ namespace MotiNet.Entities.Test
         private CityStore Store => Manager.Store as CityStore;
 
         [Fact(DisplayName = "GroupedEntityManager.GetsAllEntities")]
-        public async void GetsAllGroups()
+        public async Task GetsAllGroups()
         {
             var groups = await Manager.AllGroupsAsync();
             var expected = Store.Data.Count;
@@ -24,7 +24,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "GroupedEntityManager.GetsAllNonEmptyGroups")]
-        public async void GetsAllNonEmptyGroups()
+        public async Task GetsAllNonEmptyGroups()
         {
             var groups = await Manager.AllNonEmptyGroupsAsync();
             var expected = Store.Data.Where(x => x.Cities != null && x.Cities.Count > 0).Count();

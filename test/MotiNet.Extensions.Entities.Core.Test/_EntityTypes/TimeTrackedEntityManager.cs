@@ -16,7 +16,7 @@ namespace MotiNet.Entities.Test
         private ArticleStore Store => Manager.Store as ArticleStore;
 
         [Fact(DisplayName = "TimeTrackedEntityManager.AutoSetsDatesWhenCreatingANewEntity")]
-        public async void AutoSetsDatesWhenCreatingANewEntity()
+        public async Task AutoSetsDatesWhenCreatingANewEntity()
         {
             var newEntity = new Article { Id = 4 };
             var oldDataCreateDate = newEntity.DataCreateDate;
@@ -31,7 +31,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "TimeTrackedEntityManager.AutoUpdatesDataLastModifyDateWhenUpdatingAnEntity")]
-        public async void AutoUpdatesDataLastModifyDateWhenUpdatingAnEntity()
+        public async Task AutoUpdatesDataLastModifyDateWhenUpdatingAnEntity()
         {
             var testId = 1;
 
@@ -46,7 +46,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "TimeTrackedEntityManager.FindsLatestEntity")]
-        public async void FindsLatestEntity()
+        public async Task FindsLatestEntity()
         {
             var entity = await Manager.FindLatestAsync();
             var expected = Store.Data.OrderByDescending(x => x.DataCreateDate).First().Id;

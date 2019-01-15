@@ -16,7 +16,7 @@ namespace MotiNet.Entities.Test
         private CategoryStore Store => Manager.Store as CategoryStore;
 
         [Fact(DisplayName = "NameBasedEntityManager.AutoNormalizesNameWhenSavingAnEntity")]
-        public async void AutoNormalizesNameWhenSavingAnEntity()
+        public async Task AutoNormalizesNameWhenSavingAnEntity()
         {
             var testName = "test name";
             var newEntity = new Category { Id = 4, Name = testName };
@@ -29,7 +29,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "NameBasedEntityManager.FindsEntityByName")]
-        public async void FindsEntityByName()
+        public async Task FindsEntityByName()
         {
             var testName = "Name 1";
             var entity = await Manager.FindByNameAsync(testName);

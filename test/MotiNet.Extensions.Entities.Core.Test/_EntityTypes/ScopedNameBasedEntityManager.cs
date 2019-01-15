@@ -16,7 +16,7 @@ namespace MotiNet.Entities.Test
         private CityStore Store => Manager.Store as CityStore;
 
         [Fact(DisplayName = "ScopedNameBasedEntityManager.AutoNormalizesNameWhenSavingAnEntity")]
-        public async void AutoNormalizesNameWhenSavingAnEntity()
+        public async Task AutoNormalizesNameWhenSavingAnEntity()
         {
             var testName = "test name";
             var newEntity = new City { Id = 6, Name = testName };
@@ -29,7 +29,7 @@ namespace MotiNet.Entities.Test
         }
 
         [Fact(DisplayName = "ScopedNameBasedEntityManager.FindsEntityByName")]
-        public async void FindsEntityByName()
+        public async Task FindsEntityByName()
         {
             var testName = "City 1";
             var testScopeId = 1;
