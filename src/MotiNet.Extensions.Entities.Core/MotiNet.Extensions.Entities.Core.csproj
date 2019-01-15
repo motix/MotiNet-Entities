@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.0" />
-    <PackageReference Include="MotiNet.Core" Version="1.0.0-beta-0023" />
+    <PackageReference Include="MotiNet.Core" Version="1.0.0-beta-0024" />
   </ItemGroup>
 
   <ItemGroup>
