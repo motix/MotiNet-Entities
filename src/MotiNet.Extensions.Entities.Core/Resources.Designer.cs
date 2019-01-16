@@ -61,6 +61,24 @@ namespace MotiNet.Entities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Length of &apos;types&apos; must equal to number of parameters of &apos;constructorMethod&apos; minus one..
+        /// </summary>
+        internal static string BuilderConstructionInvalidTypesLength {
+            get {
+                return ResourceManager.GetString("BuilderConstructionInvalidTypesLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property for parameter &apos;{0}&apos; not defined in class &apos;{1}&apos;..
+        /// </summary>
+        internal static string BuilderPropertyNotFound {
+            get {
+                return ResourceManager.GetString("BuilderPropertyNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Optimistic concurrency failure, object has been modified..
         /// </summary>
         internal static string ConcurrencyFailure {
