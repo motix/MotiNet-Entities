@@ -10,15 +10,23 @@ namespace MotiNet.Entities
         {
             manager.ThrowIfDisposed();
 
-            return manager.TimeTrackedEntityStore.FindLatest();
+            var entity = manager.TimeTrackedEntityStore.FindLatest();
+
+            manager.ExecuteEntityGet(entity);
+
+            return entity;
         }
 
-        public static Task<TEntity> FindLatestAsync<TEntity>(this ITimeTrackedEntityManager<TEntity> manager)
+        public static async Task<TEntity> FindLatestAsync<TEntity>(this ITimeTrackedEntityManager<TEntity> manager)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
 
-            return manager.TimeTrackedEntityStore.FindLatestAsync(manager.CancellationToken);
+            var entity = await manager.TimeTrackedEntityStore.FindLatestAsync(manager.CancellationToken);
+
+            await manager.ExecuteEntityGetAsync(entity);
+
+            return entity;
         }
 
         public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()

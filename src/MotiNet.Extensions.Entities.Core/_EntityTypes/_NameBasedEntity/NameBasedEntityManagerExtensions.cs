@@ -14,10 +14,14 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return manager.NameBasedEntityStore.FindByName(NormalizeEntityName(manager, name));
+            var entity = manager.NameBasedEntityStore.FindByName(NormalizeEntityName(manager, name));
+
+            manager.ExecuteEntityGet(entity);
+
+            return entity;
         }
 
-        public static Task<TEntity> FindByNameAsync<TEntity>(this INameBasedEntityManager<TEntity> manager, string name)
+        public static async Task<TEntity> FindByNameAsync<TEntity>(this INameBasedEntityManager<TEntity> manager, string name)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -26,7 +30,11 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return manager.NameBasedEntityStore.FindByNameAsync(NormalizeEntityName(manager, name), manager.CancellationToken);
+            var entity = await manager.NameBasedEntityStore.FindByNameAsync(NormalizeEntityName(manager, name), manager.CancellationToken);
+
+            await manager.ExecuteEntityGetAsync(entity);
+
+            return entity;
         }
 
         public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()

@@ -15,10 +15,14 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return manager.ScopedNameBasedEntityStore.FindByName(NormalizeEntityName(manager, name), scope);
+            var entity = manager.ScopedNameBasedEntityStore.FindByName(NormalizeEntityName(manager, name), scope);
+
+            manager.ExecuteEntityGet(entity);
+
+            return entity;
         }
 
-        public static Task<TEntity> FindByNameAsync<TEntity, TEntityScope>(this IScopedNameBasedEntityManager<TEntity, TEntityScope> manager, string name, TEntityScope scope)
+        public static async Task<TEntity> FindByNameAsync<TEntity, TEntityScope>(this IScopedNameBasedEntityManager<TEntity, TEntityScope> manager, string name, TEntityScope scope)
             where TEntity : class
             where TEntityScope : class
         {
@@ -28,7 +32,11 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return manager.ScopedNameBasedEntityStore.FindByNameAsync(NormalizeEntityName(manager, name), scope, manager.CancellationToken);
+            var entity = await manager.ScopedNameBasedEntityStore.FindByNameAsync(NormalizeEntityName(manager, name), scope, manager.CancellationToken);
+
+            await manager.ExecuteEntityGetAsync(entity);
+
+            return entity;
         }
 
         public static ManagerTasks<TEntity, TEntityScope> GetManagerTasks<TEntity, TEntityScope>()

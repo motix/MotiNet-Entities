@@ -15,10 +15,14 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return manager.EntityStore.FindById(id);
+            var entity = manager.EntityStore.FindById(id);
+
+            manager.ExecuteEntityGet(entity);
+
+            return entity;
         }
 
-        public static Task<TEntity> FindByIdAsync<TEntity>(this IEntityManager<TEntity> manager, object id)
+        public static async Task<TEntity> FindByIdAsync<TEntity>(this IEntityManager<TEntity> manager, object id)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -27,7 +31,11 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return manager.EntityStore.FindByIdAsync(id, manager.CancellationToken);
+            var entity = await manager.EntityStore.FindByIdAsync(id, manager.CancellationToken);
+
+            await manager.ExecuteEntityGetAsync(entity);
+
+            return entity;
         }
 
         public static TEntity Find<TEntity>(this IEntityManager<TEntity> manager, object key, IFindSpecification<TEntity> spec)
@@ -43,10 +51,14 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            return manager.EntityStore.Find(key, spec);
+            var entity = manager.EntityStore.Find(key, spec);
+
+            manager.ExecuteEntityGet(entity);
+
+            return entity;
         }
 
-        public static Task<TEntity> FindAsync<TEntity>(this IEntityManager<TEntity> manager, object key, IFindSpecification<TEntity> spec)
+        public static async Task<TEntity> FindAsync<TEntity>(this IEntityManager<TEntity> manager, object key, IFindSpecification<TEntity> spec)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -59,7 +71,11 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            return manager.EntityStore.FindAsync(key, spec, manager.CancellationToken);
+            var entity = await manager.EntityStore.FindAsync(key, spec, manager.CancellationToken);
+
+            await manager.ExecuteEntityGetAsync(entity);
+
+            return entity;
         }
 
         public static IEnumerable<TEntity> All<TEntity>(this IEntityManager<TEntity> manager)
@@ -67,15 +83,29 @@ namespace MotiNet.Entities
         {
             manager.ThrowIfDisposed();
 
-            return manager.EntityStore.All();
+            var entities = manager.EntityStore.All();
+
+            foreach (var entity in entities)
+            {
+                manager.ExecuteEntityGet(entity);
+            }
+
+            return entities;
         }
 
-        public static Task<IEnumerable<TEntity>> AllAsync<TEntity>(this IEntityManager<TEntity> manager)
+        public static async Task<IEnumerable<TEntity>> AllAsync<TEntity>(this IEntityManager<TEntity> manager)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
 
-            return manager.EntityStore.AllAsync(manager.CancellationToken);
+            var entities = await manager.EntityStore.AllAsync(manager.CancellationToken);
+
+            foreach (var entity in entities)
+            {
+                await manager.ExecuteEntityGetAsync(entity);
+            }
+
+            return entities;
         }
 
         public static IEnumerable<TEntity> Search<TEntity>(this IEntityManager<TEntity> manager, ISearchSpecification<TEntity> spec)
@@ -87,10 +117,17 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            return manager.EntityStore.Search(spec);
+            var entities = manager.EntityStore.Search(spec);
+
+            foreach (var entity in entities)
+            {
+                manager.ExecuteEntityGet(entity);
+            }
+
+            return entities;
         }
 
-        public static Task<IEnumerable<TEntity>> SearchAsync<TEntity>(this IEntityManager<TEntity> manager, ISearchSpecification<TEntity> spec)
+        public static async Task<IEnumerable<TEntity>> SearchAsync<TEntity>(this IEntityManager<TEntity> manager, ISearchSpecification<TEntity> spec)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -99,7 +136,14 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            return manager.EntityStore.SearchAsync(spec, manager.CancellationToken);
+            var entities = await manager.EntityStore.SearchAsync(spec, manager.CancellationToken);
+
+            foreach (var entity in entities)
+            {
+                await manager.ExecuteEntityGetAsync(entity);
+            }
+
+            return entities;
         }
 
         public static PagedSearchResult<TEntity> Search<TEntity>(this IEntityManager<TEntity> manager, IPagedSearchSpecification<TEntity> spec)
@@ -111,10 +155,17 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            return manager.EntityStore.Search(spec);
+            var result = manager.EntityStore.Search(spec);
+
+            foreach (var entity in result.Results)
+            {
+                manager.ExecuteEntityGet(entity);
+            }
+
+            return result;
         }
 
-        public static Task<PagedSearchResult<TEntity>> SearchAsync<TEntity>(this IEntityManager<TEntity> manager, IPagedSearchSpecification<TEntity> spec)
+        public static async Task<PagedSearchResult<TEntity>> SearchAsync<TEntity>(this IEntityManager<TEntity> manager, IPagedSearchSpecification<TEntity> spec)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -123,7 +174,14 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(spec));
             }
 
-            return manager.EntityStore.SearchAsync(spec, manager.CancellationToken);
+            var result = await manager.EntityStore.SearchAsync(spec, manager.CancellationToken);
+
+            foreach (var entity in result.Results)
+            {
+                await manager.ExecuteEntityGetAsync(entity);
+            }
+
+            return result;
         }
 
         public static async Task<GenericResult> CreateAsync<TEntity>(this IEntityManager<TEntity> manager, TEntity entity)
