@@ -12,6 +12,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
     public abstract class EntityApiControllerBase<TKey, TEntity, TEntityViewModel, TEntityManager> : ControllerBase
         where TKey : IEquatable<TKey>
         where TEntity : class
+        where TEntityViewModel : class
         where TEntityManager : class, IEntityManager<TEntity>
     {
         public EntityApiControllerBase(TEntityManager entityManager)
