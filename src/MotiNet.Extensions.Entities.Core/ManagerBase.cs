@@ -234,6 +234,8 @@ namespace MotiNet.Entities
 
         public virtual CancellationToken CancellationToken => CancellationToken.None;
 
+        protected IList<EntityGetAsync<TEntity>> EntityGetTasks { get; } = new List<EntityGetAsync<TEntity>>();
+
         protected IList<EntityCreateValidatingAsync<TEntity>> EntityCreateValidatingTasks { get; } = new List<EntityCreateValidatingAsync<TEntity>>();
 
         protected IList<EntityCreatingAsync<TEntity>> EntityCreatingTasks { get; } = new List<EntityCreatingAsync<TEntity>>();
@@ -252,6 +254,10 @@ namespace MotiNet.Entities
         
         public virtual void InitExtensions(ManagerTasks<TEntity> tasks)
         {
+            if (tasks.EntityGetAsync != null)
+            {
+                EntityGetTasks.Add(tasks.EntityGetAsync);
+            }
             if (tasks.EntityCreateValidatingAsync != null)
             {
                 EntityCreateValidatingTasks.Add(tasks.EntityCreateValidatingAsync);
@@ -292,6 +298,15 @@ namespace MotiNet.Entities
                 return GenericResult.Failed(errors.ToArray());
             }
             return GenericResult.Success;
+        }
+
+        public virtual async Task ExecuteEntityGetAsync(TEntity entity)
+        {
+            foreach(var task in EntityGetTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
         }
 
         public virtual async Task ExecuteEntityCreateValidatingAsync(TEntity entity)

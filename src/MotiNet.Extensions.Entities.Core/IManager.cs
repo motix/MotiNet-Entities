@@ -38,6 +38,8 @@ namespace MotiNet.Entities
 
         Task<GenericResult> ValidateEntityAsync(TEntity entity);
 
+        Task ExecuteEntityGetAsync(TEntity entity);
+
         Task ExecuteEntityCreateValidatingAsync(TEntity entity);
 
         Task ExecuteEntityCreatingAsync(TEntity entity);
