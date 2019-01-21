@@ -2,6 +2,9 @@
 
 namespace MotiNet.Entities
 {
+    public delegate void EntityGet<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
+        where TEntity : class;
+
     public delegate Task EntityGetAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         where TEntity : class;
 
@@ -51,6 +54,8 @@ namespace MotiNet.Entities
 
     public class ManagerTasks<TEntity> where TEntity : class
     {
+        public EntityGet<TEntity> EntityGet { get; set; }
+
         public EntityGetAsync<TEntity> EntityGetAsync { get; set; }
 
         public EntityCreateValidatingAsync<TEntity> EntityCreateValidatingAsync { get; set; }

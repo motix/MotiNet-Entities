@@ -234,17 +234,19 @@ namespace MotiNet.Entities
 
         public virtual CancellationToken CancellationToken => CancellationToken.None;
 
-        protected IList<EntityGetAsync<TEntity>> EntityGetTasks { get; } = new List<EntityGetAsync<TEntity>>();
+        protected IList<EntityGet<TEntity>> EntityGetTasks { get; } = new List<EntityGet<TEntity>>();
 
-        protected IList<EntityCreateValidatingAsync<TEntity>> EntityCreateValidatingTasks { get; } = new List<EntityCreateValidatingAsync<TEntity>>();
+        protected IList<EntityGetAsync<TEntity>> EntityGetAsyncTasks { get; } = new List<EntityGetAsync<TEntity>>();
 
-        protected IList<EntityCreatingAsync<TEntity>> EntityCreatingTasks { get; } = new List<EntityCreatingAsync<TEntity>>();
+        protected IList<EntityCreateValidatingAsync<TEntity>> EntityCreateValidatingAsyncTasks { get; } = new List<EntityCreateValidatingAsync<TEntity>>();
 
-        protected IList<EntityUpdateValidatingAsync<TEntity>> EntityUpdateValidatingTasks { get; } = new List<EntityUpdateValidatingAsync<TEntity>>();
+        protected IList<EntityCreatingAsync<TEntity>> EntityCreatingAsyncTasks { get; } = new List<EntityCreatingAsync<TEntity>>();
 
-        protected IList<EntityUpdatingAsync<TEntity>> EntityUpdatingTasks { get; } = new List<EntityUpdatingAsync<TEntity>>();
+        protected IList<EntityUpdateValidatingAsync<TEntity>> EntityUpdateValidatingAsyncTasks { get; } = new List<EntityUpdateValidatingAsync<TEntity>>();
 
-        protected IList<EntitySavingAsync<TEntity>> EntitySavingTasks { get; } = new List<EntitySavingAsync<TEntity>>();
+        protected IList<EntityUpdatingAsync<TEntity>> EntityUpdatingAsyncTasks { get; } = new List<EntityUpdatingAsync<TEntity>>();
+
+        protected IList<EntitySavingAsync<TEntity>> EntitySavingAsyncTasks { get; } = new List<EntitySavingAsync<TEntity>>();
 
         private IList<IValidator<TEntity>> EntityValidators { get; } = new List<IValidator<TEntity>>();
 
@@ -254,29 +256,33 @@ namespace MotiNet.Entities
         
         public virtual void InitExtensions(ManagerTasks<TEntity> tasks)
         {
+            if (tasks.EntityGet != null)
+            {
+                EntityGetTasks.Add(tasks.EntityGet);
+            }
             if (tasks.EntityGetAsync != null)
             {
-                EntityGetTasks.Add(tasks.EntityGetAsync);
+                EntityGetAsyncTasks.Add(tasks.EntityGetAsync);
             }
             if (tasks.EntityCreateValidatingAsync != null)
             {
-                EntityCreateValidatingTasks.Add(tasks.EntityCreateValidatingAsync);
+                EntityCreateValidatingAsyncTasks.Add(tasks.EntityCreateValidatingAsync);
             }
             if (tasks.EntityCreatingAsync != null)
             {
-                EntityCreatingTasks.Add(tasks.EntityCreatingAsync);
+                EntityCreatingAsyncTasks.Add(tasks.EntityCreatingAsync);
             }
             if (tasks.EntityUpdateValidatingAsync != null)
             {
-                EntityUpdateValidatingTasks.Add(tasks.EntityUpdateValidatingAsync);
+                EntityUpdateValidatingAsyncTasks.Add(tasks.EntityUpdateValidatingAsync);
             }
             if (tasks.EntityUpdatingAsync != null)
             {
-                EntityUpdatingTasks.Add(tasks.EntityUpdatingAsync);
+                EntityUpdatingAsyncTasks.Add(tasks.EntityUpdatingAsync);
             }
             if (tasks.EntitySavingAsync != null)
             {
-                EntitySavingTasks.Add(tasks.EntitySavingAsync);
+                EntitySavingAsyncTasks.Add(tasks.EntitySavingAsync);
             }
         }
 
@@ -300,9 +306,17 @@ namespace MotiNet.Entities
             return GenericResult.Success;
         }
 
+        public virtual void ExecuteEntityGet(TEntity entity)
+        {
+            foreach (var task in EntityGetTasks)
+            {
+                task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
+        }
+
         public virtual async Task ExecuteEntityGetAsync(TEntity entity)
         {
-            foreach(var task in EntityGetTasks)
+            foreach(var task in EntityGetAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));
@@ -311,7 +325,7 @@ namespace MotiNet.Entities
 
         public virtual async Task ExecuteEntityCreateValidatingAsync(TEntity entity)
         {
-            foreach(var task in EntityCreateValidatingTasks)
+            foreach(var task in EntityCreateValidatingAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));
@@ -322,7 +336,7 @@ namespace MotiNet.Entities
         {
             await ExecuteEntitySavingAsync(entity);
 
-            foreach (var task in EntityCreatingTasks)
+            foreach (var task in EntityCreatingAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));
@@ -331,7 +345,7 @@ namespace MotiNet.Entities
 
         public virtual async Task ExecuteEntityUpdateValidatingAsync(TEntity entity, TEntity oldEntity)
         {
-            foreach (var task in EntityUpdateValidatingTasks)
+            foreach (var task in EntityUpdateValidatingAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerUpdatingTaskArgs<TEntity>(entity, oldEntity));
@@ -342,7 +356,7 @@ namespace MotiNet.Entities
         {
             await ExecuteEntitySavingAsync(entity);
 
-            foreach (var task in EntityUpdatingTasks)
+            foreach (var task in EntityUpdatingAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerUpdatingTaskArgs<TEntity>(entity, oldEntity));
@@ -351,7 +365,7 @@ namespace MotiNet.Entities
 
         public virtual async Task ExecuteEntitySavingAsync(TEntity entity)
         {
-            foreach (var task in EntitySavingTasks)
+            foreach (var task in EntitySavingAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));
