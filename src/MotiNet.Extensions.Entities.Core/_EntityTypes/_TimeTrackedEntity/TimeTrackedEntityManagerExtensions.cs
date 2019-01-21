@@ -11,8 +11,10 @@ namespace MotiNet.Entities
             manager.ThrowIfDisposed();
 
             var entity = manager.TimeTrackedEntityStore.FindLatest();
-
-            manager.ExecuteEntityGet(entity);
+            if (entity != null)
+            {
+                manager.ExecuteEntityGet(entity);
+            }
 
             return entity;
         }
@@ -23,8 +25,10 @@ namespace MotiNet.Entities
             manager.ThrowIfDisposed();
 
             var entity = await manager.TimeTrackedEntityStore.FindLatestAsync(manager.CancellationToken);
-
-            await manager.ExecuteEntityGetAsync(entity);
+            if (entity != null)
+            {
+                await manager.ExecuteEntityGetAsync(entity);
+            }
 
             return entity;
         }

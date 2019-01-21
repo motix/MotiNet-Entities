@@ -15,8 +15,10 @@ namespace MotiNet.Entities
             }
 
             var entity = manager.NameBasedEntityStore.FindByName(NormalizeEntityName(manager, name));
-
-            manager.ExecuteEntityGet(entity);
+            if (entity != null)
+            {
+                manager.ExecuteEntityGet(entity);
+            }
 
             return entity;
         }
@@ -31,8 +33,10 @@ namespace MotiNet.Entities
             }
 
             var entity = await manager.NameBasedEntityStore.FindByNameAsync(NormalizeEntityName(manager, name), manager.CancellationToken);
-
-            await manager.ExecuteEntityGetAsync(entity);
+            if (entity != null)
+            {
+                await manager.ExecuteEntityGetAsync(entity);
+            }
 
             return entity;
         }

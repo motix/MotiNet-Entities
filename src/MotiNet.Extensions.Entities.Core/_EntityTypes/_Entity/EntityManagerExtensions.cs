@@ -16,8 +16,10 @@ namespace MotiNet.Entities
             }
 
             var entity = manager.EntityStore.FindById(id);
-
-            manager.ExecuteEntityGet(entity);
+            if (entity != null)
+            {
+                manager.ExecuteEntityGet(entity);
+            }
 
             return entity;
         }
@@ -32,8 +34,10 @@ namespace MotiNet.Entities
             }
 
             var entity = await manager.EntityStore.FindByIdAsync(id, manager.CancellationToken);
-
-            await manager.ExecuteEntityGetAsync(entity);
+            if (entity != null)
+            {
+                await manager.ExecuteEntityGetAsync(entity);
+            }
 
             return entity;
         }
@@ -52,8 +56,10 @@ namespace MotiNet.Entities
             }
 
             var entity = manager.EntityStore.Find(key, spec);
-
-            manager.ExecuteEntityGet(entity);
+            if (entity != null)
+            {
+                manager.ExecuteEntityGet(entity);
+            }
 
             return entity;
         }
@@ -72,8 +78,10 @@ namespace MotiNet.Entities
             }
 
             var entity = await manager.EntityStore.FindAsync(key, spec, manager.CancellationToken);
-
-            await manager.ExecuteEntityGetAsync(entity);
+            if (entity != null)
+            {
+                await manager.ExecuteEntityGetAsync(entity);
+            }
 
             return entity;
         }
