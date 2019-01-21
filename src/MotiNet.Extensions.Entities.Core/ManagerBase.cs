@@ -314,12 +314,35 @@ namespace MotiNet.Entities
             }
         }
 
+        public virtual void ExecuteEntitiesGet(IEnumerable<TEntity> entities)
+        {
+            foreach (var task in EntityGetTasks)
+            {
+                foreach (var entity in entities)
+                {
+                    task(this, new ManagerTaskArgs<TEntity>(entity));
+                }
+            }
+        }
+
         public virtual async Task ExecuteEntityGetAsync(TEntity entity)
         {
             foreach(var task in EntityGetAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
+        }
+
+        public virtual async Task ExecuteEntitiesGetAsync(IEnumerable<TEntity> entities)
+        {
+            foreach (var task in EntityGetAsyncTasks)
+            {
+                foreach (var entity in entities)
+                {
+                    // Do one by one to ensure the order
+                    await task(this, new ManagerTaskArgs<TEntity>(entity));
+                }
             }
         }
 

@@ -92,11 +92,7 @@ namespace MotiNet.Entities
             manager.ThrowIfDisposed();
 
             var entities = manager.EntityStore.All();
-
-            foreach (var entity in entities)
-            {
-                manager.ExecuteEntityGet(entity);
-            }
+            manager.ExecuteEntitiesGet(entities);
 
             return entities;
         }
@@ -107,11 +103,7 @@ namespace MotiNet.Entities
             manager.ThrowIfDisposed();
 
             var entities = await manager.EntityStore.AllAsync(manager.CancellationToken);
-
-            foreach (var entity in entities)
-            {
-                await manager.ExecuteEntityGetAsync(entity);
-            }
+            await manager.ExecuteEntitiesGetAsync(entities);
 
             return entities;
         }
@@ -126,11 +118,7 @@ namespace MotiNet.Entities
             }
 
             var entities = manager.EntityStore.Search(spec);
-
-            foreach (var entity in entities)
-            {
-                manager.ExecuteEntityGet(entity);
-            }
+            manager.ExecuteEntitiesGet(entities);
 
             return entities;
         }
@@ -145,11 +133,7 @@ namespace MotiNet.Entities
             }
 
             var entities = await manager.EntityStore.SearchAsync(spec, manager.CancellationToken);
-
-            foreach (var entity in entities)
-            {
-                await manager.ExecuteEntityGetAsync(entity);
-            }
+            await manager.ExecuteEntitiesGetAsync(entities);
 
             return entities;
         }
@@ -164,11 +148,7 @@ namespace MotiNet.Entities
             }
 
             var result = manager.EntityStore.Search(spec);
-
-            foreach (var entity in result.Results)
-            {
-                manager.ExecuteEntityGet(entity);
-            }
+            manager.ExecuteEntitiesGet(result.Results);
 
             return result;
         }
@@ -183,11 +163,7 @@ namespace MotiNet.Entities
             }
 
             var result = await manager.EntityStore.SearchAsync(spec, manager.CancellationToken);
-
-            foreach (var entity in result.Results)
-            {
-                await manager.ExecuteEntityGetAsync(entity);
-            }
+            await manager.ExecuteEntitiesGetAsync(result.Results);
 
             return result;
         }

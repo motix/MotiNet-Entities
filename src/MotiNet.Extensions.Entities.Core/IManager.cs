@@ -40,7 +40,11 @@ namespace MotiNet.Entities
 
         void ExecuteEntityGet(TEntity entity);
 
+        void ExecuteEntitiesGet(IEnumerable<TEntity> entities);
+
         Task ExecuteEntityGetAsync(TEntity entity);
+
+        Task ExecuteEntitiesGetAsync(IEnumerable<TEntity> entities);
 
         Task ExecuteEntityCreateValidatingAsync(TEntity entity);
 
