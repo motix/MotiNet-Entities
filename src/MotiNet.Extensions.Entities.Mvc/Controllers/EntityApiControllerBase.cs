@@ -50,7 +50,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors);
+                return BadRequest(result);
             }
 
             viewModel = Mapper.Map<TEntityViewModel>(model);
@@ -76,7 +76,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
                     return NotFound();
                 }
 
-                return BadRequest(result.Errors);
+                return BadRequest(result);
             }
 
             return Mapper.Map<TEntityViewModel>(model);
@@ -96,7 +96,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors);
+                return BadRequest(result);
             }
 
             return Mapper.Map<TEntityViewModel>(model);
