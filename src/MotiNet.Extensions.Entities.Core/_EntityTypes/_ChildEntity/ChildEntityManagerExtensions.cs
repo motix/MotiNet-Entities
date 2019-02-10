@@ -2,11 +2,11 @@
 
 namespace MotiNet.Entities
 {
-    public static class ChildEntityManagerExtensions
+    public static class ChildEntityManagerExtensions<TEntity, TEntityParent>
+        where TEntity : class
+        where TEntityParent : class
     {
-        public static ManagerTasks<TEntity, TEntityParent> GetManagerTasks<TEntity, TEntityParent>()
-            where TEntity : class
-            where TEntityParent : class
+        public static ManagerTasks<TEntity, TEntityParent> GetManagerTasks()
         {
             return new ManagerTasks<TEntity, TEntityParent>()
             {
@@ -16,9 +16,7 @@ namespace MotiNet.Entities
             };
         }
 
-        private static async Task EntityCreateValidatingAsync<TEntity, TEntityParent>(IManager<TEntity, TEntityParent> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
-            where TEntityParent : class
+        private static async Task EntityCreateValidatingAsync(IManager<TEntity, TEntityParent> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var childManager = (IChildEntityManager<TEntity, TEntityParent>)manager;
 
@@ -27,9 +25,7 @@ namespace MotiNet.Entities
             childManager.ChildEntityAccessor.SetParent(taskArgs.Entity, parent);
         }
 
-        private static Task EntityUpdateValidatingAsync<TEntity, TEntityParent>(IManager<TEntity, TEntityParent> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
-            where TEntity : class
-            where TEntityParent : class
+        private static Task EntityUpdateValidatingAsync(IManager<TEntity, TEntityParent> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
         {
             var childManager = (IChildEntityManager<TEntity, TEntityParent>)manager;
 
@@ -39,9 +35,7 @@ namespace MotiNet.Entities
             return EntityCreateValidatingAsync(manager, taskArgs);
         }
 
-        private static Task EntitySavingAsync<TEntity, TEntityParent>(IManager<TEntity, TEntityParent> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
-            where TEntityParent : class
+        private static Task EntitySavingAsync(IManager<TEntity, TEntityParent> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var childManager = (IChildEntityManager<TEntity, TEntityParent>)manager;
 

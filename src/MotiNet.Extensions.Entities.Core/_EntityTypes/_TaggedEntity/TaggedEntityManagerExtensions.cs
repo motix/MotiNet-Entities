@@ -2,10 +2,10 @@
 
 namespace MotiNet.Entities
 {
-    public static class TaggedEntityManagerExtensions
+    public static class TaggedEntityManagerExtensions<TEntity>
+        where TEntity : class
     {
-        public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()
-            where TEntity : class
+        public static ManagerTasks<TEntity> GetManagerTasks()
         {
             return new ManagerTasks<TEntity>()
             {
@@ -13,8 +13,7 @@ namespace MotiNet.Entities
             };
         }
 
-        private static Task EntitySavingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
+        private static Task EntitySavingAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var taggedManager = (ITaggedEntityManager<TEntity>)manager;
 
@@ -25,8 +24,7 @@ namespace MotiNet.Entities
             return Task.FromResult(0);
         }
 
-        private static string NormalizeEntityTags<TEntity>(ITaggedEntityManager<TEntity> manager, string tags)
-            where TEntity : class
+        private static string NormalizeEntityTags(ITaggedEntityManager<TEntity> manager, string tags)
         {
             return (manager.TagProcessor == null) ? tags : manager.TagProcessor.NormalizeTags(tags);
         }

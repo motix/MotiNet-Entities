@@ -41,8 +41,17 @@ namespace MotiNet.Entities
             return entity;
         }
 
-        public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()
+        internal static string NormalizeEntityName<TEntity>(INameBasedEntityManager<TEntity> manager, string name)
             where TEntity : class
+        {
+            return (manager.NameNormalizer == null) ? name : manager.NameNormalizer.Normalize(name);
+        }
+    }
+
+    public static class NameBasedEntityManagerExtensions<TEntity>
+        where TEntity : class
+    {
+        public static ManagerTasks<TEntity> GetManagerTasks()
         {
             return new ManagerTasks<TEntity>()
             {
@@ -50,22 +59,15 @@ namespace MotiNet.Entities
             };
         }
 
-        private static Task EntitySavingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
+        private static Task EntitySavingAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var nameBasedManager = (INameBasedEntityManager<TEntity>)manager;
 
             var name = nameBasedManager.NameBasedEntityAccessor.GetName(taskArgs.Entity);
-            var normalizedName = NormalizeEntityName(nameBasedManager, name);
+            var normalizedName = NameBasedEntityManagerExtensions.NormalizeEntityName(nameBasedManager, name);
             nameBasedManager.NameBasedEntityAccessor.SetNormalizedName(taskArgs.Entity, normalizedName);
 
             return Task.FromResult(0);
-        }
-
-        private static string NormalizeEntityName<TEntity>(INameBasedEntityManager<TEntity> manager, string name)
-            where TEntity : class
-        {
-            return (manager.NameNormalizer == null) ? name : manager.NameNormalizer.Normalize(name);
         }
     }
 }

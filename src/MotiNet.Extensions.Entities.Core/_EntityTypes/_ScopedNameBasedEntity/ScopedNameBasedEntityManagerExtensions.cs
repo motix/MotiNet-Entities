@@ -43,9 +43,19 @@ namespace MotiNet.Entities
             return entity;
         }
 
-        public static ManagerTasks<TEntity, TEntityScope> GetManagerTasks<TEntity, TEntityScope>()
+        internal static string NormalizeEntityName<TEntity, TEntityScope>(IScopedNameBasedEntityManager<TEntity, TEntityScope> manager, string name)
             where TEntity : class
             where TEntityScope : class
+        {
+            return (manager.NameNormalizer == null) ? name : manager.NameNormalizer.Normalize(name);
+        }
+    }
+
+    public static class ScopedNameBasedEntityManagerExtensions<TEntity, TEntityScope>
+        where TEntity : class
+        where TEntityScope : class
+    {
+        public static ManagerTasks<TEntity, TEntityScope> GetManagerTasks()
         {
             return new ManagerTasks<TEntity, TEntityScope>()
             {
@@ -55,9 +65,7 @@ namespace MotiNet.Entities
             };
         }
 
-        private static async Task EntityCreateValidatingAsync<TEntity, TEntityScope>(IManager<TEntity, TEntityScope> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
-            where TEntityScope : class
+        private static async Task EntityCreateValidatingAsync(IManager<TEntity, TEntityScope> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var scopedNameBasedManager = (IScopedNameBasedEntityManager<TEntity, TEntityScope>)manager;
 
@@ -66,9 +74,7 @@ namespace MotiNet.Entities
             scopedNameBasedManager.ScopedNameBasedEntityAccessor.SetScope(taskArgs.Entity, scope);
         }
 
-        private static Task EntityUpdateValidatingAsync<TEntity, TEntityScope>(IManager<TEntity, TEntityScope> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
-            where TEntity : class
-            where TEntityScope : class
+        private static Task EntityUpdateValidatingAsync(IManager<TEntity, TEntityScope> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
         {
             var scopedNameBasedManager = (IScopedNameBasedEntityManager<TEntity, TEntityScope>)manager;
 
@@ -78,26 +84,17 @@ namespace MotiNet.Entities
             return EntityCreateValidatingAsync(manager, taskArgs);
         }
 
-        private static Task EntitySavingAsync<TEntity, TEntityScope>(IManager<TEntity, TEntityScope> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
-            where TEntityScope : class
+        private static Task EntitySavingAsync(IManager<TEntity, TEntityScope> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var scopedNameBasedManager = (IScopedNameBasedEntityManager<TEntity, TEntityScope>)manager;
 
             scopedNameBasedManager.ScopedNameBasedEntityAccessor.SetScope(taskArgs.Entity, null);
 
             var name = scopedNameBasedManager.ScopedNameBasedEntityAccessor.GetName(taskArgs.Entity);
-            var normalizedName = NormalizeEntityName(scopedNameBasedManager, name);
+            var normalizedName = ScopedNameBasedEntityManagerExtensions.NormalizeEntityName(scopedNameBasedManager, name);
             scopedNameBasedManager.ScopedNameBasedEntityAccessor.SetNormalizedName(taskArgs.Entity, normalizedName);
 
             return Task.FromResult(0);
-        }
-
-        private static string NormalizeEntityName<TEntity, TEntityScope>(IScopedNameBasedEntityManager<TEntity, TEntityScope> manager, string name)
-            where TEntity : class
-            where TEntityScope : class
-        {
-            return (manager.NameNormalizer == null) ? name : manager.NameNormalizer.Normalize(name);
         }
     }
 }

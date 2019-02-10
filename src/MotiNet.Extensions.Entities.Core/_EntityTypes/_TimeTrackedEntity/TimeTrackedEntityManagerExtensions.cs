@@ -32,9 +32,12 @@ namespace MotiNet.Entities
 
             return entity;
         }
+    }
 
-        public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()
-            where TEntity : class
+    public static class TimeTrackedEntityManagerExtensions<TEntity>
+        where TEntity : class
+    {
+        public static ManagerTasks<TEntity> GetManagerTasks()
         {
             return new ManagerTasks<TEntity>()
             {
@@ -43,8 +46,7 @@ namespace MotiNet.Entities
             };
         }
 
-        private static Task EntityCreatingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
+        private static Task EntityCreatingAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var timeTrackedManager = (ITimeTrackedEntityManager<TEntity>)manager;
 
@@ -55,8 +57,7 @@ namespace MotiNet.Entities
             return Task.FromResult(0);
         }
 
-        private static Task EntityUpdatingAsync<TEntity>(IManager<TEntity> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
-            where TEntity : class
+        private static Task EntityUpdatingAsync(IManager<TEntity> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
         {
             var timeTrackedManager = (ITimeTrackedEntityManager<TEntity>)manager;
 

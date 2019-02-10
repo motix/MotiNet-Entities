@@ -41,8 +41,17 @@ namespace MotiNet.Entities
             return entity;
         }
 
-        public static ManagerTasks<TEntity> GetManagerTasks<TEntity>()
+        internal static string NormalizeEntityCode<TEntity>(ICodeBasedEntityManager<TEntity> manager, string code)
             where TEntity : class
+        {
+            return (manager.CodeNormalizer == null) ? code : manager.CodeNormalizer.Normalize(code);
+        }
+    }
+
+    public static class CodeBasedEntityManagerExtensions<TEntity>
+        where TEntity : class
+    {
+        public static ManagerTasks<TEntity> GetManagerTasks()
         {
             return new ManagerTasks<TEntity>()
             {
@@ -52,8 +61,7 @@ namespace MotiNet.Entities
             };
         }
 
-        private static Task EntityValidatingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
+        private static Task EntityValidatingAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var codeBasedManager = (ICodeBasedEntityManager<TEntity>)manager;
 
@@ -66,22 +74,15 @@ namespace MotiNet.Entities
             return Task.FromResult(0);
         }
 
-        private static Task EntitySavingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
-            where TEntity : class
+        private static Task EntitySavingAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var codeBasedManager = (ICodeBasedEntityManager<TEntity>)manager;
 
             var code = codeBasedManager.CodeBasedEntityAccessor.GetCode(taskArgs.Entity);
-            var normalizedCode = NormalizeEntityCode(codeBasedManager, code);
+            var normalizedCode = CodeBasedEntityManagerExtensions.NormalizeEntityCode(codeBasedManager, code);
             codeBasedManager.CodeBasedEntityAccessor.SetCode(taskArgs.Entity, normalizedCode);
 
             return Task.FromResult(0);
-        }
-
-        private static string NormalizeEntityCode<TEntity>(ICodeBasedEntityManager<TEntity> manager, string code)
-            where TEntity : class
-        {
-            return (manager.CodeNormalizer == null) ? code : manager.CodeNormalizer.Normalize(code);
         }
     }
 }

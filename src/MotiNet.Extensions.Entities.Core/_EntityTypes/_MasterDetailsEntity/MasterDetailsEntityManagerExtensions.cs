@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace MotiNet.Entities
 {
-    public static class MasterDetailsEntityManagerExtensions
+    public static class MasterDetailsEntityManagerExtensions<TEntity, TEntityDetail>
+        where TEntity : class
+        where TEntityDetail : class
     {
-        public static ManagerTasks<TEntity, TEntityDetail> GetManagerTasks<TEntity, TEntityDetail>()
-            where TEntity : class
-            where TEntityDetail : class
+        public static ManagerTasks<TEntity, TEntityDetail> GetManagerTasks()
         {
             return new ManagerTasks<TEntity, TEntityDetail>()
             {
@@ -15,9 +15,7 @@ namespace MotiNet.Entities
             };
         }
 
-        private static async Task EntityValidateAsync<TEntity, TEntityDetail>(IManager<TEntity, TEntityDetail> manager, ValidateEntityTaskArgs<TEntity, TEntityDetail> taskArgs)
-            where TEntity : class
-            where TEntityDetail : class
+        private static async Task EntityValidateAsync(IManager<TEntity, TEntityDetail> manager, ValidateEntityTaskArgs<TEntity, TEntityDetail> taskArgs)
         {
             var masterDetailsManager = (IMasterDetailsEntityManager<TEntity, TEntityDetail>)manager;
 
