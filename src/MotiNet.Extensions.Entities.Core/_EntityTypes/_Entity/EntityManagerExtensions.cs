@@ -202,7 +202,8 @@ namespace MotiNet.Entities
             }
 
             var id = manager.EntityAccessor.GetId(entity);
-            var oldEntity = await manager.FindByIdAsync(id);
+            // Get old entity without passing through ExecuteEntityGetAsync
+            var oldEntity = await manager.EntityStore.FindByIdAsync(id, manager.CancellationToken);
 
             if (oldEntity == null)
             {
