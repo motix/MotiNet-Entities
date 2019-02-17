@@ -220,6 +220,10 @@ namespace MotiNet.Entities
             {
                 InitExtensions(TaggedEntityManagerExtensions<TEntity>.GetManagerTasks());
             }
+            if (this is IPreprocessedEntityManager<TEntity>)
+            {
+                InitExtensions(PreprocessedEntityManagerExtensions<TEntity>.GetManagerTasks());
+            }
         }
 
         #endregion
