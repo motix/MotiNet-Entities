@@ -9,11 +9,11 @@ namespace MotiNet.Entities
         {
             return new ManagerTasks<TEntity>()
             {
-                EntitySavingAsync = EntitySavingAsync
+                EntityCreatingAsync = EntityCreatingAsync
             };
         }
 
-        private static Task EntitySavingAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
+        private static Task EntityCreatingAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var readableIdManager = (IReadableIdEntityManager<TEntity>)manager;
 
