@@ -216,6 +216,10 @@ namespace MotiNet.Entities
             {
                 InitExtensions(NameBasedEntityManagerExtensions<TEntity>.GetManagerTasks());
             }
+            if (this is IReadableIdEntityManager<TEntity>)
+            {
+                InitExtensions(ReadableIdEntityManagerExtensions<TEntity>.GetManagerTasks());
+            }
             if (this is ITaggedEntityManager<TEntity>)
             {
                 InitExtensions(TaggedEntityManagerExtensions<TEntity>.GetManagerTasks());
