@@ -25,7 +25,9 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         [HttpGet]
         public virtual async Task<ActionResult<IEnumerable<TEntityViewModel>>> Get()
         {
-            var models = await EntityManager.AllAsync();
+            var spec = new SearchSpecification<TEntity>(x => true);
+            EntitiesSpecificationAction(spec);
+            var models = await EntityManager.SearchAsync(spec);
             models = SortEntities(models);
             return Mapper.Map<List<TEntityViewModel>>(models);
         }
@@ -103,10 +105,9 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             return Mapper.Map<TEntityViewModel>(model);
         }
 
-        protected virtual IEnumerable<TEntity> SortEntities(IEnumerable<TEntity> entities)
-        {
-            return entities;
-        }
+        protected virtual void EntitiesSpecificationAction(ISearchSpecification<TEntity> specification) { }
+
+        protected virtual IEnumerable<TEntity> SortEntities(IEnumerable<TEntity> entities) => entities;
 
         protected virtual async Task<bool> EntityExists(TKey id)
         {
