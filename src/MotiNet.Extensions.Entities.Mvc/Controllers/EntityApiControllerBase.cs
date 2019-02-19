@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MotiNet.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace MotiNet.Extensions.Entities.Mvc.Controllers
@@ -22,6 +23,8 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
         protected TEntityManager EntityManager { get; }
 
+        protected virtual Expression<Func<TEntity, object>> EntityIdExpression => null;
+
         [HttpGet]
         public virtual async Task<ActionResult<IEnumerable<TEntityViewModel>>> Get()
         {
@@ -35,7 +38,18 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<TEntityViewModel>> Get(TKey id)
         {
-            var model = await EntityManager.FindByIdAsync(id);
+            TEntity model;
+
+            if (EntityIdExpression == null)
+            {
+                model = await EntityManager.FindByIdAsync(id);
+            }
+            else
+            {
+                var spec = new FindSpecification<TEntity>(EntityIdExpression);
+                EntitySpecificationAction(spec);
+                model = await EntityManager.FindAsync(id, spec);
+            }
 
             if (model == null)
             {
@@ -104,6 +118,8 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             return Mapper.Map<TEntityViewModel>(model);
         }
+
+        protected virtual void EntitySpecificationAction(IFindSpecification<TEntity> specification) { }
 
         protected virtual void EntitiesSpecificationAction(ISearchSpecification<TEntity> specification) { }
 
