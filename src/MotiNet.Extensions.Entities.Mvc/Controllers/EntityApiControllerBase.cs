@@ -30,9 +30,17 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         {
             var spec = new SearchSpecification<TEntity>(x => true);
             EntitiesSpecificationAction(spec);
+
             var models = await EntityManager.SearchAsync(spec);
             models = SortEntities(models);
-            return Mapper.Map<List<TEntityViewModel>>(models);
+
+            var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
+            foreach(var viewModel in viewModels)
+            {
+                await ProcessViewModel(viewModel);
+            }
+
+            return viewModels;
         }
 
         [HttpGet("{id}")]
@@ -56,7 +64,10 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
                 return NotFound();
             }
 
-            return Mapper.Map<TEntityViewModel>(model);
+            var viewModel = Mapper.Map<TEntityViewModel>(model);
+            await ProcessViewModel(viewModel);
+
+            return viewModel;
         }
 
         [HttpPost]
@@ -124,6 +135,8 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         protected virtual void EntitiesSpecificationAction(ISearchSpecification<TEntity> specification) { }
 
         protected virtual IEnumerable<TEntity> SortEntities(IEnumerable<TEntity> entities) => entities;
+
+        protected virtual Task ProcessViewModel(TEntityViewModel viewModel) => Task.FromResult(0);
 
         protected virtual async Task<bool> EntityExists(TKey id)
         {
