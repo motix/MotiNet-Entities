@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MotiNet.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -35,9 +36,11 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             models = SortEntities(models);
 
             var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
-            foreach(var viewModel in viewModels)
+            for (var i = 0; i < viewModels.Count; i++)
             {
-                await ProcessViewModel(viewModel);
+                var viewModel = viewModels[i];
+                var model = models.ElementAt(i);
+                await ProcessViewModel(viewModel, model);
             }
 
             return viewModels;
@@ -65,7 +68,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             }
 
             var viewModel = Mapper.Map<TEntityViewModel>(model);
-            await ProcessViewModel(viewModel);
+            await ProcessViewModel(viewModel, model);
 
             return viewModel;
         }
@@ -136,7 +139,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
         protected virtual IEnumerable<TEntity> SortEntities(IEnumerable<TEntity> entities) => entities;
 
-        protected virtual Task ProcessViewModel(TEntityViewModel viewModel) => Task.FromResult(0);
+        protected virtual Task ProcessViewModel(TEntityViewModel viewModel, TEntity model) => Task.FromResult(0);
 
         protected virtual async Task<bool> EntityExists(TKey id)
         {
