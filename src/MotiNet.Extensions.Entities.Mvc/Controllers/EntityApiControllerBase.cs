@@ -36,12 +36,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             models = SortEntities(models);
 
             var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
-            for (var i = 0; i < viewModels.Count; i++)
-            {
-                var viewModel = viewModels[i];
-                var model = models.ElementAt(i);
-                await ProcessViewModel(viewModel, model);
-            }
+            await ProcessViewModels(viewModels, models);
 
             return viewModels;
         }
@@ -140,6 +135,16 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         protected virtual IEnumerable<TEntity> SortEntities(IEnumerable<TEntity> entities) => entities;
 
         protected virtual Task ProcessViewModel(TEntityViewModel viewModel, TEntity model) => Task.FromResult(0);
+
+        protected virtual async Task ProcessViewModels(IEnumerable<TEntityViewModel> viewModels, IEnumerable<TEntity> models)
+        {
+            for (var i = 0; i < viewModels.Count(); i++)
+            {
+                var viewModel = viewModels.ElementAt(i);
+                var model = models.ElementAt(i);
+                await ProcessViewModel(viewModel, model);
+            }
+        }
 
         protected virtual async Task<bool> EntityExists(TKey id)
         {
