@@ -27,19 +27,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         protected virtual Expression<Func<TEntity, object>> EntityIdExpression => null;
 
         [HttpGet]
-        public virtual async Task<ActionResult<IEnumerable<TEntityViewModel>>> Get()
-        {
-            var spec = new SearchSpecification<TEntity>(x => true);
-            EntitiesSpecificationAction(spec);
-
-            var models = await EntityManager.SearchAsync(spec);
-            models = SortEntities(models);
-
-            var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
-            await ProcessViewModels(viewModels, models);
-
-            return viewModels;
-        }
+        public virtual Task<ActionResult<IEnumerable<TEntityViewModel>>> Get() => Get(x => true);
 
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<TEntityViewModel>> Get(TKey id)
@@ -126,6 +114,20 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             }
 
             return Mapper.Map<TEntityViewModel>(model);
+        }
+
+        protected virtual async Task<ActionResult<IEnumerable<TEntityViewModel>>> Get(Expression<Func<TEntity, bool>> criteria)
+        {
+            var spec = new SearchSpecification<TEntity>(criteria);
+            EntitiesSpecificationAction(spec);
+
+            var models = await EntityManager.SearchAsync(spec);
+            models = SortEntities(models);
+
+            var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
+            await ProcessViewModels(viewModels, models);
+
+            return viewModels;
         }
 
         protected virtual void EntitySpecificationAction(IFindSpecification<TEntity> specification) { }
