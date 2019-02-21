@@ -122,6 +122,12 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             EntitiesSpecificationAction(spec);
 
             var models = await EntityManager.SearchAsync(spec);
+
+            return await Get(models);
+        }
+
+        protected virtual async Task<ActionResult<IEnumerable<TEntityViewModel>>> Get(IEnumerable<TEntity> models)
+        {
             models = SortEntities(models);
 
             var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
