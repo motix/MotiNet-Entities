@@ -26,7 +26,9 @@ namespace MotiNet.Entities
 
         protected ICodeBasedEntityAccessor<TEntity> EntityCodeAccessor { get; }
 
-        public string GenerateCode(object manager, TEntity entity)
+        public string GenerateCode(object manager, TEntity entity) => GenerateCode(manager, entity, Prefix, true);
+
+        protected string GenerateCode(object manager, TEntity entity, string prefix, bool staticPrefix)
         {
             if (manager == null)
             {
@@ -42,15 +44,31 @@ namespace MotiNet.Entities
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            var latestEntity = ((TEntityManager)manager).FindLatest();
-            if (latestEntity == null)
+            if (staticPrefix)
             {
-                return $"{Prefix}1";
-            }
+                var latestEntity = ((TEntityManager)manager).FindLatest();
+                if (latestEntity == null)
+                {
+                    return $"{prefix}1";
+                }
 
-            var latestCode = EntityCodeAccessor.GetCode(latestEntity);
-            var latestNumber = int.Parse(latestCode.Substring(Prefix.Length));
-            return $"{Prefix}{latestNumber + 1}";
+                var latestCode = EntityCodeAccessor.GetCode(latestEntity);
+                var latestNumber = int.Parse(latestCode.Substring(prefix.Length));
+                return $"{prefix}{latestNumber + 1}";
+            }
+            else
+            {
+                var latestNumber = 0;
+                string code;
+                TEntity currentEntity;
+                do
+                {
+                    latestNumber++;
+                    code = $"{prefix}{latestNumber}";
+                    currentEntity = ((TEntityManager)manager).FindByCode(code);
+                } while (currentEntity != null);
+                return code;
+            }
         }
     }
 }
