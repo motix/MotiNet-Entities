@@ -26,9 +26,9 @@ namespace MotiNet.Entities
 
         protected ICodeBasedEntityAccessor<TEntity> EntityCodeAccessor { get; }
 
-        public string GenerateCode(object manager, TEntity entity) => GenerateCode(manager, entity, Prefix, true);
+        public virtual string GenerateCode(object manager, TEntity entity) => GenerateCode(manager, entity, Prefix, true);
 
-        protected string GenerateCode(object manager, TEntity entity, string prefix, bool staticPrefix)
+        protected virtual string GenerateCode(object manager, TEntity entity, string prefix, bool staticPrefix)
         {
             if (manager == null)
             {
