@@ -32,7 +32,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
         protected virtual Expression<Func<TEntity, object>> EntityIdExpression => null;
 
-        protected virtual Expression<Func<TEntity, bool>> EntityDeleteNotMarkedExpression => null;
+        protected virtual Expression<Func<TEntity, bool>> EntityNotDeleteMarkedExpression => null;
 
         [HttpGet]
         public virtual Task<ActionResult<IEnumerable<TEntityViewModel>>> Get() => Get(x => true);
@@ -48,7 +48,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             }
             else
             {
-                var spec = new FindSpecification<TEntity>(EntityIdExpression, IsDeleteMarkEntity ? EntityDeleteNotMarkedExpression : null);
+                var spec = new FindSpecification<TEntity>(EntityIdExpression, IsDeleteMarkEntity ? EntityNotDeleteMarkedExpression : null);
                 EntitySpecificationAction(spec);
                 model = await EntityManager.FindAsync(id, spec);
             }
@@ -139,7 +139,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         {
             if (IsDeleteMarkEntity)
             {
-                criteria = criteria.And(EntityDeleteNotMarkedExpression);
+                criteria = criteria.And(EntityNotDeleteMarkedExpression);
             }
 
             var spec = new SearchSpecification<TEntity>(criteria);
