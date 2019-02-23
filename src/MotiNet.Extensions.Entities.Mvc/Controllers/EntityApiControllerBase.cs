@@ -59,7 +59,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             }
 
             var viewModel = Mapper.Map<TEntityViewModel>(model);
-            await ProcessViewModel(viewModel, model);
+            await ProcessViewModelForGet(viewModel, model);
 
             return viewModel;
         }
@@ -120,6 +120,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             if (IsDeleteMarkEntity)
             {
+                await ProcessModelForMarkDeleted(model);
                 result = await DeleteMarkEntityManager.MarkDeletedAsync(model);
             }
             else
@@ -155,7 +156,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             models = SortEntities(models);
 
             var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
-            await ProcessViewModels(viewModels, models);
+            await ProcessViewModelsForGet(viewModels, models);
 
             return viewModels;
         }
@@ -166,17 +167,19 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
         protected virtual IEnumerable<TEntity> SortEntities(IEnumerable<TEntity> entities) => entities;
 
-        protected virtual Task ProcessViewModel(TEntityViewModel viewModel, TEntity model) => Task.FromResult(0);
+        protected virtual Task ProcessViewModelForGet(TEntityViewModel viewModel, TEntity model) => Task.FromResult(0);
 
-        protected virtual async Task ProcessViewModels(IEnumerable<TEntityViewModel> viewModels, IEnumerable<TEntity> models)
+        protected virtual async Task ProcessViewModelsForGet(IEnumerable<TEntityViewModel> viewModels, IEnumerable<TEntity> models)
         {
             for (var i = 0; i < viewModels.Count(); i++)
             {
                 var viewModel = viewModels.ElementAt(i);
                 var model = models.ElementAt(i);
-                await ProcessViewModel(viewModel, model);
+                await ProcessViewModelForGet(viewModel, model);
             }
         }
+
+        protected virtual Task ProcessModelForMarkDeleted(TEntity model) => Task.FromResult(0);
 
         protected virtual async Task<TEntity> FindByIdAsync(TKey id)
         {
