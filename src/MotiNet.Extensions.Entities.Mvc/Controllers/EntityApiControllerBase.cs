@@ -22,9 +22,17 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             EntityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
         }
 
+        protected virtual bool IgnoreDeleteMark => false;
+
+        protected virtual bool IsDeleteMarkEntity => EntityManager is IDeleteMarkEntityManager<TEntity> && !IgnoreDeleteMark;
+
         protected TEntityManager EntityManager { get; }
 
+        protected IDeleteMarkEntityManager<TEntity> DeleteMarkEntityManager => EntityManager as IDeleteMarkEntityManager<TEntity>;
+
         protected virtual Expression<Func<TEntity, object>> EntityIdExpression => null;
+
+        protected virtual Expression<Func<TEntity, bool>> EntityDeleteMarkedExpression => null;
 
         [HttpGet]
         public virtual Task<ActionResult<IEnumerable<TEntityViewModel>>> Get() => Get(x => true);
@@ -36,11 +44,11 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             if (EntityIdExpression == null)
             {
-                model = await EntityManager.FindByIdAsync(id);
+                model = await FindByIdAsync(id);
             }
             else
             {
-                var spec = new FindSpecification<TEntity>(EntityIdExpression);
+                var spec = new FindSpecification<TEntity>(EntityIdExpression, IsDeleteMarkEntity ? EntityDeleteMarkedExpression : null);
                 EntitySpecificationAction(spec);
                 model = await EntityManager.FindAsync(id, spec);
             }
@@ -74,6 +82,13 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         [HttpPut("{id}")]
         public virtual async Task<ActionResult<TEntityViewModel>> Put(TKey id, TEntityViewModel viewModel)
         {
+            var oldModel = await FindByIdAsync(id);
+
+            if (oldModel == null)
+            {
+                return NotFound();
+            }
+
             var model = Mapper.Map<TEntity>(viewModel);
 
             if (!Equals(id, (TKey)EntityManager.EntityAccessor.GetId(model)))
@@ -85,11 +100,6 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             if (!result.Succeeded)
             {
-                if (!await EntityExists(id))
-                {
-                    return NotFound();
-                }
-
                 return BadRequest(result);
             }
 
@@ -99,7 +109,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         [HttpDelete("{id}")]
         public virtual async Task<ActionResult<TEntityViewModel>> Delete(TKey id)
         {
-            var model = await EntityManager.FindByIdAsync(id);
+            var model = await FindByIdAsync(id);
 
             if (model == null)
             {
@@ -108,9 +118,9 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             GenericResult result;
 
-            if (EntityManager is IDeleteMarkEntityManager<TEntity>)
+            if (IsDeleteMarkEntity)
             {
-                result = await ((IDeleteMarkEntityManager<TEntity>)EntityManager).MarkDeletedAsync(model);
+                result = await DeleteMarkEntityManager.MarkDeletedAsync(model);
             }
             else
             {
@@ -127,6 +137,11 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
         protected virtual async Task<ActionResult<IEnumerable<TEntityViewModel>>> Get(Expression<Func<TEntity, bool>> criteria)
         {
+            if (IsDeleteMarkEntity)
+            {
+                criteria = criteria.And(EntityDeleteMarkedExpression);
+            }
+
             var spec = new SearchSpecification<TEntity>(criteria);
             EntitiesSpecificationAction(spec);
 
@@ -163,10 +178,15 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             }
         }
 
-        protected virtual async Task<bool> EntityExists(TKey id)
+        protected virtual async Task<TEntity> FindByIdAsync(TKey id)
         {
             var model = await EntityManager.FindByIdAsync(id);
-            return model != null;
+            if (IsDeleteMarkEntity && model != null && DeleteMarkEntityManager.DeleteMarkEntityAccessor.GetDeleteMarked(model))
+            {
+                model = null;
+            }
+
+            return model;
         }
     }
 }
