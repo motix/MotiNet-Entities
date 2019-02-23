@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MotiNet.Entities.EntityFrameworkCore.Test
 {
-    public partial class Article : ITimeWiseEntity, ITagsWiseEntity
+    public partial class Article : ITimeWiseEntity
     {
         public int Id { get; set; }
 
