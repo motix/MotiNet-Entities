@@ -5,7 +5,14 @@ namespace MotiNet.Entities
 {
     public static class DeleteMarkEntityManagerExtensions
     {
-        public static async Task<GenericResult> MarkDeletedAsync<TEntity>(this IDeleteMarkEntityManager<TEntity> manager, TEntity entity)
+        public static Task<GenericResult> MarkDeletedAsync<TEntity>(this IDeleteMarkEntityManager<TEntity> manager, TEntity entity)
+            where TEntity : class
+            => manager.MarkDeletedAsync(entity, null);
+        
+        public static async Task<GenericResult> MarkDeletedAsync<TEntity>(
+            this IDeleteMarkEntityManager<TEntity> manager,
+            TEntity entity,
+            Action<TEntity> entityAction)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -22,6 +29,8 @@ namespace MotiNet.Entities
             {
                 return GenericResult.Failed();
             }
+
+            entityAction?.Invoke(oldEntity);
 
             manager.DeleteMarkEntityAccessor.MarkDeleted(oldEntity);
 
@@ -29,8 +38,15 @@ namespace MotiNet.Entities
 
             return GenericResult.Success;
         }
+        public static Task<GenericResult> UnmarkDeletedAsync<TEntity>(this IDeleteMarkEntityManager<TEntity> manager, TEntity entity)
+            where TEntity : class
+            => manager.UnmarkDeletedAsync(entity, null);
 
-        public static async Task<GenericResult> UnmarkDeletedAsync<TEntity>(this IDeleteMarkEntityManager<TEntity> manager, TEntity entity)
+
+        public static async Task<GenericResult> UnmarkDeletedAsync<TEntity>(
+            this IDeleteMarkEntityManager<TEntity> manager,
+            TEntity entity,
+            Action<TEntity> entityAction)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -47,6 +63,8 @@ namespace MotiNet.Entities
             {
                 return GenericResult.Failed();
             }
+
+            entityAction?.Invoke(oldEntity);
 
             manager.DeleteMarkEntityAccessor.UnmarkDeleted(oldEntity);
 
