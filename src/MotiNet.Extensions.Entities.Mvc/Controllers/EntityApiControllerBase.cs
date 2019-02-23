@@ -106,7 +106,16 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
                 return NotFound();
             }
 
-            var result = await EntityManager.DeleteAsync(model);
+            GenericResult result;
+
+            if (EntityManager is IDeleteMarkEntityManager<TEntity>)
+            {
+                result = await ((IDeleteMarkEntityManager<TEntity>)EntityManager).MarkDeletedAsync(model);
+            }
+            else
+            {
+                result = await EntityManager.DeleteAsync(model);
+            }
 
             if (!result.Succeeded)
             {
