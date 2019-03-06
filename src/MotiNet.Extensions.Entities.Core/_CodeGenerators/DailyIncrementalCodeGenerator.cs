@@ -19,6 +19,12 @@ namespace MotiNet.Entities
 
         public override string GenerateCode(object manager, TEntity entity)
         {
+            var prefix = GenerateDailyPrefix();
+            return GenerateCode(manager, entity, prefix, false);
+        }
+
+        protected virtual string GenerateDailyPrefix()
+        {
             var today = _localTime.Today;
             var year = today.Year.ToString();
             year = year.Substring(year.Length - 2);
@@ -26,7 +32,7 @@ namespace MotiNet.Entities
             var day = today.Day.ToString("D2");
             var prefix = $"{Prefix}{year}{month}{day}-";
 
-            return GenerateCode(manager, entity, prefix, false);
+            return prefix;
         }
     }
 }
