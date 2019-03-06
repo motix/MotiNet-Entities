@@ -68,7 +68,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         public virtual async Task<ActionResult<TEntityViewModel>> Post(TEntityViewModel viewModel)
         {
             var model = Mapper.Map<TEntity>(viewModel);
-            ProcessModelForCreate(model);
+            ProcessModelForCreate(viewModel, model);
             var result = await EntityManager.CreateAsync(model);
 
             if (!result.Succeeded)
@@ -97,7 +97,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
                 return BadRequest();
             }
 
-            ProcessModelForUpdate(model);
+            ProcessModelForUpdate(viewModel, model);
             var result = await EntityManager.UpdateAsync(model);
 
             if (!result.Succeeded)
@@ -180,9 +180,9 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
             }
         }
 
-        protected virtual void ProcessModelForCreate(TEntity model) { }
+        protected virtual void ProcessModelForCreate(TEntityViewModel viewModel, TEntity model) { }
 
-        protected virtual void ProcessModelForUpdate(TEntity model) { }
+        protected virtual void ProcessModelForUpdate(TEntityViewModel viewModel, TEntity model) { }
 
         protected virtual void ProcessModelForMarkDeleted(TEntity model) { }
 
