@@ -68,7 +68,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var result = entities.SingleOrDefault(x => Equals(StoreHelper.GetPropertyValue(x, spec.KeyExpression), key));
 
-            if (spec.ManyToManyIncludes != null)
+            if (result != null && spec.ManyToManyIncludes != null)
             {
                 StoreHelper.FillManyToManyRelationships(result, store.DbContext, spec.ManyToManyIncludes);
             }
@@ -105,7 +105,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
 
             var result = await entities.SingleOrDefaultAsync(x => Equals(StoreHelper.GetPropertyValue(x, spec.KeyExpression), key), cancellationToken);
 
-            if (spec.ManyToManyIncludes != null)
+            if (result != null && spec.ManyToManyIncludes != null)
             {
                 await StoreHelper.FillManyToManyRelationshipsAsync(result, store.DbContext, spec.ManyToManyIncludes, cancellationToken);
             }
