@@ -97,7 +97,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
                 return BadRequest();
             }
 
-            ProcessModelForUpdate(viewModel, model);
+            ProcessModelForUpdate(viewModel, model, oldModel);
             var result = await EntityManager.UpdateAsync(model);
 
             if (!result.Succeeded)
@@ -182,7 +182,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
         protected virtual void ProcessModelForCreate(TEntityViewModel viewModel, TEntity model) { }
 
-        protected virtual void ProcessModelForUpdate(TEntityViewModel viewModel, TEntity model) { }
+        protected virtual void ProcessModelForUpdate(TEntityViewModel viewModel, TEntity model, TEntity oldModel) { }
 
         protected virtual void ProcessModelForMarkDeleted(TEntity model) { }
 
