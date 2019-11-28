@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -177,7 +177,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return store.DbContext.Set<TEntityScope>().FindAsync(new object[] { id }, cancellationToken);
+            return store.DbContext.Set<TEntityScope>().FindAsync(new object[] { id }, cancellationToken).AsTask();
         }
 
         private static IQueryable<TEntity> GetScopedEntities<TEntity, TEntityScope, TKey, TDbContext>(

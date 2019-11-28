@@ -1,9 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <VersionPrefix>1.1.0</VersionPrefix>
+    <Authors>Minh Nguyen</Authors>
+    <Company>Motix</Company>
+    <Description>MotiNet.Extensions.Entities.EntityMarkers class library</Description>
+    <Copyright>Motix</Copyright>
+    <PackageLicense>https://github.com/motix/MotiNet-Entities/blob/master/LICENSE</PackageLicense>
+    <PackageProjectUrl>https://github.com/motix/MotiNet-Entities</PackageProjectUrl>
     <RootNamespace>MotiNet.Entities</RootNamespace>
-    <DebugType>Full</DebugType>
   </PropertyGroup>
 
 </Project>

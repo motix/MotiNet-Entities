@@ -38,7 +38,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return store.DbContext.Set<TEntityParent>().FindAsync(new object[] { id }, cancellationToken);
+            return store.DbContext.Set<TEntityParent>().FindAsync(new object[] { id }, cancellationToken).AsTask();
         }
     }
 }

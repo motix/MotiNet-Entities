@@ -1,15 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <VersionPrefix>1.1.0</VersionPrefix>
+    <Authors>Minh Nguyen</Authors>
+    <Company>Motix</Company>
+    <Description>MotiNet.Extensions.Entities.Core class library</Description>
+    <Copyright>Motix</Copyright>
+    <PackageLicense>https://github.com/motix/MotiNet-Entities/blob/master/LICENSE</PackageLicense>
+    <PackageProjectUrl>https://github.com/motix/MotiNet-Entities</PackageProjectUrl>
     <RootNamespace>MotiNet.Entities</RootNamespace>
-    <DebugType>Full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="MotiNet.Core" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.0.1" />
+    <PackageReference Include="MotiNet.Core" Version="1.1.0-beta-0005" />
   </ItemGroup>
 
   <ItemGroup>

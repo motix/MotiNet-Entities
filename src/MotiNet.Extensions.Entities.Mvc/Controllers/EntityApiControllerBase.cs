@@ -17,9 +17,10 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         where TEntityViewModel : class
         where TEntityManager : class, IEntityManager<TEntity>
     {
-        public EntityApiControllerBase(TEntityManager entityManager)
+        public EntityApiControllerBase(TEntityManager entityManager, IMapper mapper)
         {
             EntityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
+            Mapper = mapper;
         }
 
         protected virtual bool IgnoreDeleteMark => false;
@@ -27,6 +28,8 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         protected virtual bool IsDeleteMarkEntity => EntityManager is IDeleteMarkEntityManager<TEntity> && !IgnoreDeleteMark;
 
         protected TEntityManager EntityManager { get; }
+
+        protected IMapper Mapper { get; }
 
         protected IDeleteMarkEntityManager<TEntity> DeleteMarkEntityManager => EntityManager as IDeleteMarkEntityManager<TEntity>;
 

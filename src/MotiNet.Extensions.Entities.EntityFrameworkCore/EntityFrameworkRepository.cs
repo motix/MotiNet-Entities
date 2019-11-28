@@ -54,7 +54,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return _dbContext.Set<TEntity>().FindAsync(new object[] { id }, cancellationToken);
+            return _dbContext.Set<TEntity>().FindAsync(new object[] { id }, cancellationToken).AsTask();
         }
 
         #endregion
