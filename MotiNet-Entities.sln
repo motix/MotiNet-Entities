@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5AF9D36A-D67E-447C-A107-E06B5056134F}"
 EndProject
@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotiNet.Extensions.Entities
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotiNet.Extensions.Entities.Core.Test", "test\MotiNet.Extensions.Entities.Core.Test\MotiNet.Extensions.Entities.Core.Test.csproj", "{E0443460-6E24-4804-9CCE-54FC656E1958}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotiNet.Extensions.Entities.Mvc", "src\MotiNet.Extensions.Entities.Mvc\MotiNet.Extensions.Entities.Mvc.csproj", "{867C97C5-45BF-407A-8C4A-D7623D3507D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MotiNet.Extensions.Entities.Mvc", "src\MotiNet.Extensions.Entities.Mvc\MotiNet.Extensions.Entities.Mvc.csproj", "{867C97C5-45BF-407A-8C4A-D7623D3507D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
