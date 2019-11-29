@@ -68,6 +68,10 @@ namespace MotiNet.Entities.EntityFrameworkCore
             {
                 throw new ArgumentNullException(nameof(key));
             }
+            if (spec == null)
+            {
+                throw new ArgumentNullException(nameof(spec));
+            }
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
@@ -78,7 +82,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 entities = entities.Where(spec.AdditionalCriteria);
             }
 
-            var result = entities.SingleOrDefault(x => Equals(StoreHelper.GetPropertyValue(x, spec.KeyExpression), key));
+            var result = entities.SingleOrDefault(StoreHelper.BuildPropertyLambda(spec.KeyExpression, key));
 
             if (spec.ManyToManyIncludes != null)
             {
@@ -96,6 +100,10 @@ namespace MotiNet.Entities.EntityFrameworkCore
             {
                 throw new ArgumentNullException(nameof(key));
             }
+            if (spec == null)
+            {
+                throw new ArgumentNullException(nameof(spec));
+            }
 
             var entities = _dbContext.Set<TEntity>().AsQueryable();
 
@@ -106,7 +114,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 entities = entities.Where(spec.AdditionalCriteria);
             }
 
-            var result = await entities.SingleOrDefaultAsync(x => Equals(StoreHelper.GetPropertyValue(x, spec.KeyExpression), key), cancellationToken);
+            var result = await entities.SingleOrDefaultAsync(StoreHelper.BuildPropertyLambda(spec.KeyExpression, key), cancellationToken);
 
             if (spec.ManyToManyIncludes != null)
             {

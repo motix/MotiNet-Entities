@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,6 +13,47 @@ namespace MotiNet.Entities.EntityFrameworkCore
 {
     internal static class StoreHelper
     {
+        public static Expression<Func<T, TProperty>> BuildPropertyLambda<T, TProperty>(Expression<Func<T, TProperty>> propertyExpression)
+            => BuildPropertyLambda<T, TProperty>(propertyExpression.GetPropertyAccess().Name);
+
+        public static Expression<Func<T, TProperty>> BuildPropertyLambda<T, TProperty>(string name)
+        {
+            var parameterExpression = Expression.Parameter(typeof(T), "x");
+            var property = Expression.Property(parameterExpression, name);
+            var lambda = Expression.Lambda<Func<T, TProperty>>(property, parameterExpression);
+
+            return lambda;
+        }
+
+        public static Expression<Func<T, bool>> BuildPropertyLambda<T>(Expression<Func<T, object>> propertyExpression, object value)
+            => BuildPropertyLambda<T>(propertyExpression.GetPropertyAccess().Name, value);
+
+        public static Expression<Func<T, bool>> BuildPropertyLambda<T>(string name, object value)
+        {
+            var parameterExpression = Expression.Parameter(typeof(T), "x");
+            var constant = Expression.Constant(value);
+            var property = Expression.Property(parameterExpression, name);
+            var equalsExpression = Expression.Equal(property, constant);
+            var lambda = Expression.Lambda<Func<T, bool>>(equalsExpression, parameterExpression);
+
+            return lambda;
+        }
+
+        public static Expression<Func<T, bool>> BuildPropertyLambda<T>(Expression<Func<T, object>> propertyExpression, IList values)
+            => BuildPropertyLambda<T>(propertyExpression.GetPropertyAccess().Name, values);
+
+        public static Expression<Func<T, bool>> BuildPropertyLambda<T>(string name, IList values)
+        {
+            var parameterExpression = Expression.Parameter(typeof(T), "x");
+            var constant = Expression.Constant(values);
+            var property = Expression.Property(parameterExpression, name);
+            var containsMethod = values.GetType().GetMethod(nameof(Enumerable.Contains));
+            var containsExpression = Expression.Call(constant, containsMethod, property);
+            var lambda = Expression.Lambda<Func<T, bool>>(containsExpression, parameterExpression);
+
+            return lambda;
+        }
+
         public static TResult GetPropertyValue<T, TResult>(T obj, Expression<Func<T, TResult>> expression)
         {
             var body = expression.Body;
@@ -50,13 +93,17 @@ namespace MotiNet.Entities.EntityFrameworkCore
             foreach (var include in manyToManyIncludes)
             {
                 var thisId = GetPropertyValue(entity, include.ThisIdExpression);
-                var linkSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(include.LinkType);
-                var linkSet = (IQueryable<object>)linkSetMethod.Invoke(dbContext, new object[0]);
-                var links = linkSet.Where(x => Equals(GetPropertyValue(x, include.LinkForeignKeyToThisExpression), thisId));
-                var otherIds = links.Select(x => GetPropertyValue(x, include.LinkForeignKeyToOtherExpression)).ToList();
-                var otherSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(include.OtherType);
-                var otherSet = (IQueryable<object>)otherSetMethod.Invoke(dbContext, new object[0]);
-                var othersQuery = otherSet.Where(x => otherIds.Contains(GetPropertyValue(x, include.OtherIdExpression)));
+                var keyType = thisId.GetType();
+
+                var otherIdsQuery = BuildManyToManyRelationshipOtherIdsQuery(keyType, thisId, dbContext, include);
+
+                // var otherIds = otherIdsQuery.ToList();
+                var toListMethod = typeof(Enumerable)
+                    .GetMethod((nameof(Enumerable.ToList)))
+                    .MakeGenericMethod(keyType);
+                var otherIds = (IList)toListMethod.Invoke(null, new object[] { otherIdsQuery });
+
+                var othersQuery = (IQueryable<object>)BuildManyToManyRelationshipOthersQuery(otherIds, dbContext, include);
 
                 if (include.ChildIncludes != null)
                 {
@@ -92,13 +139,21 @@ namespace MotiNet.Entities.EntityFrameworkCore
             foreach (var include in manyToManyIncludes)
             {
                 var thisId = GetPropertyValue(entity, include.ThisIdExpression);
-                var linkSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(include.LinkType);
-                var linkSet = (IQueryable<object>)linkSetMethod.Invoke(dbContext, new object[0]);
-                var links = linkSet.Where(x => Equals(GetPropertyValue(x, include.LinkForeignKeyToThisExpression), thisId));
-                var otherIds = await links.Select(x => GetPropertyValue(x, include.LinkForeignKeyToOtherExpression)).ToListAsync(cancellationToken);
-                var otherSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(include.OtherType);
-                var otherSet = (IQueryable<object>)otherSetMethod.Invoke(dbContext, new object[0]);
-                var othersQuery = otherSet.Where(x => otherIds.Contains(GetPropertyValue(x, include.OtherIdExpression)));
+                var keyType = thisId.GetType();
+
+                var otherIdsQuery = BuildManyToManyRelationshipOtherIdsQuery(keyType, thisId, dbContext, include);
+
+                // var otherIds = await otherIdsQuery.ToListAsync(cancellationToken);
+                var toListMethod = typeof(EntityFrameworkQueryableExtensions)
+                    .GetMethod((nameof(EntityFrameworkQueryableExtensions.ToListAsync)))
+                    .MakeGenericMethod(keyType);
+                var otherIdsTask = (Task)toListMethod.Invoke(null, new object[] { otherIdsQuery, cancellationToken });
+                await otherIdsTask;
+                var resultProperty = typeof(Task<>).MakeGenericType(typeof(List<>).MakeGenericType(keyType))
+                    .GetProperty(nameof(Task<object>.Result));
+                var otherIds = (IList)resultProperty.GetValue(otherIdsTask);
+
+                var othersQuery = (IQueryable<object>)BuildManyToManyRelationshipOthersQuery(otherIds, dbContext, include);
 
                 if (include.ChildIncludes != null)
                 {
@@ -374,5 +429,73 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 }
             }
         }
+
+        #region Helpers
+
+        private static object BuildManyToManyRelationshipOtherIdsQuery<T>(Type keyType, object thisId, DbContext dbContext,
+            ManyToManyIncludeSpecification<T> manyToManyInclude)
+            where T : class
+        {
+            // var linkSet = dbContext.Set<LinkEntity>()
+            var linkSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(manyToManyInclude.LinkType);
+            var linkSet = linkSetMethod.Invoke(dbContext, new object[0]);
+
+            // linksQuery = linkSet.Where(x => x.ThisEntityId = entity.Id)
+            var buildPropertyLambdaMethod = typeof(StoreHelper)
+                .GetMethod(nameof(BuildPropertyLambda), new Type[] { typeof(string), typeof(object) })
+                .MakeGenericMethod(manyToManyInclude.LinkType);
+            var lambda = buildPropertyLambdaMethod.Invoke(
+                null,
+                new object[] { manyToManyInclude.LinkForeignKeyToThisExpression.GetPropertyAccess().Name, thisId });
+            var whereMethod = typeof(Queryable)
+                .GetMethods()
+                .Single(x => x.Name == nameof(Queryable.Where) &&
+                             x.GetParameters().Last().ParameterType.GenericTypeArguments.First().GenericTypeArguments.Length == 2)
+                .MakeGenericMethod(manyToManyInclude.LinkType);
+            var linksQuery = whereMethod.Invoke(null, new object[] { linkSet, lambda });
+
+            // var otherIdsQuery = linksQuery.Select(x => x.OtherEntityId)
+            buildPropertyLambdaMethod = typeof(StoreHelper)
+                .GetMethod(nameof(BuildPropertyLambda), new Type[] { typeof(string) })
+                .MakeGenericMethod(manyToManyInclude.LinkType, keyType);
+            lambda = buildPropertyLambdaMethod.Invoke(
+                null,
+                new object[] { manyToManyInclude.LinkForeignKeyToOtherExpression.GetPropertyAccess().Name });
+            var selectMethod = typeof(Queryable)
+                .GetMethods()
+                .Single(x => x.Name == nameof(Queryable.Select) &&
+                             x.GetParameters().Last().ParameterType.GenericTypeArguments.First().GenericTypeArguments.Length == 2)
+                .MakeGenericMethod(manyToManyInclude.LinkType, keyType);
+            var otherIdsQuery = selectMethod.Invoke(null, new object[] { linksQuery, lambda });
+
+            return otherIdsQuery;
+        }
+
+        private static object BuildManyToManyRelationshipOthersQuery<T>(object otherIds, DbContext dbContext,
+            ManyToManyIncludeSpecification<T> manyToManyInclude)
+            where T : class
+        {
+            // var otherSet = dbContext.Set<OtherEntity>()
+            var otherSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(manyToManyInclude.OtherType);
+            var otherSet = otherSetMethod.Invoke(dbContext, new object[0]);
+
+            // othersQuery = otherSet.Where(x => otherIds.Contains(x.Id))
+            var buildPropertyLambdaMethod = typeof(StoreHelper)
+                .GetMethod(nameof(BuildPropertyLambda), new Type[] { typeof(string), typeof(IList) })
+                .MakeGenericMethod(manyToManyInclude.OtherType);
+            var lambda = buildPropertyLambdaMethod.Invoke(
+                null,
+                new object[] { manyToManyInclude.OtherIdExpression.GetPropertyAccess().Name, otherIds });
+            var whereMethod = typeof(Queryable)
+                .GetMethods()
+                .Single(x => x.Name == nameof(Queryable.Where) &&
+                             x.GetParameters().Last().ParameterType.GenericTypeArguments.First().GenericTypeArguments.Length == 2)
+                .MakeGenericMethod(manyToManyInclude.OtherType);
+            var othersQuery = whereMethod.Invoke(null, new object[] { otherSet, lambda });
+
+            return othersQuery;
+        }
+
+        #endregion
     }
 }

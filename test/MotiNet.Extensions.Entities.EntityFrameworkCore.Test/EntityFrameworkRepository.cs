@@ -30,13 +30,36 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             try
             {
                 // Run the test against one instance of the context
-                using (var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext)
-                {
-                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
-                    var entity = await repository.FindByIdAsync(testId, CancellationToken.None);
+                using var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext;
+                var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                var entity = await repository.FindByIdAsync(testId, CancellationToken.None);
 
-                    Assert.Equal(testId, entity.Id);
-                }
+                Assert.Equal(testId, entity.Id);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        [Fact(DisplayName = "EntityFrameworkRepository.FindsEntity")]
+        public async Task FindsEntity()
+        {
+            var testId = 1;
+
+            // In-memory database only exists while the connection is open
+            var connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+
+            try
+            {
+                // Run the test against one instance of the context
+                using var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext;
+                var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                var spec = new FindArticleByIdSpecification();
+                var entity = await repository.FindAsync(testId, spec, CancellationToken.None);
+
+                Assert.Equal(testId, entity.Id);
             }
             finally
             {
@@ -56,16 +79,14 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             try
             {
                 // Run the test against one instance of the context
-                using (var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext)
-                {
-                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
-                    var spec = new FindArticleByIdSpecification();
-                    spec.AddInclude(x => x.Author);
-                    var entity = await repository.FindAsync(testId, spec, CancellationToken.None);
+                using var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext;
+                var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                var spec = new FindArticleByIdSpecification();
+                spec.AddInclude(x => x.Author);
+                var entity = await repository.FindAsync(testId, spec, CancellationToken.None);
 
-                    Assert.NotNull(entity.Author);
-                    Assert.Equal(entity.AuthorId, entity.Author.Id);
-                }
+                Assert.NotNull(entity.Author);
+                Assert.Equal(entity.AuthorId, entity.Author.Id);
             }
             finally
             {
@@ -90,41 +111,39 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
             try
             {
                 // Run the test against one instance of the context
-                using (var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext)
-                {
-                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
-                    var articleCategoryInclude = new ManyToManyIncludeSpecification<Article>(
-                        thisIdExpression: x => x.Id,
-                        otherType: typeof(Category),
-                        otherIdExpression: x => ((Category)x).Id,
-                        othersExpression: x => x.Categories,
-                        linkType: typeof(ArticleCategory),
-                        linkForeignKeyToThisExpression: x => ((ArticleCategory)x).ArticleId,
-                        linkForeignKeyToOtherExpression: x => ((ArticleCategory)x).CategoryId);
-                    articleCategoryInclude.ChildIncludes.Add(x => ((Category)x).Parent);
-                    var categoryArticleInclude = new ManyToManyIncludeSpecification<object>(
-                        thisIdExpression: x => ((Category)x).Id,
-                        otherType: typeof(Article),
-                        otherIdExpression: x => ((Article)x).Id,
-                        othersExpression: x => ((Category)x).Articles,
-                        linkType: typeof(ArticleCategory),
-                        linkForeignKeyToThisExpression: x => ((ArticleCategory)x).CategoryId,
-                        linkForeignKeyToOtherExpression: x => ((ArticleCategory)x).ArticleId);
-                    categoryArticleInclude.ChildIncludes.Add(x => ((Article)x).Author);
-                    articleCategoryInclude.ChildManyToManyIncludes.Add(categoryArticleInclude);
-                    var spec = new FindArticleByIdSpecification();
-                    spec.AddInclude(articleCategoryInclude);
-                    var entity = await repository.FindAsync(testId, spec, CancellationToken.None);
+                using var dbContext = DbContextHelper.InitBloggingDbContext(connection).dbContext;
+                var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                var articleCategoryInclude = new ManyToManyIncludeSpecification<Article>(
+                    thisIdExpression: x => x.Id,
+                    otherType: typeof(Category),
+                    otherIdExpression: x => ((Category)x).Id,
+                    othersExpression: x => x.Categories,
+                    linkType: typeof(ArticleCategory),
+                    linkForeignKeyToThisExpression: x => ((ArticleCategory)x).ArticleId,
+                    linkForeignKeyToOtherExpression: x => ((ArticleCategory)x).CategoryId);
+                articleCategoryInclude.ChildIncludes.Add(x => ((Category)x).Parent);
+                var categoryArticleInclude = new ManyToManyIncludeSpecification<object>(
+                    thisIdExpression: x => ((Category)x).Id,
+                    otherType: typeof(Article),
+                    otherIdExpression: x => ((Article)x).Id,
+                    othersExpression: x => ((Category)x).Articles,
+                    linkType: typeof(ArticleCategory),
+                    linkForeignKeyToThisExpression: x => ((ArticleCategory)x).CategoryId,
+                    linkForeignKeyToOtherExpression: x => ((ArticleCategory)x).ArticleId);
+                categoryArticleInclude.ChildIncludes.Add(x => ((Article)x).Author);
+                articleCategoryInclude.ChildManyToManyIncludes.Add(categoryArticleInclude);
+                var spec = new FindArticleByIdSpecification();
+                spec.AddInclude(articleCategoryInclude);
+                var entity = await repository.FindAsync(testId, spec, CancellationToken.None);
 
-                    Assert.Equal(categoriesCount, entity.Categories.Count);
-                    Assert.Equal(testCategoryParentId, entity.Categories.Single(x => x.Id == testCategoryId).ParentId);
-                    Assert.NotNull(entity.Categories.Single(x => x.Id == testCategoryId).Parent);
-                    Assert.Equal(testCategoryParentId, entity.Categories.Single(x => x.Id == testCategoryId).Parent.Id);
-                    Assert.Equal(siblingCount, entity.Categories.Single(x => x.Id == testCategoryId).Articles.Count);
-                    Assert.Equal(testAuthorId, entity.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).AuthorId);
-                    Assert.NotNull(entity.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).Author);
-                    Assert.Equal(testAuthorId, entity.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).Author.Id);
-                }
+                Assert.Equal(categoriesCount, entity.Categories.Count);
+                Assert.Equal(testCategoryParentId, entity.Categories.Single(x => x.Id == testCategoryId).ParentId);
+                Assert.NotNull(entity.Categories.Single(x => x.Id == testCategoryId).Parent);
+                Assert.Equal(testCategoryParentId, entity.Categories.Single(x => x.Id == testCategoryId).Parent.Id);
+                Assert.Equal(siblingCount, entity.Categories.Single(x => x.Id == testCategoryId).Articles.Count);
+                Assert.Equal(testAuthorId, entity.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).AuthorId);
+                Assert.NotNull(entity.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).Author);
+                Assert.Equal(testAuthorId, entity.Categories.Single(x => x.Id == testCategoryId).Articles.Single(x => x.Id == testId).Author.Id);
             }
             finally
             {

@@ -24,7 +24,9 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
 
             if (!dbContext.Articles.Any())
             {
-                dbContext.Articles.AddRange(GetPreconfiguredArticles());
+                var articles = GetPreconfiguredArticles();
+                articles = articles.Reverse();
+                dbContext.Articles.AddRange(articles);
                 dbContext.SaveChanges();
             }
 

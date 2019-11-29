@@ -66,7 +66,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 entities = entities.Where(spec.AdditionalCriteria);
             }
 
-            var result = entities.SingleOrDefault(x => Equals(StoreHelper.GetPropertyValue(x, spec.KeyExpression), key));
+            var result = entities.SingleOrDefault(StoreHelper.BuildPropertyLambda(spec.KeyExpression, key));
 
             if (result != null && spec.ManyToManyIncludes != null)
             {
@@ -103,7 +103,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                 entities = entities.Where(spec.AdditionalCriteria);
             }
 
-            var result = await entities.SingleOrDefaultAsync(x => Equals(StoreHelper.GetPropertyValue(x, spec.KeyExpression), key), cancellationToken);
+            var result = await entities.SingleOrDefaultAsync(StoreHelper.BuildPropertyLambda(spec.KeyExpression, key), cancellationToken);
 
             if (result != null && spec.ManyToManyIncludes != null)
             {
