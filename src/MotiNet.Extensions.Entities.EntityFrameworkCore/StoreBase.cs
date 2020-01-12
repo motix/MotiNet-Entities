@@ -17,10 +17,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
         #region Constructors
 
         public StoreBase(TDbContext dbContext)
-        {
-            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            DbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-        }
+            => DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
         protected StoreBase() { }
 
