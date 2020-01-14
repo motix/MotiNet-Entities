@@ -56,16 +56,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
                 model = await EntityManager.FindAsync(id, spec);
             }
 
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            ProcessModelForGet(model);
-            var viewModel = Mapper.Map<TEntityViewModel>(model);
-            ProcessViewModelForGet(viewModel, model);
-
-            return viewModel;
+            return Get(model);
         }
 
         [HttpPost]
@@ -153,6 +144,25 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             var models = await EntityManager.SearchAsync(spec);
 
+            return Get(models);
+        }
+
+        protected virtual ActionResult<TEntityViewModel> Get(TEntity model)
+        {
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            ProcessModelForGet(model);
+            var viewModel = Mapper.Map<TEntityViewModel>(model);
+            ProcessViewModelForGet(viewModel, model);
+
+            return viewModel;
+        }
+
+        protected virtual ActionResult<IEnumerable<TEntityViewModel>> Get(IEnumerable<TEntity> models)
+        {
             models = SortEntities(models);
 
             ProcessModelsForGet(models);
