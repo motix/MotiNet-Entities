@@ -61,6 +61,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
                 return NotFound();
             }
 
+            ProcessModelForGet(model);
             var viewModel = Mapper.Map<TEntityViewModel>(model);
             ProcessViewModelForGet(viewModel, model);
 
@@ -152,13 +153,9 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
             var models = await EntityManager.SearchAsync(spec);
 
-            return Get(models);
-        }
-
-        protected virtual ActionResult<IEnumerable<TEntityViewModel>> Get(IEnumerable<TEntity> models)
-        {
             models = SortEntities(models);
 
+            ProcessModelsForGet(models);
             var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
             ProcessViewModelsForGet(viewModels, models);
 
@@ -171,17 +168,13 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
 
         protected virtual IEnumerable<TEntity> SortEntities(IEnumerable<TEntity> entities) => entities;
 
+        protected virtual void ProcessModelForGet(TEntity model) { }
+
+        protected virtual void ProcessModelsForGet(IEnumerable<TEntity> models) { }
+
         protected virtual void ProcessViewModelForGet(TEntityViewModel viewModel, TEntity model) { }
 
-        protected virtual void ProcessViewModelsForGet(IEnumerable<TEntityViewModel> viewModels, IEnumerable<TEntity> models)
-        {
-            for (var i = 0; i < viewModels.Count(); i++)
-            {
-                var viewModel = viewModels.ElementAt(i);
-                var model = models.ElementAt(i);
-                ProcessViewModelForGet(viewModel, model);
-            }
-        }
+        protected virtual void ProcessViewModelsForGet(IEnumerable<TEntityViewModel> viewModels, IEnumerable<TEntity> models) { }
 
         protected virtual void ProcessModelForCreate(TEntityViewModel viewModel, TEntity model) { }
 

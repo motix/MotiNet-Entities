@@ -21,7 +21,10 @@ namespace MotiNet.Entities.EntityFrameworkCore
         #region Constructors
 
         public EntityFrameworkRepository(TDbContext dbContext)
-            => _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        {
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        }
 
         protected EntityFrameworkRepository() { }
 
