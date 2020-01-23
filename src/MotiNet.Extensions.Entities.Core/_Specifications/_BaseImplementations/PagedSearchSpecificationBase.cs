@@ -7,7 +7,7 @@ namespace MotiNet.Entities
     public abstract class PagedSearchSpecificationBase<TEntity> : SearchSpecificationBase<TEntity>, IPagedSearchSpecification<TEntity>
         where TEntity : class
     {
-        public PagedSearchSpecificationBase(int? pageSize, int? pageNumber)
+        protected PagedSearchSpecificationBase(int? pageSize, int? pageNumber)
         {
             PageSize = pageSize;
             PageNumber = pageNumber;

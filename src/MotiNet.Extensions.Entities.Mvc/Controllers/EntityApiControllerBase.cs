@@ -17,7 +17,7 @@ namespace MotiNet.Extensions.Entities.Mvc.Controllers
         where TEntityViewModel : class
         where TEntityManager : class, IEntityManager<TEntity>
     {
-        public EntityApiControllerBase(TEntityManager entityManager, IMapper mapper)
+        protected EntityApiControllerBase(TEntityManager entityManager, IMapper mapper)
         {
             EntityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
             Mapper = mapper;
