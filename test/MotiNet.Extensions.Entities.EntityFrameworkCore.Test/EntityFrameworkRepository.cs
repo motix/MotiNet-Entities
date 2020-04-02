@@ -155,6 +155,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
         public async Task UpdatesOneToManyRelationshipRespectingParentIdWhenParentPresentsAndForeignKeyNotPresent()
         {
             var testId = 1;
+            var testParentId = 1;
             var newParentId = 2;
 
             // In-memory database only exists while the connection is open
@@ -168,10 +169,10 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 using (var dbContext = db.dbContext)
                 {
                     var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
-                    var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
+                    var entity = await dbContext.Articles.AsNoTracking().Include(x => x.Author).SingleAsync(x => x.Id == testId);
 
-                    Assert.Equal(testId, entity.AuthorId);
-                    Assert.Equal(testId, entity.Author.Id);
+                    Assert.Equal(testParentId, entity.AuthorId);
+                    Assert.Equal(testParentId, entity.Author.Id);
 
                     entity.AuthorId = 0;
                     entity.Author = dbContext.Authors.AsNoTracking().Single(x => x.Id == newParentId);
@@ -186,7 +187,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var dbContext = new BloggingDbContext(db.options))
                 {
-                    var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
+                    var entity = await dbContext.Articles.AsNoTracking().Include(x => x.Author).SingleAsync(x => x.Id == testId);
 
                     Assert.Equal(newParentId, entity.AuthorId);
                     Assert.Equal(newParentId, entity.Author.Id);
@@ -202,6 +203,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
         public async Task UpdatesOneToManyRelationshipRespectingForeignKeyWhenForeignKeyPresentsAndParentHasDifferentId()
         {
             var testId = 1;
+            var testParentId = 1;
             var newForeignKeyId = 2;
             var newParentId = 3;
 
@@ -216,10 +218,10 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 using (var dbContext = db.dbContext)
                 {
                     var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
-                    var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
+                    var entity = await dbContext.Articles.AsNoTracking().Include(x => x.Author).SingleAsync(x => x.Id == testId);
 
-                    Assert.Equal(testId, entity.AuthorId);
-                    Assert.Equal(testId, entity.Author.Id);
+                    Assert.Equal(testParentId, entity.AuthorId);
+                    Assert.Equal(testParentId, entity.Author.Id);
 
                     entity.AuthorId = newForeignKeyId;
                     entity.Author = dbContext.Authors.AsNoTracking().Single(x => x.Id == newParentId);
@@ -234,10 +236,75 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var dbContext = new BloggingDbContext(db.options))
                 {
-                    var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
+                    var entity = await dbContext.Articles.AsNoTracking().Include(x => x.Author).SingleAsync(x => x.Id == testId);
 
                     Assert.Equal(newForeignKeyId, entity.AuthorId);
                     Assert.Equal(newForeignKeyId, entity.Author.Id);
+                }
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        [Fact(DisplayName = "EntityFrameworkRepository.UpdatesManyToManyRelationship")]
+        public async Task UpdatesManyToManyRelationship()
+        {
+            var testId = 1;
+            var testRelationshipCount = 2;
+            var testRelationship1Id = 1;
+            var testRelationship2Id = 5;
+            var newRelationshipId = 2;
+
+            // In-memory database only exists while the connection is open
+            var connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+
+            try
+            {
+                // Run the test against one instance of the context
+                var db = DbContextHelper.InitBloggingDbContext(connection);
+                using (var dbContext = db.dbContext)
+                {
+                    var repository = new EntityFrameworkRepository<Article, BloggingDbContext>(dbContext);
+                    var entity = await dbContext.Articles.AsNoTracking().SingleAsync(x => x.Id == testId);
+                    var categoryIds = await dbContext.ArticleCategories.AsNoTracking().Where(x => x.ArticleId == testId)
+                                                                                      .Select(x => x.CategoryId)
+                                                                                      .ToListAsync();
+                    entity.Categories = await dbContext.Categories.AsNoTracking().Where(x => categoryIds.Contains(x.Id))
+                                                                                 .ToListAsync();
+
+                    Assert.Equal(testRelationshipCount, entity.Categories.Count);
+                    Assert.Contains(entity.Categories, x => x.Id == testRelationship1Id);
+                    Assert.Contains(entity.Categories, x => x.Id == testRelationship2Id);
+
+                    entity.Categories.Add(new Category { Id = newRelationshipId });
+                    var spec = new UpdateArticleSpecification();
+                    spec.AddManyToManyRelationship(
+                        thisIdExpression: x => x.Id,
+                        otherIdExpression: x => ((Category)x).Id,
+                        othersExpression: x => x.Categories,
+                        linkType: typeof(ArticleCategory),
+                        linkForeignKeyToThisExpression: x => ((ArticleCategory)x).ArticleId,
+                        linkForeignKeyToOtherExpression: x => ((ArticleCategory)x).CategoryId);
+                    await repository.UpdateAsync(entity, spec, CancellationToken.None);
+                }
+
+                // Use a separate instance of the context to verify correct data was saved to database
+                using (var dbContext = new BloggingDbContext(db.options))
+                {
+                    var entity = await dbContext.Articles.AsNoTracking().SingleAsync(x => x.Id == testId);
+                    var categoryIds = await dbContext.ArticleCategories.AsNoTracking().Where(x => x.ArticleId == testId)
+                                                                                      .Select(x => x.CategoryId)
+                                                                                      .ToListAsync();
+                    entity.Categories = await dbContext.Categories.AsNoTracking().Where(x => categoryIds.Contains(x.Id))
+                                                                                 .ToListAsync();
+
+                    Assert.Equal(testRelationshipCount + 1, entity.Categories.Count);
+                    Assert.Contains(entity.Categories, x => x.Id == testRelationship1Id);
+                    Assert.Contains(entity.Categories, x => x.Id == testRelationship2Id);
+                    Assert.Contains(entity.Categories, x => x.Id == newRelationshipId);
                 }
             }
             finally

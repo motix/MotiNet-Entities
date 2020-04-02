@@ -168,7 +168,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 using (var dbContext = db.dbContext)
                 {
                     var store = new EntityStore<Article, BloggingDbContext>(dbContext);
-                    var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
+                    var entity = await dbContext.Articles.AsNoTracking().Include(x => x.Author).SingleAsync(x => x.Id == testId);
 
                     Assert.Equal(testId, entity.AuthorId);
                     Assert.Equal(testId, entity.Author.Id);
@@ -186,7 +186,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var dbContext = new BloggingDbContext(db.options))
                 {
-                    var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
+                    var entity = await dbContext.Articles.AsNoTracking().Include(x => x.Author).SingleAsync(x => x.Id == testId);
 
                     Assert.Equal(newParentId, entity.AuthorId);
                     Assert.Equal(newParentId, entity.Author.Id);
@@ -216,7 +216,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 using (var dbContext = db.dbContext)
                 {
                     var store = new EntityStore<Article, BloggingDbContext>(dbContext);
-                    var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
+                    var entity = await dbContext.Articles.AsNoTracking().Include(x => x.Author).SingleAsync(x => x.Id == testId);
 
                     Assert.Equal(testId, entity.AuthorId);
                     Assert.Equal(testId, entity.Author.Id);
@@ -234,7 +234,7 @@ namespace MotiNet.Entities.EntityFrameworkCore.Test
                 // Use a separate instance of the context to verify correct data was saved to database
                 using (var dbContext = new BloggingDbContext(db.options))
                 {
-                    var entity = dbContext.Articles.AsNoTracking().Include(x => x.Author).Single(x => x.Id == testId);
+                    var entity = await dbContext.Articles.AsNoTracking().Include(x => x.Author).SingleAsync(x => x.Id == testId);
 
                     Assert.Equal(newForeignKeyId, entity.AuthorId);
                     Assert.Equal(newForeignKeyId, entity.Author.Id);
