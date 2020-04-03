@@ -17,7 +17,10 @@ namespace MotiNet.Entities
             for (var i = 0; i < parameterNames.Length; i++)
             {
                 var name = parameterNames[i];
-                var property = builder.GetType().GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                var property = builder.GetType().GetProperty(name, BindingFlags.FlattenHierarchy |
+                                                                   BindingFlags.IgnoreCase |
+                                                                   BindingFlags.Public |
+                                                                   BindingFlags.Instance);
                 if (property == null)
                 {
                     throw new InvalidOperationException(string.Format(Resources.BuilderPropertyNotFound, name, builder.GetType().Name));
