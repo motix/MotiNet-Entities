@@ -24,10 +24,7 @@ namespace MotiNet.Entities
                 }
                 if (i == 0)
                 {
-                    if (property.GetSetMethod() != null)
-                    {
-                        property.SetValue(builder, services);
-                    }
+                    property.SetValue(builder, services);
                 }
                 else
                 {
