@@ -9,7 +9,7 @@ namespace MotiNet.Entities
         protected BuilderBase(IServiceCollection services)
             => Services = services;
 
-        public IServiceCollection Services { get; private set; }
+        public IServiceCollection Services { get; protected set; }
 
         public Dictionary<string, Type> DomainSpecificTypes = new Dictionary<string, Type>();
     }
