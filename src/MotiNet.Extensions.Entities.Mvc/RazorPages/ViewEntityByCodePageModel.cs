@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 
 namespace MotiNet.Entities.Mvc.RazorPages
 {
-    public abstract class ViewEntityByIdPageModelBase<TKey, TEntity, TEntityViewModel, TEntityManager> : PageModel
-        where TKey : IEquatable<TKey>
+    public class ViewEntityByCodePageModel<TEntity, TEntityViewModel, TEntityManager> : PageModel
         where TEntity : class
         where TEntityViewModel : class
-        where TEntityManager : class, IEntityManager<TEntity>
+        where TEntityManager : class, ICodeBasedEntityManager<TEntity>
     {
         private readonly IMapper _mapper;
 
-        protected ViewEntityByIdPageModelBase(TEntityManager entityManager, IMapper mapper)
+        public ViewEntityByCodePageModel(TEntityManager entityManager, IMapper mapper)
         {
             EntityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
 
@@ -25,9 +24,9 @@ namespace MotiNet.Entities.Mvc.RazorPages
 
         public TEntityViewModel Entity { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(TKey id)
+        public async Task<IActionResult> OnGetAsync(string code)
         {
-            var model = await EntityManager.FindByIdAsync(id);
+            var model = await EntityManager.FindByCodeAsync(code);
 
             if (model == null)
             {
