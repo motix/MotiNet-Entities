@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace MotiNet.Extensions.Entities.Mvc.Controllers
+namespace MotiNet.Entities.Mvc.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
