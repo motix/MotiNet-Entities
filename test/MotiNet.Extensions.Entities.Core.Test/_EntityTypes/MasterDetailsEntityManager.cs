@@ -84,8 +84,8 @@ namespace MotiNet.Entities.Test
             public CountryManager()
                 : base(
                       store: new CountryStore(),
-                      entityAccessor: new CountryAccessor(),
-                      entityValidators: new List<CountryValidator>() { new CountryValidator() },
+                      accessor: new CountryAccessor(),
+                      validators: new List<CountryValidator>() { new CountryValidator() },
                       logger: new Mock<ILogger<CountryManager>>().Object)
             { }
 

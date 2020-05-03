@@ -16,14 +16,14 @@ namespace MotiNet.Entities
 
         protected ManagerBase(
             IDisposable store,
-            object entityAccessor,
-            IEnumerable<IValidator<TEntity, TSubEntity>> entityValidators,
+            object accessor,
+            IEnumerable<IValidator<TEntity, TSubEntity>> validators,
             ILogger<ManagerBase<TEntity>> logger)
-            : base(store, entityAccessor, entityValidators, logger)
+            : base(store, accessor, validators, logger)
         {
-            if (entityValidators != null)
+            if (validators != null)
             {
-                foreach (var validator in entityValidators)
+                foreach (var validator in validators)
                 {
                     EntityValidators.Add(validator);
                 }
@@ -188,17 +188,17 @@ namespace MotiNet.Entities
 
         protected ManagerBase(
             IDisposable store,
-            object entityAccessor,
-            IEnumerable<IValidator<TEntity>> entityValidators,
+            object accessor,
+            IEnumerable<IValidator<TEntity>> validators,
             ILogger<ManagerBase<TEntity>> logger)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
-            Accessor = entityAccessor;
+            Accessor = accessor;
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            if (entityValidators != null)
+            if (validators != null)
             {
-                foreach (var validator in entityValidators)
+                foreach (var validator in validators)
                 {
                     EntityValidators.Add(validator);
                 }

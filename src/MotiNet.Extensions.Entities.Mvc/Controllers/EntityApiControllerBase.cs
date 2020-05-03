@@ -93,7 +93,12 @@ namespace MotiNet.Entities.Mvc.Controllers
             }
 
             ProcessModelForUpdate(viewModel, model, oldModel);
-            var result = await EntityManager.UpdateAsync(model);
+
+            var spec = new ModifySpecification<TEntity>();
+            EntitySpecificationAction(spec);
+
+            var result = spec.OneToManyRelationships?.Count > 0 || spec.ManyToManyRelationships?.Count > 0 ?
+                await EntityManager.UpdateAsync(model, spec) : await EntityManager.UpdateAsync(model);
 
             if (!result.Succeeded)
             {
@@ -173,6 +178,8 @@ namespace MotiNet.Entities.Mvc.Controllers
         }
 
         protected virtual void EntitySpecificationAction(IFindSpecification<TEntity> specification) { }
+
+        protected virtual void EntitySpecificationAction(IModifySpecification<TEntity> specification) { }
 
         protected virtual void EntitiesSpecificationAction(ISearchSpecification<TEntity> specification) { }
 

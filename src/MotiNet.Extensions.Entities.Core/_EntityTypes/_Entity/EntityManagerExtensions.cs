@@ -192,7 +192,29 @@ namespace MotiNet.Entities
             return GenericResult.Success;
         }
 
-        public static async Task<GenericResult> UpdateAsync<TEntity>(this IEntityManager<TEntity> manager, TEntity entity)
+        public static Task<GenericResult> UpdateAsync<TEntity>(this IEntityManager<TEntity> manager, TEntity entity)
+            where TEntity : class
+            => UpdateInternal(manager, entity);
+
+        public static Task<GenericResult> UpdateAsync<TEntity>(this IEntityManager<TEntity> manager, TEntity entity, IModifySpecification<TEntity> spec)
+            where TEntity : class
+            => UpdateInternal(manager, entity, spec);
+
+        public static async Task<GenericResult> DeleteAsync<TEntity>(this IEntityManager<TEntity> manager, TEntity entity)
+            where TEntity : class
+        {
+            manager.ThrowIfDisposed();
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            await manager.EntityStore.DeleteAsync(entity, manager.CancellationToken);
+
+            return GenericResult.Success;
+        }
+
+        private static async Task<GenericResult> UpdateInternal<TEntity>(this IEntityManager<TEntity> manager, TEntity entity, IModifySpecification<TEntity> spec = null)
             where TEntity : class
         {
             manager.ThrowIfDisposed();
@@ -220,21 +242,14 @@ namespace MotiNet.Entities
 
             await manager.ExecuteEntityUpdatingAsync(entity, oldEntity);
 
-            await manager.EntityStore.UpdateAsync(entity, manager.CancellationToken);
-
-            return GenericResult.Success;
-        }
-
-        public static async Task<GenericResult> DeleteAsync<TEntity>(this IEntityManager<TEntity> manager, TEntity entity)
-            where TEntity : class
-        {
-            manager.ThrowIfDisposed();
-            if (entity == null)
+            if (spec == null)
             {
-                throw new ArgumentNullException(nameof(entity));
+                await manager.EntityStore.UpdateAsync(entity, manager.CancellationToken);
             }
-
-            await manager.EntityStore.DeleteAsync(entity, manager.CancellationToken);
+            else
+            {
+                await manager.EntityStore.UpdateAsync(entity, spec, manager.CancellationToken);
+            }
 
             return GenericResult.Success;
         }

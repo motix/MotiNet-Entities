@@ -81,8 +81,8 @@ namespace MotiNet.Entities.Test
             public CategoryManager()
                 : base(
                       store: new CategoryStore(),
-                      entityAccessor: new CategoryAccessor(),
-                      entityValidators: null,
+                      accessor: new CategoryAccessor(),
+                      validators: null,
                       logger: new Mock<ILogger<CategoryManager>>().Object)
             {
                 NameNormalizer = new UpperInvariantLookupNormalizer();

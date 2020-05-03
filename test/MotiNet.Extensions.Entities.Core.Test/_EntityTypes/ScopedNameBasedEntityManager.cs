@@ -100,8 +100,8 @@ namespace MotiNet.Entities.Test
             public CityManager()
                 : base(
                       store: new CityStore(),
-                      entityAccessor: new CityAccessor(),
-                      entityValidators: null,
+                      accessor: new CityAccessor(),
+                      validators: null,
                       logger: new Mock<ILogger<CityManager>>().Object)
             {
                 NameNormalizer = new UpperInvariantLookupNormalizer();

@@ -111,8 +111,8 @@ namespace MotiNet.Entities.Test
             public ArticleManager()
                 : base(
                       store: new ArticleStore(),
-                      entityAccessor: new ArticleAccessor(),
-                      entityValidators: null,
+                      accessor: new ArticleAccessor(),
+                      validators: null,
                       logger: new Mock<ILogger<ArticleManager>>().Object)
             { }
 

@@ -59,8 +59,8 @@ namespace MotiNet.Entities.Test
             public CityManager()
                 : base(
                       store: new CityStore(),
-                      entityAccessor: null,
-                      entityValidators: null,
+                      accessor: null,
+                      validators: null,
                       logger: new Mock<ILogger<CityManager>>().Object)
             { }
 

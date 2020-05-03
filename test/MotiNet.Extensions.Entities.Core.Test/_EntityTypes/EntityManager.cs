@@ -167,7 +167,7 @@ namespace MotiNet.Entities.Test
             }
         }
 
-        public class ArticleStore : IEntityStore<Article>
+        public sealed class ArticleStore : IEntityStore<Article>
         {
             internal List<Article> Data { get; } = new List<Article>()
             {
@@ -351,8 +351,8 @@ namespace MotiNet.Entities.Test
             public ArticleManager()
                 : base(
                       store: new ArticleStore(),
-                      entityAccessor: new ArticleAccessor(),
-                      entityValidators: new List<ArticleValidator>() { new ArticleValidator() },
+                      accessor: new ArticleAccessor(),
+                      validators: new List<ArticleValidator>() { new ArticleValidator() },
                       logger: new Mock<ILogger<ArticleManager>>().Object)
             { }
 
