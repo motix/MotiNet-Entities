@@ -1,12 +1,14 @@
-﻿namespace MotiNet.Entities
+﻿using System.Threading.Tasks;
+
+namespace MotiNet.Entities
 {
     public interface IEntityAdapter<TEntity>
         where TEntity : class
     {
-        EntityCreatedAsync<TEntity> CreatedAsync { get; set; }
-    
-        EntityUpdatedAsync<TEntity> UpdatedAsync { get; set; }
-    
-        EntityDeletedAsync<TEntity> DeletedAsync { get; set; }
+        Task OnCreatedAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs);
+
+        Task OnUpdatedAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs);
+
+        Task OnDeletedAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs);
     }
 }

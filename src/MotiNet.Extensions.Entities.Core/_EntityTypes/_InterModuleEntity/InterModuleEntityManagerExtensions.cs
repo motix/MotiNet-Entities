@@ -19,21 +19,21 @@ namespace MotiNet.Entities
         {
             var interModuleEntityManager = (IInterModuleEntityManager<TEntity>)manager;
 
-            return interModuleEntityManager.EntityAdapter.CreatedAsync(manager, taskArgs);
+            return interModuleEntityManager.EntityAdapter.OnCreatedAsync(manager, taskArgs);
         }
 
         private static Task EntityUpdatedAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var interModuleEntityManager = (IInterModuleEntityManager<TEntity>)manager;
 
-            return interModuleEntityManager.EntityAdapter.UpdatedAsync(manager, taskArgs);
+            return interModuleEntityManager.EntityAdapter.OnUpdatedAsync(manager, taskArgs);
         }
 
         private static Task EntityDeletedAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         {
             var interModuleEntityManager = (IInterModuleEntityManager<TEntity>)manager;
 
-            return interModuleEntityManager.EntityAdapter.DeletedAsync(manager, taskArgs);
+            return interModuleEntityManager.EntityAdapter.OnDeletedAsync(manager, taskArgs);
         }
     }
 }
