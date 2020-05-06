@@ -14,13 +14,22 @@ namespace MotiNet.Entities
     public delegate Task EntityCreatingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         where TEntity : class;
 
+    public delegate Task EntityCreatedAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
+        where TEntity : class;
+
     public delegate Task EntityUpdateValidatingAsync<TEntity>(IManager<TEntity> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
         where TEntity : class;
 
     public delegate Task EntityUpdatingAsync<TEntity>(IManager<TEntity> manager, ManagerUpdatingTaskArgs<TEntity> taskArgs)
         where TEntity : class;
 
+    public delegate Task EntityUpdatedAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
+        where TEntity : class;
+
     public delegate Task EntitySavingAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
+        where TEntity : class;
+
+    public delegate Task EntityDeletedAsync<TEntity>(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
         where TEntity : class;
 
     public delegate Task EntityCreateValidatingAsync<TEntity, TSubEntity>(IManager<TEntity, TSubEntity> manager, ManagerTaskArgs<TEntity> taskArgs)
@@ -62,10 +71,16 @@ namespace MotiNet.Entities
 
         public EntityCreatingAsync<TEntity> EntityCreatingAsync { get; set; }
 
+        public EntityCreatedAsync<TEntity> EntityCreatedAsync { get; set; }
+
         public EntityUpdateValidatingAsync<TEntity> EntityUpdateValidatingAsync { get; set; }
 
         public EntityUpdatingAsync<TEntity> EntityUpdatingAsync { get; set; }
 
+        public EntityUpdatedAsync<TEntity> EntityUpdatedAsync { get; set; }
+
         public EntitySavingAsync<TEntity> EntitySavingAsync { get; set; }
+
+        public EntityDeletedAsync<TEntity> EntityDeletedAsync { get; set; }
     }
 }

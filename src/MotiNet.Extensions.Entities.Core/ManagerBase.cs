@@ -29,15 +29,15 @@ namespace MotiNet.Entities
                 }
             }
 
+            if (this is IScopedNameBasedEntityManager<TEntity, TSubEntity>)
+            {
+                InitExtensions(ScopedNameBasedEntityManagerExtensions<TEntity, TSubEntity>.GetManagerTasks());
+            }
             if (this is IChildEntityManager<TEntity, TSubEntity>)
             {
                 InitExtensions(ChildEntityManagerExtensions<TEntity, TSubEntity>.GetManagerTasks());
             }
-            else if (this is IScopedNameBasedEntityManager<TEntity, TSubEntity>)
-            {
-                InitExtensions(ScopedNameBasedEntityManagerExtensions<TEntity, TSubEntity>.GetManagerTasks());
-            }
-            else if (this is IMasterDetailsEntityManager<TEntity, TSubEntity>)
+            if (this is IMasterDetailsEntityManager<TEntity, TSubEntity>)
             {
                 InitExtensions(MasterDetailsEntityManagerExtensions<TEntity, TSubEntity>.GetManagerTasks());
             }
@@ -204,6 +204,10 @@ namespace MotiNet.Entities
                 }
             }
 
+            if (this is IReadableIdEntityManager<TEntity>)
+            {
+                InitExtensions(ReadableIdEntityManagerExtensions<TEntity>.GetManagerTasks());
+            }
             if (this is ITimeTrackedEntityManager<TEntity>)
             {
                 InitExtensions(TimeTrackedEntityManagerExtensions<TEntity>.GetManagerTasks());
@@ -216,10 +220,6 @@ namespace MotiNet.Entities
             {
                 InitExtensions(NameBasedEntityManagerExtensions<TEntity>.GetManagerTasks());
             }
-            if (this is IReadableIdEntityManager<TEntity>)
-            {
-                InitExtensions(ReadableIdEntityManagerExtensions<TEntity>.GetManagerTasks());
-            }
             if (this is ITaggedEntityManager<TEntity>)
             {
                 InitExtensions(TaggedEntityManagerExtensions<TEntity>.GetManagerTasks());
@@ -227,6 +227,10 @@ namespace MotiNet.Entities
             if (this is IPreprocessedEntityManager<TEntity>)
             {
                 InitExtensions(PreprocessedEntityManagerExtensions<TEntity>.GetManagerTasks());
+            }
+            if (this is IInterModuleEntityManager<TEntity>)
+            {
+                InitExtensions(InterModuleEntityManagerExtensions<TEntity>.GetManagerTasks());
             }
         }
 
@@ -250,11 +254,17 @@ namespace MotiNet.Entities
 
         protected IList<EntityCreatingAsync<TEntity>> EntityCreatingAsyncTasks { get; } = new List<EntityCreatingAsync<TEntity>>();
 
+        protected IList<EntityCreatedAsync<TEntity>> EntityCreatedAsyncTasks { get; } = new List<EntityCreatedAsync<TEntity>>();
+
         protected IList<EntityUpdateValidatingAsync<TEntity>> EntityUpdateValidatingAsyncTasks { get; } = new List<EntityUpdateValidatingAsync<TEntity>>();
 
         protected IList<EntityUpdatingAsync<TEntity>> EntityUpdatingAsyncTasks { get; } = new List<EntityUpdatingAsync<TEntity>>();
 
+        protected IList<EntityUpdatedAsync<TEntity>> EntityUpdatedAsyncTasks { get; } = new List<EntityUpdatedAsync<TEntity>>();
+
         protected IList<EntitySavingAsync<TEntity>> EntitySavingAsyncTasks { get; } = new List<EntitySavingAsync<TEntity>>();
+
+        protected IList<EntityDeletedAsync<TEntity>> EntityDeletedAsyncTasks { get; } = new List<EntityDeletedAsync<TEntity>>();
 
         private IList<IValidator<TEntity>> EntityValidators { get; } = new List<IValidator<TEntity>>();
 
@@ -280,6 +290,10 @@ namespace MotiNet.Entities
             {
                 EntityCreatingAsyncTasks.Add(tasks.EntityCreatingAsync);
             }
+            if (tasks.EntityCreatedAsync != null)
+            {
+                EntityCreatedAsyncTasks.Add(tasks.EntityCreatedAsync);
+            }
             if (tasks.EntityUpdateValidatingAsync != null)
             {
                 EntityUpdateValidatingAsyncTasks.Add(tasks.EntityUpdateValidatingAsync);
@@ -288,9 +302,17 @@ namespace MotiNet.Entities
             {
                 EntityUpdatingAsyncTasks.Add(tasks.EntityUpdatingAsync);
             }
+            if (tasks.EntityUpdatedAsync != null)
+            {
+                EntityUpdatedAsyncTasks.Add(tasks.EntityUpdatedAsync);
+            }
             if (tasks.EntitySavingAsync != null)
             {
                 EntitySavingAsyncTasks.Add(tasks.EntitySavingAsync);
+            }
+            if (tasks.EntityDeletedAsync != null)
+            {
+                EntityDeletedAsyncTasks.Add(tasks.EntityDeletedAsync);
             }
         }
 
@@ -374,6 +396,15 @@ namespace MotiNet.Entities
             }
         }
 
+        public virtual async Task ExecuteEntityCreatedAsync(TEntity entity)
+        {
+            foreach (var task in EntityCreatedAsyncTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
+        }
+
         public virtual async Task ExecuteEntityUpdateValidatingAsync(TEntity entity, TEntity oldEntity)
         {
             foreach (var task in EntityUpdateValidatingAsyncTasks)
@@ -394,9 +425,27 @@ namespace MotiNet.Entities
             }
         }
 
+        public virtual async Task ExecuteEntityUpdatedAsync(TEntity entity)
+        {
+            foreach (var task in EntityUpdatedAsyncTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
+        }
+
         public virtual async Task ExecuteEntitySavingAsync(TEntity entity)
         {
             foreach (var task in EntitySavingAsyncTasks)
+            {
+                // Do one by one to ensure the order
+                await task(this, new ManagerTaskArgs<TEntity>(entity));
+            }
+        }
+
+        public virtual async Task ExecuteEntityDeletedAsync(TEntity entity)
+        {
+            foreach (var task in EntityDeletedAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));

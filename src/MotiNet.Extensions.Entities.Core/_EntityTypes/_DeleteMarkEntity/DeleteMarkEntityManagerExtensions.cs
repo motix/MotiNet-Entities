@@ -38,6 +38,7 @@ namespace MotiNet.Entities
 
             return GenericResult.Success;
         }
+
         public static Task<GenericResult> UnmarkDeletedAsync<TEntity>(this IDeleteMarkEntityManager<TEntity> manager, TEntity entity)
             where TEntity : class
             => manager.UnmarkDeletedAsync(entity, null);

@@ -50,11 +50,17 @@ namespace MotiNet.Entities
 
         Task ExecuteEntityCreatingAsync(TEntity entity);
 
+        Task ExecuteEntityCreatedAsync(TEntity entity);
+
         Task ExecuteEntityUpdateValidatingAsync(TEntity entity, TEntity oldEntity);
 
         Task ExecuteEntityUpdatingAsync(TEntity entity, TEntity oldEntity);
 
+        Task ExecuteEntityUpdatedAsync(TEntity entity);
+
         Task ExecuteEntitySavingAsync(TEntity entity);
+        
+        Task ExecuteEntityDeletedAsync(TEntity entity);
 
         void ThrowIfDisposed();
     }

@@ -189,6 +189,8 @@ namespace MotiNet.Entities
 
             await manager.EntityStore.CreateAsync(entity, manager.CancellationToken);
 
+            await manager.ExecuteEntityCreatedAsync(entity);
+
             return GenericResult.Success;
         }
 
@@ -210,6 +212,8 @@ namespace MotiNet.Entities
             }
 
             await manager.EntityStore.DeleteAsync(entity, manager.CancellationToken);
+
+            await manager.ExecuteEntityDeletedAsync(entity);
 
             return GenericResult.Success;
         }
@@ -250,6 +254,8 @@ namespace MotiNet.Entities
             {
                 await manager.EntityStore.UpdateAsync(entity, spec, manager.CancellationToken);
             }
+
+            await manager.ExecuteEntityUpdatedAsync(entity);
 
             return GenericResult.Success;
         }
