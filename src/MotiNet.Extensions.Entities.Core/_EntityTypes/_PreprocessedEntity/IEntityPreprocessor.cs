@@ -3,7 +3,7 @@
     public interface IEntityPreprocessor<TEntity>
         where TEntity : class
     {
-        bool Enabled { get; set; }
+        bool Disabled { get; set; }
 
         void PreprocessEntityForGet(TEntity entity);
 

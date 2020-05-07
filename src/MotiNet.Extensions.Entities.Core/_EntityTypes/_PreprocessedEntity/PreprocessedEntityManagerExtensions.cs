@@ -19,7 +19,7 @@ namespace MotiNet.Entities
         {
             var preprocessedEntityManager = (IPreprocessedEntityManager<TEntity>)manager;
 
-            if (preprocessedEntityManager.EntityPreprocessor?.Enabled == true)
+            if (preprocessedEntityManager.EntityPreprocessor?.Disabled == false)
             {
                 preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForGet(taskArgs.Entity);
             }
@@ -29,7 +29,7 @@ namespace MotiNet.Entities
         {
             var preprocessedEntityManager = (IPreprocessedEntityManager<TEntity>)manager;
 
-            if (preprocessedEntityManager.EntityPreprocessor?.Enabled == true)
+            if (preprocessedEntityManager.EntityPreprocessor?.Disabled == false)
             {
                 preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForGet(taskArgs.Entity);
             }
@@ -41,7 +41,7 @@ namespace MotiNet.Entities
         {
             var preprocessedEntityManager = (IPreprocessedEntityManager<TEntity>)manager;
 
-            if (preprocessedEntityManager.EntityPreprocessor?.Enabled == true)
+            if (preprocessedEntityManager.EntityPreprocessor?.Disabled == false)
             {
                 preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForUpdate(taskArgs.OldEntity, taskArgs.Entity);
             }
