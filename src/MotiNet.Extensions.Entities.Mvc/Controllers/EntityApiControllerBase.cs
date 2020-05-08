@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using MotiNet.Entities;
+using Microsoft.Extensions.Logging;
+using MotiNet.Entities.Mvc.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,28 +36,28 @@ namespace MotiNet.Entities.Mvc.Controllers
 
         protected virtual Expression<Func<TEntity, object>> EntityIdExpression => null;
 
-        protected virtual Expression<Func<TEntity, bool>> EntityNotDeleteMarkedExpression => null;
+        protected virtual Expression<Func<TEntity, bool>> EntityNotDeleteMarkedExpression => throw new NotImplementedException();
 
         [HttpGet]
-        public virtual Task<ActionResult<IEnumerable<TEntityViewModel>>> Get() => Get(x => true);
+        public virtual Task<ActionResult<IEnumerable<TEntityViewModel>>> Get() => GetInternal(x => true);
 
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<TEntityViewModel>> Get(TKey id)
         {
             TEntity model;
 
-            if (EntityIdExpression == null)
-            {
-                model = await FindByIdAsync(id);
-            }
-            else
+            if (EntityIdExpression != null || IsDeleteMarkEntity)
             {
                 var spec = new FindSpecification<TEntity>(EntityIdExpression, IsDeleteMarkEntity ? EntityNotDeleteMarkedExpression : null);
                 EntitySpecificationAction(spec);
                 model = await EntityManager.FindAsync(id, spec);
             }
+            else
+            {
+                model = await FindByIdAsync(id);
+            }
 
-            return Get(model);
+            return GetInternal(model);
         }
 
         [HttpPost]
@@ -137,45 +138,100 @@ namespace MotiNet.Entities.Mvc.Controllers
             return Mapper.Map<TEntityViewModel>(model);
         }
 
-        protected virtual async Task<ActionResult<IEnumerable<TEntityViewModel>>> Get(Expression<Func<TEntity, bool>> criteria)
+        [HttpPost("all")]
+        public virtual async Task<ActionResult<UpdateAllViewModel<TKey, TEntityViewModel>>> Post(UpdateAllViewModel<TKey, TEntityViewModel> viewModels)
         {
-            if (IsDeleteMarkEntity)
+            foreach (var entry in viewModels.All)
             {
-                criteria = criteria.And(EntityNotDeleteMarkedExpression);
+                var oldModel = await FindByIdAsync(entry.Id);
+
+                if (oldModel == null)
+                {
+                    // Create
+
+                    var result = await Post(entry.ViewModel);
+                    switch (result.Result)
+                    {
+                        case BadRequestObjectResult _:
+                            return BadRequest(viewModels);
+                        case CreatedAtActionResult _:
+                            entry.Result = GenericResult.Success;
+                            entry.ViewModel = result.Value;
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+                else
+                {
+                    // Update
+
+                    var result = await Put(entry.Id, entry.ViewModel);
+                    switch (result.Result)
+                    {
+                        case NotFoundResult _:
+                            throw new NotImplementedException();
+                        case BadRequestObjectResult actionResult:
+                            if (actionResult.Value == null)
+                            {
+                                return BadRequest();
+                            }
+                            else
+                            {
+                                entry.Result = (GenericResult)actionResult.Value;
+                                return BadRequest(viewModels);
+                            }
+                        case null:
+                            entry.Result = GenericResult.Success;
+                            entry.ViewModel = result.Value;
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
             }
 
-            var spec = new SearchSpecification<TEntity>(criteria);
-            EntitiesSpecificationAction(spec);
-
-            var models = await EntityManager.SearchAsync(spec);
-
-            return Get(models);
-        }
-
-        protected virtual ActionResult<TEntityViewModel> Get(TEntity model)
-        {
-            if (model == null)
+            if (viewModels.RemoveExtra)
             {
-                return NotFound();
+                // Delete
+
+                var ids = viewModels.All.Select(x => x.Id);
+                var expression = BuildSearchEntitiesExcludeIdsExpression(ids, viewModels.RemoveExtraParameters);
+                var spec = new SearchSpecification<TEntity>(expression);
+                var models = await EntityManager.SearchAsync(spec);
+
+                foreach (var model in models)
+                {
+                    var entry = new UpdateAllEntryViewModel<TKey, TEntityViewModel>
+                    {
+                        ViewModel = Mapper.Map<TEntityViewModel>(model)
+                    };
+
+                    viewModels.All.Add(entry);
+
+                    var result = await Delete(entry.Id);
+                    switch (result.Result)
+                    {
+                        case NotFoundResult _:
+                            throw new NotImplementedException();
+                        case BadRequestObjectResult actionResult:
+                                entry.Result = (GenericResult)actionResult.Value;
+                                return BadRequest(viewModels);
+                        case null:
+                            entry.Result = GenericResult.Success;
+                            entry.ViewModel = result.Value;
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
             }
-
-            ProcessModelForGet(model);
-            var viewModel = Mapper.Map<TEntityViewModel>(model);
-            ProcessViewModelForGet(viewModel, model);
-
-            return viewModel;
-        }
-
-        protected virtual ActionResult<IEnumerable<TEntityViewModel>> Get(IEnumerable<TEntity> models)
-        {
-            models = SortEntities(models);
-
-            ProcessModelsForGet(models);
-            var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
-            ProcessViewModelsForGet(viewModels, models);
 
             return viewModels;
         }
+
+        protected virtual Expression<Func<TEntity, bool>> BuildSearchEntitiesExcludeIdsExpression(IEnumerable<TKey> ids, object removeExtraParameters)
+            => throw new NotImplementedException();
 
         protected virtual void EntitySpecificationAction(IFindSpecification<TEntity> specification) { }
 
@@ -208,6 +264,46 @@ namespace MotiNet.Entities.Mvc.Controllers
             }
 
             return model;
+        }
+
+        private async Task<ActionResult<IEnumerable<TEntityViewModel>>> GetInternal(Expression<Func<TEntity, bool>> criteria)
+        {
+            if (IsDeleteMarkEntity)
+            {
+                criteria = criteria.And(EntityNotDeleteMarkedExpression);
+            }
+
+            var spec = new SearchSpecification<TEntity>(criteria);
+            EntitiesSpecificationAction(spec);
+
+            var models = await EntityManager.SearchAsync(spec);
+
+            return GetInternal(models);
+        }
+
+        private ActionResult<TEntityViewModel> GetInternal(TEntity model)
+        {
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            ProcessModelForGet(model);
+            var viewModel = Mapper.Map<TEntityViewModel>(model);
+            ProcessViewModelForGet(viewModel, model);
+
+            return viewModel;
+        }
+
+        private ActionResult<IEnumerable<TEntityViewModel>> GetInternal(IEnumerable<TEntity> models)
+        {
+            models = SortEntities(models);
+
+            ProcessModelsForGet(models);
+            var viewModels = Mapper.Map<List<TEntityViewModel>>(models);
+            ProcessViewModelsForGet(viewModels, models);
+
+            return viewModels;
         }
     }
 }
