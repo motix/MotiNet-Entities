@@ -59,7 +59,7 @@ namespace MotiNet.Entities
         Task ExecuteEntityUpdatedAsync(TEntity entity);
 
         Task ExecuteEntitySavingAsync(TEntity entity);
-        
+
         Task ExecuteEntityDeletedAsync(TEntity entity);
 
         void ThrowIfDisposed();

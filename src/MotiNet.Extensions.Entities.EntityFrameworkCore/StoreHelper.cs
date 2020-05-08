@@ -333,7 +333,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                     if (others != null)
                     {
                         var newOtherIds = others.AsQueryable().Select(x => GetPropertyValue(x, relationship.OtherIdExpression)).ToList();
-                        
+
                         var thisId = GetPropertyValue(entity, relationship.ThisIdExpression);
                         var keyType = thisId.GetType();
                         var oldOtherIdsQuery = BuildManyToManyRelationshipOtherIdsQuery(keyType, thisId, dbContext, relationship);
@@ -380,7 +380,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                     if (others != null)
                     {
                         var newOtherIds = others.AsQueryable().Select(x => GetPropertyValue(x, relationship.OtherIdExpression)).ToList();
-                        
+
                         var thisId = GetPropertyValue(entity, relationship.ThisIdExpression);
                         var keyType = thisId.GetType();
                         var oldOtherIdsQuery = BuildManyToManyRelationshipOtherIdsQuery(keyType, thisId, dbContext, relationship);

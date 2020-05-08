@@ -8,7 +8,7 @@ namespace MotiNet.Entities
         public static Task<GenericResult> MarkDeletedAsync<TEntity>(this IDeleteMarkEntityManager<TEntity> manager, TEntity entity)
             where TEntity : class
             => manager.MarkDeletedAsync(entity, null);
-        
+
         public static async Task<GenericResult> MarkDeletedAsync<TEntity>(
             this IDeleteMarkEntityManager<TEntity> manager,
             TEntity entity,

@@ -271,7 +271,7 @@ namespace MotiNet.Entities
         #endregion
 
         #region Public Operations
-        
+
         public virtual void InitExtensions(ManagerTasks<TEntity> tasks)
         {
             if (tasks.EntityGet != null)
@@ -357,7 +357,7 @@ namespace MotiNet.Entities
 
         public virtual async Task ExecuteEntityGetAsync(TEntity entity)
         {
-            foreach(var task in EntityGetAsyncTasks)
+            foreach (var task in EntityGetAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));
@@ -378,7 +378,7 @@ namespace MotiNet.Entities
 
         public virtual async Task ExecuteEntityCreateValidatingAsync(TEntity entity)
         {
-            foreach(var task in EntityCreateValidatingAsyncTasks)
+            foreach (var task in EntityCreateValidatingAsyncTasks)
             {
                 // Do one by one to ensure the order
                 await task(this, new ManagerTaskArgs<TEntity>(entity));

@@ -4,7 +4,7 @@
     {
         public virtual string Normalize(string key)
         {
-             return key?.Normalize().ToUpperInvariant();
+            return key?.Normalize().ToUpperInvariant();
         }
     }
 }
