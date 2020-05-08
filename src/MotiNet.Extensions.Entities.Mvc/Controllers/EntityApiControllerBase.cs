@@ -266,7 +266,7 @@ namespace MotiNet.Entities.Mvc.Controllers
             return model;
         }
 
-        private async Task<ActionResult<IEnumerable<TEntityViewModel>>> GetInternal(Expression<Func<TEntity, bool>> criteria)
+        protected virtual async Task<ActionResult<IEnumerable<TEntityViewModel>>> GetInternal(Expression<Func<TEntity, bool>> criteria)
         {
             if (IsDeleteMarkEntity)
             {
@@ -281,7 +281,7 @@ namespace MotiNet.Entities.Mvc.Controllers
             return GetInternal(models);
         }
 
-        private ActionResult<TEntityViewModel> GetInternal(TEntity model)
+        protected virtual ActionResult<TEntityViewModel> GetInternal(TEntity model)
         {
             if (model == null)
             {
@@ -295,7 +295,7 @@ namespace MotiNet.Entities.Mvc.Controllers
             return viewModel;
         }
 
-        private ActionResult<IEnumerable<TEntityViewModel>> GetInternal(IEnumerable<TEntity> models)
+        protected virtual ActionResult<IEnumerable<TEntityViewModel>> GetInternal(IEnumerable<TEntity> models)
         {
             models = SortEntities(models);
 
