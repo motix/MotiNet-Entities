@@ -230,7 +230,7 @@ namespace MotiNet.Entities.Mvc.Controllers
             return viewModels;
         }
 
-        protected virtual Expression<Func<TEntity, bool>> BuildSearchEntitiesExcludeIdsExpression(IEnumerable<TKey> ids, object removeExtraParameters)
+        protected virtual Expression<Func<TEntity, bool>> BuildSearchEntitiesExcludeIdsExpression(IEnumerable<TKey> ids, object parameters)
             => throw new NotImplementedException();
 
         protected virtual void EntitySpecificationAction(IFindSpecification<TEntity> specification) { }
