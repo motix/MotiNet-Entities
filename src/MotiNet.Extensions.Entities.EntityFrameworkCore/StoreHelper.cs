@@ -282,10 +282,10 @@ namespace MotiNet.Entities.EntityFrameworkCore
                     {
                         var newOtherIds = others.AsQueryable().Select(x => GetPropertyValue(x, relationship.OtherIdExpression)).ToList();
                         var thisId = GetPropertyValue(entity, relationship.ThisIdExpression);
-                        var linkConstructor = relationship.LinkType.GetConstructor(new Type[0]);
+                        var linkConstructor = relationship.LinkType.GetConstructor(Array.Empty<Type>());
                         foreach (var newOtherId in newOtherIds)
                         {
-                            var link = linkConstructor.Invoke(new object[0]);
+                            var link = linkConstructor.Invoke(Array.Empty<object>());
                             SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
                             SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, newOtherId);
                             dbContext.Add(link);
@@ -308,10 +308,10 @@ namespace MotiNet.Entities.EntityFrameworkCore
                     {
                         var newOtherIds = others.AsQueryable().Select(x => GetPropertyValue(x, relationship.OtherIdExpression)).ToList();
                         var thisId = GetPropertyValue(entity, relationship.ThisIdExpression);
-                        var linkConstructor = relationship.LinkType.GetConstructor(new Type[0]);
+                        var linkConstructor = relationship.LinkType.GetConstructor(Array.Empty<Type>());
                         foreach (var newOtherId in newOtherIds)
                         {
-                            var link = linkConstructor.Invoke(new object[0]);
+                            var link = linkConstructor.Invoke(Array.Empty<object>());
                             SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
                             SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, newOtherId);
                             dbContext.Add(link);
@@ -339,13 +339,13 @@ namespace MotiNet.Entities.EntityFrameworkCore
                         var oldOtherIdsQuery = BuildManyToManyRelationshipOtherIdsQuery(keyType, thisId, dbContext, relationship);
                         var oldOtherIds = QueryToList(oldOtherIdsQuery, keyType);
 
-                        var linkConstructor = relationship.LinkType.GetConstructor(new Type[0]);
+                        var linkConstructor = relationship.LinkType.GetConstructor(Array.Empty<Type>());
 
                         foreach (var newOtherId in newOtherIds)
                         {
                             if (!oldOtherIds.Contains(newOtherId))
                             {
-                                var link = linkConstructor.Invoke(new object[0]);
+                                var link = linkConstructor.Invoke(Array.Empty<object>());
                                 SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
                                 SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, newOtherId);
                                 dbContext.Add(link);
@@ -357,7 +357,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                         {
                             if (!newOtherIds.Contains(oldOtherId))
                             {
-                                var link = linkConstructor.Invoke(new object[0]);
+                                var link = linkConstructor.Invoke(Array.Empty<object>());
                                 SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
                                 SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, oldOtherId);
                                 dbContext.Remove(link);
@@ -386,13 +386,13 @@ namespace MotiNet.Entities.EntityFrameworkCore
                         var oldOtherIdsQuery = BuildManyToManyRelationshipOtherIdsQuery(keyType, thisId, dbContext, relationship);
                         var oldOtherIds = await QueryToListAsync(oldOtherIdsQuery, keyType, cancellationToken);
 
-                        var linkConstructor = relationship.LinkType.GetConstructor(new Type[0]);
+                        var linkConstructor = relationship.LinkType.GetConstructor(Array.Empty<Type>());
 
                         foreach (var newOtherId in newOtherIds)
                         {
                             if (!oldOtherIds.Contains(newOtherId))
                             {
-                                var link = linkConstructor.Invoke(new object[0]);
+                                var link = linkConstructor.Invoke(Array.Empty<object>());
                                 SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
                                 SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, newOtherId);
                                 dbContext.Add(link);
@@ -404,7 +404,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
                         {
                             if (!newOtherIds.Contains(oldOtherId))
                             {
-                                var link = linkConstructor.Invoke(new object[0]);
+                                var link = linkConstructor.Invoke(Array.Empty<object>());
                                 SetPropertyValue(link, relationship.LinkForeignKeyToThisExpression, thisId);
                                 SetPropertyValue(link, relationship.LinkForeignKeyToOtherExpression, oldOtherId);
                                 dbContext.Remove(link);
@@ -473,7 +473,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
         {
             // var linkSet = dbContext.Set<LinkEntity>()
             var linkSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(linkType);
-            var linkSet = linkSetMethod.Invoke(dbContext, new object[0]);
+            var linkSet = linkSetMethod.Invoke(dbContext, Array.Empty<object>());
 
             // linksQuery = linkSet.Where(x => x.ThisEntityId = entity.Id)
             var buildPropertyLambdaMethod = typeof(StoreHelper)
@@ -512,7 +512,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
         {
             // var otherSet = dbContext.Set<OtherEntity>()
             var otherSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(manyToManyInclude.OtherType);
-            var otherSet = otherSetMethod.Invoke(dbContext, new object[0]);
+            var otherSet = otherSetMethod.Invoke(dbContext, Array.Empty<object>());
 
             // othersQuery = otherSet.Where(x => otherIds.Contains(x.Id))
             var buildPropertyLambdaMethod = typeof(StoreHelper)
