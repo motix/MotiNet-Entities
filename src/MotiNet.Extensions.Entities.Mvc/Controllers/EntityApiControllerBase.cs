@@ -106,7 +106,7 @@ namespace MotiNet.Entities.Mvc.Controllers
                 return BadRequest(result);
             }
 
-            return Mapper.Map<TEntityViewModel>(model);
+            return await Get(id);
         }
 
         [HttpDelete("{id}")]
