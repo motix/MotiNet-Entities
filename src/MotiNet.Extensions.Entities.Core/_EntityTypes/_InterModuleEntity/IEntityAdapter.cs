@@ -5,10 +5,10 @@ namespace MotiNet.Entities
     public interface IEntityAdapter<TEntity>
         where TEntity : class
     {
-        Task OnCreatedAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs);
+        Task OnCreatedAsync(IInterModuleEntityManager<TEntity> manager, TEntity entity);
 
-        Task OnUpdatedAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs);
+        Task OnUpdatedAsync(IInterModuleEntityManager<TEntity> manager, TEntity entity);
 
-        Task OnDeletedAsync(IManager<TEntity> manager, ManagerTaskArgs<TEntity> taskArgs);
+        Task OnDeletedAsync(IInterModuleEntityManager<TEntity> manager, TEntity entity);
     }
 }

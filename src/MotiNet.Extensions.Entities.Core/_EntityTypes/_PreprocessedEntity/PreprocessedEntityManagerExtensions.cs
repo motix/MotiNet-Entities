@@ -21,7 +21,7 @@ namespace MotiNet.Entities
 
             if (preprocessedEntityManager.EntityPreprocessor?.Disabled == false)
             {
-                preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForGet(taskArgs.Entity);
+                preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForGet(preprocessedEntityManager, taskArgs.Entity);
             }
         }
 
@@ -31,7 +31,7 @@ namespace MotiNet.Entities
 
             if (preprocessedEntityManager.EntityPreprocessor?.Disabled == false)
             {
-                preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForGet(taskArgs.Entity);
+                preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForGet(preprocessedEntityManager, taskArgs.Entity);
             }
 
             return Task.FromResult(0);
@@ -43,7 +43,7 @@ namespace MotiNet.Entities
 
             if (preprocessedEntityManager.EntityPreprocessor?.Disabled == false)
             {
-                preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForUpdate(taskArgs.OldEntity, taskArgs.Entity);
+                preprocessedEntityManager.EntityPreprocessor.PreprocessEntityForUpdate(preprocessedEntityManager, taskArgs.OldEntity, taskArgs.Entity);
             }
 
             return Task.FromResult(0);

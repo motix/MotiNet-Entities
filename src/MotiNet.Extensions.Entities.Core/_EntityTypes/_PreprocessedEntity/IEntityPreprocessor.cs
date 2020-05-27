@@ -5,8 +5,8 @@
     {
         bool Disabled { get; set; }
 
-        void PreprocessEntityForGet(TEntity entity);
+        void PreprocessEntityForGet(IPreprocessedEntityManager<TEntity> manager, TEntity entity);
 
-        void PreprocessEntityForUpdate(TEntity oldEntity, TEntity newEntity);
+        void PreprocessEntityForUpdate(IPreprocessedEntityManager<TEntity> manager, TEntity oldEntity, TEntity newEntity);
     }
 }
