@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MotiNet.Entities.Mvc.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MotiNet.Entities.Mvc.Controllers
@@ -72,8 +72,20 @@ namespace MotiNet.Entities.Mvc.Controllers
                 return BadRequest(result);
             }
 
+            object id;
+
+            if (EntityIdExpression == null)
+            {
+                id = EntityManager.EntityAccessor.GetId(model);
+            }
+            else
+            {
+                var getIdMethod = ((PropertyInfo)((MemberExpression)EntityIdExpression.Body).Member).GetMethod;
+                id = getIdMethod.Invoke(model, Array.Empty<object>());
+            }
+
             viewModel = Mapper.Map<TEntityViewModel>(model);
-            return CreatedAtAction(nameof(Get), new { id = EntityManager.EntityAccessor.GetId(model) }, viewModel);
+            return CreatedAtAction(nameof(Get), new { id }, viewModel);
         }
 
         [HttpPut("{id}")]
@@ -104,6 +116,13 @@ namespace MotiNet.Entities.Mvc.Controllers
             if (!result.Succeeded)
             {
                 return BadRequest(result);
+            }
+
+            if (EntityIdExpression != null)
+            {
+                oldModel = await FindByIdAsync(id);
+                var getIdMethod = ((PropertyInfo)((MemberExpression)EntityIdExpression.Body).Member).GetMethod;
+                id = (TKey)getIdMethod.Invoke(oldModel, Array.Empty<object>());
             }
 
             return await Get(id);
@@ -215,8 +234,8 @@ namespace MotiNet.Entities.Mvc.Controllers
                         case NotFoundResult _:
                             throw new NotImplementedException();
                         case BadRequestObjectResult actionResult:
-                                entry.Result = (GenericResult)actionResult.Value;
-                                return BadRequest(viewModels);
+                            entry.Result = (GenericResult)actionResult.Value;
+                            return BadRequest(viewModels);
                         case null:
                             entry.Result = GenericResult.Success;
                             entry.ViewModel = result.Value;
