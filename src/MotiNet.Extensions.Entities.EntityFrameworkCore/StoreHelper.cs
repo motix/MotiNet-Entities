@@ -472,7 +472,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
             where T : class
         {
             // var linkSet = dbContext.Set<LinkEntity>()
-            var linkSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(linkType);
+            var linkSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set), Array.Empty<Type>()).MakeGenericMethod(linkType);
             var linkSet = linkSetMethod.Invoke(dbContext, Array.Empty<object>());
 
             // linksQuery = linkSet.Where(x => x.ThisEntityId = entity.Id)
@@ -511,7 +511,7 @@ namespace MotiNet.Entities.EntityFrameworkCore
             where T : class
         {
             // var otherSet = dbContext.Set<OtherEntity>()
-            var otherSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set)).MakeGenericMethod(manyToManyInclude.OtherType);
+            var otherSetMethod = dbContext.GetType().GetMethod(nameof(dbContext.Set), Array.Empty<Type>()).MakeGenericMethod(manyToManyInclude.OtherType);
             var otherSet = otherSetMethod.Invoke(dbContext, Array.Empty<object>());
 
             // othersQuery = otherSet.Where(x => otherIds.Contains(x.Id))
