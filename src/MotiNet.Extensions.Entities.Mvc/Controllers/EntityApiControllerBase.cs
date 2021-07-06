@@ -84,7 +84,10 @@ namespace MotiNet.Entities.Mvc.Controllers
                 id = getIdMethod.Invoke(model, Array.Empty<object>());
             }
 
+            ProcessModelForGet(model);
             viewModel = Mapper.Map<TEntityViewModel>(model);
+            ProcessViewModelForGet(viewModel, model);
+            
             return CreatedAtAction(nameof(Get), new { id }, viewModel);
         }
 
